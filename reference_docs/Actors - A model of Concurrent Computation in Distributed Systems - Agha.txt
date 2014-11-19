@@ -1,0 +1,14 @@
+dc.contributor.author	Agha, Gul Abdulnabi	en_US
+dc.date.accessioned	2004-10-20T20:10:20Z	
+dc.date.available	2004-10-20T20:10:20Z	
+dc.date.issued		1985-06-01	en_US
+dc.identifier.other	AITR-844	en_US
+dc.identifier.uri	http://hdl.handle.net/1721.1/6952	
+
+dc.format.extent	20776822 bytes	
+dc.format.extent	16890973 bytes	
+dc.format.mimetype	application/postscript	
+dc.format.mimetype	application/pdf	
+dc.language.iso	en_US	
+dc.relation.ispartofseries	AITR-844	en_US
+dc.title	ACTORS: A Model of Concurrent Computation in Distributed Systems

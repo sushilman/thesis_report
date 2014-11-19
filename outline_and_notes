@@ -1,0 +1,100 @@
+Outline:
+
+
+0. Abstract
+  -> What did you do?
+  -> Why did you do it? What question were you trying to answer?
+  -> How did you do it? State methods.
+  -> What did you learn? State major results.
+  -> Why does it matter? Point out at least one significant implication.
+
+1. Introduction (5-10)
+    -> Introduction to topic and motivation for the project
+    -> A very high level description of the system
+    -> General description of problem area (Not solution).
+    -> Summary of the work you propose to carry out
+    -> Who had/used this idea first? -> Carl Hewitt? Erlang?
+    -> Recent works in relevant field? -> Akka (Scala/Java)
+    -> Why more work was necessary? -> Dart and for distributed systems
+    -> May be also write briefly about reactive programming and its advantages
+
+  2. Literature Review/Background (15-20)
+    -> Explain Actor programming model
+      -> Write a bit about Actors in distributed systems?
+    -> Briefly about Erlang
+    -> What happend in between?
+    -> Background on Akka Framework and akka in distributed systems
+    -> Background about the Dart Language
+      -> Advantages of Dart
+        -> the philosophy of language itself and other stuffs
+        -> Quickly evolving (from 1.3.6 -> to 1.7.2)
+      -> Isolates vs Actors
+        -> Similarities and Differences (Mention Trade-offs?)
+          -> Advantages of Isolates
+      -> Isolates vs Threads
+        -> Isolates don't share memory but threads do !
+        -> Event the static variable is not share across isolates
+      -> Why dart with isolates are good for distributed systems?
+    -> Briefly about WebSockets
+    -> Briefly about Message Broker Systems
+      ->RabbitMQ (also list out other broker systems)
+        -> STOMP protocol
+
+  [3. Scope of Work ?]
+    -> What will be included and what will not
+      -> Included: Isolates in distributed systems, management, migrations etc...
+      -> Not Addressed: Security issues ...
+
+  3. General Design Decisions
+    -> Description of architecture, theory
+    -> Explain the components of framework
+    -> Scalability -> scalable at multiple levels -> from isolates / isolateSystem / message queuing system / message broker system [even Registry is scalable!]
+    -> Reconfigurability and Extensibility of the Framework
+
+    -> Explain how parallelism is obtained? multiple isolates behind the scene with router / load balancer in front of them?
+    => Implementation Details??
+      -> ?
+
+4. Results -> FACTS only !! (from the most important to the least important)
+  1. Testing and Benchmarking
+    -> Mention negative as well as positive (Do not interpret, save it for Discussions Section)
+      -> Poor results in micro instances with low network performance
+      -> Sudden breakdown when too many nodes dequeuing at once in single MQS (Just Mention Fact, no assumptions)
+      -> Refer to akka framework and make comparisons where applicable
+    -> ? Include results of message sending to/from isolates via SendPort before & after serialization of Map data types?
+
+6. Discussions (10-15?)
+   -> Analysis of result
+    -> What are major patterns in observations?
+    -> Interpret observed results, put forward hypotheses & possibilities
+    -> Compare one-way send vs send receive, and explain why send-receive is significantly slower compared to simply consume
+
+7. Conclusion (5-10)
+8. Recommendations
+  -> Future works?
+    -> Security
+    -> Interceptors -> will esp assist in unit tests and performance tests
+    -> Separate package for Browsers implementation
+9. References
+10. Appendices
+  -> Codes
+  -> Tools used ?
+
+
+
+===================Interesting NOTES==========================
+=> from Agha (A model of Concurrent Computation in Distributed Systems)
+
+If the underlying system is required to buffer segments of a communication it can equally well be required to buffer different communications so that the sender does ot have to be busy waiting" for the receiver to accept a communication before it proceeds to do sorne other processing.
+Thus buffered asynchronous communication affords efficiency in execution by pipelining the actions to be performed.
+Such buffers are readily defined actor languages.
+
+The guarantee of delivery of communications is impossible because of buffering and presence of network !
+
+An actor may be described by specifying:
+* its mail address, to which there corresponds a sufficiently large mail queue; and,
+* its behavior, which is a function of the communication accepted. <- [this is what our framework assumes ? Each Isolate is a functional component and only accepts certain types of message]
+
+[-> Creating Isolates for every message is not meaningful]
+
+=================
