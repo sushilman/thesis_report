@@ -1,0 +1,109 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\defcounter {refsection}{0}\relax 
+\select@language {american}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{Acknowledgments}{iii}{Doc-Start}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\nonumberline Abstract}{iv}{chapter*.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.1}Section}{1}{section.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {2}Literature Review}{2}{chapter.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.1}Actor Programming Model}{2}{section.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.1.1}Error Handling in Actor Model}{3}{subsection.2.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.1.2}Differences From Conventional Programming Languages}{3}{subsection.2.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.1.3}Actors for Concurrency}{4}{subsection.2.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.2}Erlang}{5}{section.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.3}Scala Actors}{5}{section.2.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.4}Akka Toolkit}{6}{section.2.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.1}Actor Model in Akka}{6}{subsection.2.4.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.2}Actor System}{7}{subsection.2.4.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.3}Message Passing}{8}{subsection.2.4.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\nonumberline Why no guaranteed Delivery?}{9}{section*.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.4}Shared Data}{9}{subsection.2.4.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.5}Actor Supervision and Monitoring}{9}{subsection.2.4.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.6}Routers}{11}{subsection.2.4.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.7}Event Bus}{11}{subsection.2.4.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.8}Remote Actors in Akka}{12}{subsection.2.4.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.9}Akka in Distributed Systems}{13}{subsection.2.4.9}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.4.10}Clustering in Akka}{13}{subsection.2.4.10}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.5}The Dart Language}{13}{section.2.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.5.1}Overview}{13}{subsection.2.5.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\nonumberline Important Concepts}{14}{section*.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.5.2}Asynchronous Programming in Dart}{15}{subsection.2.5.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.5.3}Asynchronous Message Sending}{15}{subsection.2.5.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.5.4}Isolates}{15}{subsection.2.5.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\nonumberline Similarity with Actor}{16}{section*.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.6}RabbitMQ - Message Broker System}{16}{section.2.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\nonumberline RabbitMQ and prefetch-count}{17}{section*.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.7}STOMP}{19}{section.2.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.7.1}Protocol Overview}{19}{subsection.2.7.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.7.2}STOMP Library for Dart}{19}{subsection.2.7.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.8}WebSockets}{20}{section.2.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.8.1}Security}{20}{subsection.2.8.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.8.2}Establishing a Connection}{21}{subsection.2.8.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.8.3}WebSocket URIs}{21}{subsection.2.8.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {3}General Design Decisions}{23}{chapter.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3.1}Section}{23}{section.3.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {4}Results}{24}{chapter.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.1}Section}{24}{section.4.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {5}Discussions}{25}{chapter.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5.1}Section}{25}{section.5.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {6}Conclusion}{26}{chapter.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6.1}Section}{26}{section.6.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {7}Recommendations}{27}{chapter.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.1}Section}{27}{section.7.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {8}Appendices}{28}{chapter.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {8.1}Section}{28}{section.8.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\nonumberline List of Figures}{29}{appendix*.10}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\nonumberline List of Tables}{30}{appendix*.11}

@@ -33,7 +33,7 @@ Outline:
           -> Advantages of Isolates
       -> Isolates vs Threads
         -> Isolates don't share memory but threads do !
-        -> Event the static variable is not share across isolates
+        -> Even the static variable is not shared across isolates
       -> Why dart with isolates are good for distributed systems?
     -> Briefly about WebSockets
     -> Briefly about Message Broker Systems
@@ -75,14 +75,16 @@ Outline:
     -> Security
     -> Interceptors -> will esp assist in unit tests and performance tests
     -> Separate package for Browsers implementation
+    -> Dead letters concept like in akka
+    -> Proper Supervision (which is currently limited because of limitation of dart isolates)
+    ->
 9. References
 10. Appendices
   -> Codes
   -> Tools used ?
 
 
-
-===================Interesting NOTES==========================
+===================Interesting NOTES===================================
 => from Agha (A model of Concurrent Computation in Distributed Systems)
 
 If the underlying system is required to buffer segments of a communication it can equally well be required to buffer different communications so that the sender does ot have to be busy waiting" for the receiver to accept a communication before it proceeds to do sorne other processing.
@@ -97,4 +99,22 @@ An actor may be described by specifying:
 
 [-> Creating Isolates for every message is not meaningful]
 
-=================
+================================================================================================================================================
+Advantages of framework :
+  -> Add and remove nodes on the fly !
+  -> Not all messages are lost when node fails, except which are/were already in the internal queue of the node
+  -> Simplifies Communication between actors to certain degree !
+  -> Communicate with isolates on remote node and on another system, which is not possible in Dart Isolate
+
+
+ Cons:
+  -> Isolates are heavy compared to Actors in Akka
+  -> Spawning takes time + memory
+  -> May be spawning too many actors like in Akka is not a good practice?
+
+=================================================================================================================================================
+Design Decisions:
+  -> General Question: Why 'A' over 'B'?
+    eg: Why websocket server in Activator over having webSocket server in isolatesystem? The worker could use websocket client to connect to isolatesystem, which would even make it independent and run without isolate system, would even run in browser?
+    Then isolatesystem cannot be run in browser but isolates/workers can be !
+      -> Explanation: This way each worker would need a separate websocket connection with Isolate System. Too many connections will be needed to be handled ? Not the router or any other component by the isolate system will have to handle incoming websocket requests? is it possible to delegate to router, may be not because a websocket cannot be sent as a message?
