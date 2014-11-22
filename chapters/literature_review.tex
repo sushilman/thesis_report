@@ -49,14 +49,14 @@ However, implementing request logic using actors differs clearly from sequential
 
 Another feature of the actor model is the possibility to scale the actor system as a whole by adding new machines. For instance, Erlang enables virtual machines to spawn a distributed system. In this case, remote actors can hold isolated application state, but accessible via messaging for all other actors of the entire system. \url{http://berb.github.io/diploma-thesis/original/054_actors.html#impl}
 
-Since actors may carry out their actions in par- allel and messages may be reordered, actor based systems are entirely concurrent. Each actors lives totally separated from all other actors and only messages, which are conceptually different from actors, are passed between them. So two actors may be executed by a single thread on a single chip that alternates execution between the two of them or they may be executed parallel within two data centers on both ends of the world. The actors themselves can and should not know, they simply exchange messages. This property makes it easy to scale actor based systems out of a single core to millions of them in multiple data centers. In an ideal case you simply change the configuration of the system and you are done without any need to rewrite code. [MartinThurau]
+Since actors may carry out their actions in parallel and messages may be reordered, actor based systems are entirely concurrent. Each actors lives totally separated from all other actors and only messages, which are conceptually different from actors, are passed between them. So two actors may be executed by a single thread on a single chip that alternates execution between the two of them or they may be executed parallel within two data centers on both ends of the world. The actors themselves can and should not know, they simply exchange messages. This property makes it easy to scale actor based systems out of a single core to millions of them in multiple data centers. In an ideal case you simply change the configuration of the system and you are done without any need to modify the code. [MartinThurau]
 
 \section{Erlang}
 Erlang is one of the first fairly popular programming languages that was based on the actor model.\cite{vinoski} It was developed by Joe Armstrong in 1986 at the Ericsson Computer Science Laboratory but was made open-source only in 1998. It was chiefly used in telephony applications as it was built to solve the problems of availability as well as scalability that existed in such applications.~\parencite{armstrong}
 
-Erlang was designed for writing concurrent programs that "run forever." It uses concurrent processes to structure the program. These processes have no shared memory and communicate by asynchronous message passing. Erlang processes are lightweight and belong to the language, not the operating system. It has mechanisms to allow programs to change code "on the fly" so that programs can evolve and change as they run. These mechanisms simplify the construction of software for implementing non-stop systems.~\parencite{armstrong}
+Erlang was designed for writing concurrent programs that “run forever”. It uses concurrent processes to structure the program. These processes have no shared memory and communicate by asynchronous message passing. Erlang processes are lightweight and belong to the language, not the operating system. It has mechanisms to allow programs to change code “on the fly” so that programs can evolve and change as they run. These mechanisms simplify the construction of software for implementing non-stop systems.~\parencite{armstrong}
 
-Error handling in Erlang is different from conventional programming languages. In Erlang, it is based on a "let is crash" philosophy \cite{armstrong}.
+Error handling in Erlang is different from conventional programming languages. In Erlang, it is based on a “let is crash” philosophy \cite{armstrong}.
 
 \section{Scala Actors}
 Scala is a statically typed programming language which integrates functional and object-oriented programming quite well.\cite{Odersky}
@@ -247,6 +247,7 @@ Sample Akka Config and Code for Remote Actors: ~\parencite{akkaHome}
   \end{enumerate}
 ~\parencite{dartEcma}
 Dart programs are organized in a modular fashion into units called libraries. Libraries are units of encapsulation and may be mutually recursive.
+\newline
 -> Garbage collection !
 
 Developers of dart believe that JavaScript has been pushed to its limit and the web apps developed in JavaScript are far too slow even though JavaScript engines are quite fast. They claim Dart offers a better solution to build larger and more complex web apps.[7]
@@ -271,6 +272,9 @@ Some of its important features are:
   \item Unlike Java, Dart doesn’t have the keywords public, protected, and private. If an identifier starts with an underscore (\textunderscore), it’s private to its library.
   \end{itemize}
 
+  \subsection{Dart and JavaScript}
+  Dart is a web programming language developed by Google. It is a fairly new language and competes with JavaScript. The code written in Dart can also be translated, using a tool – ’dart2js’, to JavaScript code so that it can run in any modern browser. Furthermore, Dart allows developers to code in a uniform way for both server as well as client since Dart Virtual Machine (VM) can be embedded in browsers. A variant of Chromium — Dartium browser has an embedded Dart VM.
+
   \subsection{Asynchronous Programming in Dart}
   Asynchronous programming often uses callback functions, but Dart provides alternatives: Future and Stream objects. A Future is like a promise for a result to be provided sometime in the future. A Stream is a way to get a sequence of values, such as events. Future, Stream, and more are in the dart:async library.
   The dart:async library works in both web apps and command-line apps
@@ -284,18 +288,20 @@ Some of its important features are:
   An isolate is a unit of concurrency. It has its own memory and its own thread of control. Isolates communicate by message passing. No state is ever shared between isolates. Isolates are created by spawning.
   Spawning an isolate is accomplished via what is syntactically an ordinary library call, invoking one of the functions 'spawnUri()' or 'spawnFunction()' defined in the 'dart:isolate' library. However, such calls have the semantic effect of creating a new isolate with its own memory and thread of control.
   The newly spawned isolate shares the same code as the spawner isolate. \cite{dartApiIsolate}
-  An isolate’s memory is finite, as is the space available to its thread’s call stack. It is possible for a running isolate to exhaust its memory or stack, result- ing in a run-time error that cannot be effectively caught, which will force the isolate to be suspended.
+  An isolate’s memory is finite, as is the space available to its thread’s call stack. It is possible for a running isolate to exhaust its memory or stack, resulting in a run-time error that cannot be effectively caught, which will force the isolate to be suspended.
   These peculiar characteristics of isolates make them closer to ideal actors of Hewitt’s actor model, however the hidden message passing system takes them farther from being ideal actors.In Dart, when an isolate is spawned, usually the initial message contains a sending port, so that spawner and "spawnee" can communicate with each other. The "spawnee" can later use the same port to reply to the spawner. An isolate can spawn another isolate which can further spawn other isolates and have control over them. Thus, the spawner can supervise the "spawnee". The spawner can pause the "spawnee" or terminate it.
 
   Modern web browsers, even on mobile platforms, run on multi-core CPUs. To take advantage of all those cores, developers traditionally use shared-memory threads running concurrently. However, shared-state concurrency is error prone and can lead to complicated code.
   Instead of threads, all Dart code runs inside of isolates. Each isolate has its own memory heap, ensuring that no isolate’s state is accessible from any other isolate. ~\parencite{laddWalrath}
 
   Current version of Dart at the time of writing this thesis is 1.7.2 and when the thesis started it was 1.3.6. The majority of the code in this framework was developed in version 1.6
-  TODO: A Sample Isolate Code in Dart
-  \subsubsection{Similarity with Actor}
-  A sample actor model code in dart using isolate ?
 
-\section{RabbitMQ - Message Broker System}
+  TODO: A Sample Isolate Code in Dart following actor model
+
+  \subsubsection{Difference from Actor}
+Although, not having shared state, and making message-passing as the only way to communicate between isolates, the Dart isolates differ from actors in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but spawning isolates in Dart takes significant amount of time and resource. The implementation of actor which are found in other languages like Erlang and Akka framework can be considered much closer to Hewitt's actor model. The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions[citation needed!] where as in dart it only reaches up to few hundred [100?]. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an Isolate in Dart is \textemdash similar to a thread with properties like an actor.
+
+\section{RabbitMQ - A Message Broker System}
 RabbitMQ is a messaging broker that serves as an intermediary for messaging. It gives your applications a common platform to send and receive messages, and your messages a safe place to live until received.\url{http://www.pivotal.io/products/pivotal-rabbitmq}
 A message broker is an intermediary program that translates a message from the formal messaging protocol of the sender to the formal messaging protocol of the receiver. \url{http://whatis.techtarget.com/definition/message-broker}
 Messaging enables software applications to connect and scale. Applications can connect to each other, as components of a larger application, or to user devices and data. Messaging is asynchronous, decoupling applications by separating sending and receiving data. In RabbitMQ, messages are routed through exchanges before arriving at queues. RabbitMQ features several built-in exchange types for typical routing logic.\cite{rabbitmqFeatures}
@@ -308,25 +314,53 @@ Messaging enables software applications to connect and scale. Applications can c
 RabbitMQ support several protocols for enqueuing and dequeuing messages:
 \begin{itemize}
   \item AMQP (Several versions)
-  \item STOMP
-  \item MQTT
-  \item HTTP
-  \begin{itemize}
-    \item Management Plugin
-    \item Web-STOMP Plugin
-    \item JSON-RPC channel Plugin
-  \end{itemize}
-\end{itemize}
-\subsubsection{RabbitMQ and prefetch-count}
-AMQP defaults to sending all the messages it can to any consumer that looks ready to accept them. The maximum number of these unacknowledged messages per channel can be limited by setting the prefetch count. However, small prefetch counts can hurt performance.
+  Stands for Advanced Message Queuing Protocol. Designed as an open replacement for existing proprietary messaging middleware. Two of the most important reasons to use AMQP are reliability and interoperability. As the name implies, it provides a wide range of features related to messaging, including reliable queuing, topic-based publish-and-subscribe messaging, flexible routing, transactions, and security. AMQP exchanges route messages directly—in fanout form, by topic, and also based on headers.\cite{andyPiperVmware}
 
+  There’s a lot of fine-grained control possible with such a rich feature set. You can restrict access to queues, manage their depth, and more. Features like message properties, annotations and headers make it a good fit for a wide range of enterprise applications. This protocol was designed for reliability at the many large companies who depend on messaging to integrate applications and move data around their organization. In the case of RabbitMQ, there are many different language implementations and great samples available, making it a good choice for building large scale, reliable, resilient, or clustered messaging infrastructures.
+
+  \item STOMP~\ref{sec:stomp}
+  STOMP is a text-based messaging protocol emphasizing (protocol) simplicity. It defines little in the way of messaging semantics, but is easy to implement and very easy to implement partially (it's the only protocol that can be used by hand over telnet).
+
+  RabbitMQ supports STOMP (all current versions) via a plugin.
+  \item MQTT
+  (Message Queue Telemetry Transport) was originally developed out of IBM’s pervasive computing team and their work with partners in the industrial sector. Over the past couple of years the protocol has been moved into the open source community, seen significant growth in popularity as mobile applications have taken off, and it is in the process of moving into the hands of a standards body.
+
+  The design principles and aims of MQTT are much more simple and focused than those of AMQP—it provides publish-and-subscribe messaging (no queues, in spite of the name) and was specifically designed for resource-constrained devices and low bandwidth, high latency networks such as dial up lines and satellite links, for example. Basically, it can be used effectively in embedded systems. \cite{andyPiperVmware}
+
+  MQTT is a binary protocol emphasizing lightweight publish / subscribe messaging, targetted towards clients in constrained devices. It has well defined messaging semantics for publish / subscribe, but not for other messaging idioms.
+
+
+  RabbitMQ supports MQTT 3.1 via a plugin.
+  \item HTTP
+  HTTP is of course not a messaging protocol. However, RabbitMQ can transmit messages over HTTP in three ways:
+
+  \begin{description}
+    \item[Management Plugin] The management plugin supports a simple HTTP API to send and receive messages. This is primarily intended for diagnostic purposes but can be used for low volume messaging without reliable delivery.
+    \item [Web-STOMP Plugin] The Web-STOMP plugin supports STOMP messaging to the browser, using WebSockets or one of the fallback mechanisms supported by SockJS.
+    \item [JSON-RPC channel Plugin] The JSON-RPC channel plugin supports AMQP 0-9-1 messaging over JSON-RPC to the browser. Note that since JSON RPC is a synchronous protocol, some parts of AMQP that depend on asynchronous delivery to the client are emulated by polling.
+  \end{description}
+\end{itemize}
+  \subsection{Message queues in rabbitMQ}
+  What is a queue?
+  How are they enqueued?
+  How are they dequeued?
+
+  If the queue receives messages at a faster rate than it can pump out to consumers then things get slower. As the queue grows, it will require more memory. Additionally, if a queue receives a spike of publications, then the queue must spend time dealing with those publications, which takes CPU time away from sending existing messages out to consumers: a queue of a million messages will be able to be drained out to ready consumers at a much higher rate if there are no publications arriving at the queue to distract it. Not exactly rocket science, but worth remembering that publications arriving at a queue can reduce the rate at which the queue drives its consumers.\cite{sizingYourRabbits}
+
+  \subsection{RabbitMQ and prefetch-count}
+  \label{sec:rabbitmq}
+  The default QoS prefetch setting gives clients an unlimited buffer, and that can result in poor behavior and performance. But what should you set the QoS prefetch buffer size to? The goal is to keep the consumers saturated with work, but to minimize the client's buffer size so that more messages stay in RabbitMQ's queue and are thus available for new consumers or to just be sent out to consumers as they become free.
+
+AMQP defaults to sending all the messages it can to any consumer that looks ready to accept them. The maximum number of these unacknowledged messages per channel can be limited by setting the prefetch count. However, small prefetch counts can hurt performance. Here is the result of a benchmark \footnote{posted by Simon MacMullen on April 25th, 2012 at 2:47 pm} which shows how the throughput of a queue varies when prefetch count is changed when there are different number of consumers.
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/rabbitmqPrefetch}
+  \caption[rabbitPerformance]{Chart showing performance variation when prefetch count is changed in the consumer\footnotemark}
 \end{figure}
-? \url{http://www.rabbitmq.com/blog/2012/04/25/rabbitmq-performance-measurements-part-2/}
+\footnotetext{\fullcite{rabbitmqPerformance}}
 
 \section{STOMP}
+\label{sec:stomp}
 STOMP is the Simple (or Streaming) Text Orientated Messaging Protocol.
 STOMP provides an interoperable wire format so that STOMP clients can communicate with any STOMP message broker to provide easy and widespread messaging interoperability among many languages, platforms and brokers. ~\parencite{stomp}
 STOMP is a simple interoperable protocol designed for asynchronous message passing between clients via mediating servers. It defines a text based wire-format for messages passed between these clients and servers.
@@ -336,6 +370,8 @@ STOMP is designed to be a lightweight protocol that is easy to implement both on
   \subsection{Protocol Overview}
 STOMP is a frame based protocol, with frames modeled on HTTP. A frame consists of a command, a set of optional headers and an optional body. STOMP is text based but also allows for the transmission of binary messages. The default encoding for STOMP is UTF-8, but it supports the specification of alternative encodings for message bodies.
 A STOMP server is modeled as a set of destinations to which messages can be sent. The STOMP protocol treats destinations as opaque string and their syntax is server implementation specific. Additionally STOMP does not define what the delivery semantics of destinations should be. The delivery, or “message exchange”, semantics of destinations can vary from server to server and even from destination to destination. This allows servers to be creative with the semantics that they can support with STOMP.
+STOMP does not, however, deal in queues and topics—it uses a SEND semantic with a “destination” string. The broker must map onto something that it understands internally such as a topic, queue, or exchange. Consumers then SUBSCRIBE to those destinations. Since those destinations are not mandated in the specification, different brokers may support different flavors of destination. So, it’s not always straightforward to port code between brokers. \cite{andyPiperVmware}
+
 A STOMP client is a user-agent which can act in two (possibly simultaneous) modes:
 \begin{itemize}
   \item as a producer, sending messages to a destination on the server via a SEND frame
@@ -343,13 +379,14 @@ A STOMP client is a user-agent which can act in two (possibly simultaneous) mode
 \end{itemize}
 
   \subsection{STOMP Library for Dart}
-  Given that dart is fairly new language, it does not yet have AMPQ client that can be used for RabbitMQ. As mentioned above in 2.X RabbitMQ also supports STOMP Protocol. An open source STOMP client in dart is available which was created by 'Potix corporation'. It can perform most of the basic with a message broker system like connecting, creating queue, subscribing, enqueuing as well as dequeuing. Although it has those basic functionalities, it still has some limitations and incompleteness like lack of support of 'Heartbeat', only support STOMP version 1.2 or above.
+  Given that dart is fairly new language, it does not yet have AMPQ client that can be used with RabbitMQ. As mentioned above in section~\ref{sec:rabbitmq} RabbitMQ also supports STOMP Protocol. An open source STOMP client in dart is available which was created by ‘Potix corporation’. It can perform most of the basic with a message broker system like connecting, creating queue, subscribing, enqueuing as well as dequeuing. Although it has those basic functionalities, it still has some limitations and incompleteness like lack of support of ‘Heartbeat’, only support STOMP version 1.2 or above.
 
 \section{WebSockets}
 The WebSocket Protocol enables two-way communication between a client running untrusted code in a controlled environment to a remote host that has opted-in to communications from that code.  The security model used for this is the origin-based security model commonly used by web browsers.  The protocol consists of an opening handshake followed by basic message framing, layered over TCP. The goal of this technology is to provide a mechanism for browser-based applications that need two-way communication with servers that does not rely on opening multiple HTTP connections (e.g., using XMLHttpRequest or <iframe>s and long polling).~\parencite{rfc6455}
 The WebSocket Protocol provides a single TCP connection for traffic in both directions. Combined with the WebSocket API [WSAPI], it provides an alternative to HTTP polling for two-way communication from a web page to a remote server. It can be used for variety of web applications: games, stock tickers, multiuser applications with simultaneous editing, user interfaces exposing server-side services in real time, etc.
 
 The WebSocket Protocol is designed to supersede existing bidirectional communication technologies that use HTTP as a transport layer to benefit from existing infrastructure (proxies, filtering, authentication). Such technologies were implemented as trade-offs between efficiency and reliability because HTTP was not initially meant to be used for bidirectional communication.
+
 \subsection{Security}
 The WebSocket Protocol uses the origin model used by web browsers to
 restrict which web pages can contact a WebSocket server when the
@@ -367,6 +404,7 @@ WebSocket client.  In particular, at the time of writing of this
 specification, fields starting with |Sec-| cannot be set by an
 attacker from a web browser using only HTML and JavaScript APIs such
 as XMLHttpRequest [XMLHttpRequest].
+
 \subsection{Establishing a Connection}
 When a connection is to be made to a port that is shared by an HTTP
 server (a situation that is quite likely to occur with traffic to
@@ -382,18 +420,19 @@ specification, it should be noted that connections on ports 80 and
 443 have significantly different success rates, with connections on
 port 443 being significantly more likely to succeed, though this may
 change with time.
+
 \subsection{WebSocket URIs}
 This specification defines two URI schemes, using the ABNF syntax
 defined in RFC 5234 [RFC5234], and terminology and ABNF productions
 defined by the URI specification RFC 3986 [RFC3986].
-
-ws-URI = "ws:" "//" host [ ":" port ] path [ "?" query ]
-wss-URI = "wss:" "//" host [ ":" port ] path [ "?" query ]
-
-host = <host, defined in [RFC3986], Section 3.2.2>
-port = <port, defined in [RFC3986], Section 3.2.3>
-path = <path-abempty, defined in [RFC3986], Section 3.3>
-query = <query, defined in [RFC3986], Section 3.4>
+\newline
+ws-URI = "ws:" "//" host [ ":" port ] path [ "?" query ]\newline
+wss-URI = "wss:" "//" host [ ":" port ] path [ "?" query ]\newline
+\newline
+host = <host, defined in [RFC3986], Section 3.2.2>\newline
+port = <port, defined in [RFC3986], Section 3.2.3>\newline
+path = <path-abempty, defined in [RFC3986], Section 3.3>\newline
+query = <query, defined in [RFC3986], Section 3.4>\newline
 
 The port component is OPTIONAL; the default for "ws" is port 80,
 while the default for "wss" is port 443.
@@ -409,3 +448,5 @@ can be constructed by concatenating the following
 \item "?" if the query component is non-empty
 \item the query component
 \end{itemize}
+
+\section{RESTful WebServices}
