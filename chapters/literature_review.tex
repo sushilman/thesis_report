@@ -262,6 +262,11 @@ Some of its important features are:
 
   Dart provides a homogeneous system that encompass both client as well as server as the Dart VM (Virtual Machine) can be embedded in browsers. A version of Chromium – ’Dartium’ already has Dart VM built into it.
 
+  \subsection{Advantages of Dart}
+  * Translates to JavaScript so that the code can be run in the web-browsers that do not have Dart VM yet
+  * Currently in 20th position in most popular programming languages
+  * Optionally typed language
+
   \subsubsection{Important Concepts}
   \begin{itemize}
   \item Everything you can place in a variable is an object, and every object is an instance of a class. Even numbers, functions, and null are objects. All objects inherit from the Object class.
@@ -294,12 +299,16 @@ Some of its important features are:
   Modern web browsers, even on mobile platforms, run on multi-core CPUs. To take advantage of all those cores, developers traditionally use shared-memory threads running concurrently. However, shared-state concurrency is error prone and can lead to complicated code.
   Instead of threads, all Dart code runs inside of isolates. Each isolate has its own memory heap, ensuring that no isolate’s state is accessible from any other isolate. ~\parencite{laddWalrath}
 
-  Current version of Dart at the time of writing this thesis is 1.7.2 and when the thesis started it was 1.3.6. The majority of the code in this framework was developed in version 1.6
+  \subsubsection{SendPort of Isolate}
+  \subsubsection{ReceivePort of Isolate}
+  \subsubsection{Communication Between Two Isolates}
+  TODO: A Sample Code with Isolates
 
-  TODO: A Sample Isolate Code in Dart following actor model
+  \subsubsection{Limitations of Isolates}
+  Although the communication between Isolates takes place exclusively by asynchronous message passing, which perfectly suits for distributed systems. There is no possibility of communication with isolate spawned in another dart virtual machine. A message exchange between two isolates is possible only if the isolates are spawned locally in the same dart virtual machine. Thus, a hindrance in making them distributed.
 
   \subsubsection{Difference from Actor}
-Although, not having shared state, and making message-passing as the only way to communicate between isolates, the Dart isolates differ from actors in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but spawning isolates in Dart takes significant amount of time and resource. The implementation of actor which are found in other languages like Erlang and Akka framework can be considered much closer to Hewitt's actor model. The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions[citation needed!] where as in dart it only reaches up to few hundred [100?]. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an Isolate in Dart is \textemdash similar to a thread with properties like an actor.
+Although, not having shared state, and making message-passing as the only way to communicate between isolates, the Dart isolates differ from actors in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but spawning isolates in Dart takes significant amount of time and resource. The implementation of actor which are found in other languages like Erlang and Akka framework can be considered much closer to Hewitt's actor model. The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions[citation needed!] where as in dart it only reaches up to few hundred [100?]. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an Isolate in Dart is \textemdash{} similar to a thread with properties like an actor.
 
 \section{RabbitMQ - A Message Broker System}
 RabbitMQ is a messaging broker that serves as an intermediary for messaging. It gives your applications a common platform to send and receive messages, and your messages a safe place to live until received.\url{http://www.pivotal.io/products/pivotal-rabbitmq}
@@ -340,7 +349,7 @@ RabbitMQ support several protocols for enqueuing and dequeuing messages:
     \item [JSON-RPC channel Plugin] The JSON-RPC channel plugin supports AMQP 0-9-1 messaging over JSON-RPC to the browser. Note that since JSON RPC is a synchronous protocol, some parts of AMQP that depend on asynchronous delivery to the client are emulated by polling.
   \end{description}
 \end{itemize}
-  \subsection{Message queues in rabbitMQ}
+  \subsection{Message Queues in RabbitMQ}
   What is a queue?
   How are they enqueued?
   How are they dequeued?

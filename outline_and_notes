@@ -118,3 +118,29 @@ Design Decisions:
     eg: Why websocket server in Activator over having webSocket server in isolatesystem? The worker could use websocket client to connect to isolatesystem, which would even make it independent and run without isolate system, would even run in browser?
     Then isolatesystem cannot be run in browser but isolates/workers can be !
       -> Explanation: This way each worker would need a separate websocket connection with Isolate System. Too many connections will be needed to be handled ? Not the router or any other component by the isolate system will have to handle incoming websocket requests? is it possible to delegate to router, may be not because a websocket cannot be sent as a message?
+
+
+================================
+Compare this Framework with Actor model, impacts, advantages?
+
+
+===============
+CLUSTER:
+  ->
+ -> Availability -> does it improve?
+ -> improves scalability
+ -> improve durability?
+
+ Because the messages are stored in this system cap theorem applies to it. Depends on how rabbitMQ.
+"CAP theorem"
+Consistency
+Availability
+Partition Tolerant
+
+CAP theorem applies usually in cluster
+
+  -> Higher availability: if a node fails other will continue processing!
+  -> Performance : to some degree it is true that performance improves
+  ->
+
+  Improve monitoring, fault tolerance,

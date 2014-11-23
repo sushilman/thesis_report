@@ -1,3 +1,26 @@
 \chapter{Discussions}\label{chapter:discussions}
 
-\section{TODO}
+\section{Performance Findings}
+
+\section{Non-Functional Requirements of the Framework}
+
+\subsection{Scalability}
+Scalable at different component levels. Isolates, Isolate System, Message Queuing System and clustering of Message Broker (RabbitMQ). Better scalability is obtained when the Message Queuing System is scaled out.
+
+\subsection{Availability}
+Can be designed to make highly available. Apparently, no downtime to deploy new code to a running system.
+
+\subsection{Reliability}
+
+\section{Problems/Issues}
+\subsection{Dart Induced Issues}
+  * The Unimplemented functionalities of Isolates
+    - KILL
+    - PAUSE
+    - PING
+    - Supervision of Isolates
+  * Isolate are not lightweight.
+  * Running Isolates in web (Dartium)
+  *
+
+\subsection{Performance}
