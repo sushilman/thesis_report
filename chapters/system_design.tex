@@ -71,22 +71,113 @@ But, when the shutdown command for the isolate system is triggered by the user v
 
   \subsubsection{Proxy}
   A ‘Proxy’ is the special type of a Worker. When a Worker isolate is supposed to be spawned in remote node, the Router instead first spawns a Proxy isolate in local node. Once the Proxy isolate is spawned, it connects to the ‘IsolateDeployer’ in remote node where the Worker Isolate is intended to be spawned. After establishing connection over a WebSocket with IsolateDeployer of remote node, the proxy Isolate forwards the request to spawn an isolate to the IsolateDeployer. After successful spawning of isolate in remote node, the proxy isolate simply forward the messages that is sent to it by the spawner Router. Each ‘Proxy’ worker maintains a separate WebSocket connection with an ‘IsolateDeployer’.
-  <A diagram would be helpful here>
+  <Insert a diagram here>
 
   \subsubsection{FileMonitor}
-  FileMonitor is also a Worker Isolate. If the ‘Hot Deployement’ flag for an isolate is set while spawning, a ‘FileMonitor’ for that isolate is spawned. The spawned ‘FileMonitor’ monitors the md5 checksum source code of the file from where the Worker Isolate was spawned. If the file is changed, it simply sends the restart command to the controller, which eventually forwards it to the router to restart all of its child isolates.
-
+  FileMonitor is also a Worker Isolate. If the ‘Hot Deployement’ flag for an isolate is set while spawning, a ‘FileMonitor’ for that isolate is spawned by the Controller. The spawned ‘FileMonitor’ monitors the md5 checksum of the source code from where the Worker Isolate was spawned. If the file is changed, it simply sends the RESTART command to the controller, which eventually forwards it to the target Router which restarts all of its child isolates.
 
 \subsection{The Registry}
-The Isolate Registry is a central registry system where meta-data of isolates and isolate systems are stored. It bootstraps all isolates systems and stores the current deployed location of every isolate system. It’s functions are:
+The Isolate Registry is a central node where other nodes, with Bootstrappers running, connect and register themselves. The registry simply keeps the record of the connected nodes and queries them about the running isolate systems when required. The registry provides RESTful API and a web interface~/footnote{the web interface can be opted out as it is started separately} through which one can have an overview of the full system and manage the deployments of the isolate systems as well as individual isolates.
+
   \subsubsection{RESTful API of Registry}
-  The registry provides a REST API to perform the operations on the connected nodes. One can query the ‘Registry’ using the ‘GET’ method of REST to fetch the list of the nodes that are connected to the Registry.
+  The registry provides a REST API to perform the operations on the connected nodes. One can send a ‘GET’ request to the Registry to fetch the list of the nodes that are connected to the Registry. And then use that list to deploy an isolate system or add an isolate to already deployed system by sending ‘POST’ request.
   \begin{itemize}
   \item GET list of connected nodes
   \item GET details of the running isolate systems on the node
+  \item POST command to deploy an isolate system
   \item POST command to shutdown an isolate system
   \item POST command to kill a particular isolate pool
   \end{itemize}
+
+\paragraph{An example of using RESTful API to deploy an isolate system in a node}
+
+\begin{description}
+  \item{GET request to fetch a list of connected systems}\\
+  Request: ‘GET \url{http://54.77.239.254:8000/registry/system/list}’\\
+  Response: \\
+  Status Code: 200 OK\\
+  Body:
+  \begin{lstlisting}[language=json,firstnumber=1]
+    [
+      {
+        "bootstrapperId": "266393094",
+        "ip": "54.77.239.244",
+        "port": "50189"
+      },
+      {
+        "bootstrapperId": "12133208",
+        "ip": "54.77.239.243",
+        "port": "50192"
+      }
+    ]
+  \end{lstlisting}
+
+  \item{POST request to deploy an isolate system}\\
+  Request: ‘POST \url{http://54.77.239.254:8000/registry/deploy}’
+  \begin{lstlisting}[language=json,firstnumber=1]
+    {
+      "bootstrapperId" : "266393094",
+      "action": "action.addIsolate",
+      "messageQueuingSystemServer": "ws://54.77.239.200:42043/mqs",
+      "isolateSystemName" : "sampleSystem",
+      "isolateName" : "consumer",
+      "uri" : "http://54.77.239.221/sampleSystem/bin/Consumer.dart",
+      "workersPaths" : ["localhost", "ws://54.77.239.243:42042/activator"],
+      "routerType" : "random",
+      "hotDeployment" : true
+    }
+  \end{lstlisting}
+  Response: \\
+  Status Code: 200 OK\\
+\end{description}
+
+\paragraph{An example of using RESTful API to fetch details of an isolate system}
+  \begin{description}
+    \item{POST request to get details of an isolate system}\\
+    Request: ‘POST \url{http://54.77.239.254:8000/registry/system/266393094}’
+    \begin{lstlisting}[language=json,firstnumber=1]
+    {
+      "mysystem": [
+        {
+          "id": "sampleSystem/consumer",
+          "workerUri": "http://54.77.239.221/sampleSystem/bin/Consumer.dart",
+          "workersCount": 2,
+          "workersPaths": [
+            "localhost",
+            ws://54.77.239.243:42042/activator"
+          ],
+          "routerType": "random",
+          "hotDeployment": true
+        }
+      ]
+    }
+  \end{lstlisting}
+  \end{description}
+
+\paragraph{An example of terminating an Isolate in isolate system}
+  \begin{description}
+    \item{POST request to terminate an isolate of an isolate system}\\
+    Request: ‘POST \url{http://54.77.239.254:8000/registry/system/266393094}’
+    \begin{lstlisting}[language=json,firstnumber=1]
+      {
+        "bootstrapperId" : "266393094",
+        "isolateSystemName" : "sampleSystem",
+        "isolateName" : "consumer"
+      }
+    \end{lstlisting}
+  \end{description}
+
+\paragraph{An example of terminating an isolate system}
+  \begin{description}
+    \item{POST request to terminate an isolate of an isolate system}\\
+    Request: ‘POST \url{http://54.77.239.254:8000/registry/system/266393094}’
+    \begin{lstlisting}[language=json,firstnumber=1]
+      {
+        "bootstrapperId" : "266393094",
+        "isolateSystemName" : "sampleSystem"
+      }
+    \end{lstlisting}
+  \end{description}
 
 The functions of Registry are:
 \begin{itemize}
@@ -94,10 +185,11 @@ The functions of Registry are:
   \item Provide a way to deploy, update or remove an ‘isolate system’
   \item Return information about the isolate systems running isolates by querying the individual isolate systems of a node
 \end{itemize}
+
 The registry does not need to persist any data as all the information about isolate systems are queried and generated “on the fly”.
 
   \subsubsection{Management Interface}
-  The deployment of isolates can be managed through the web interface provided by Isolate Registry
+  The deployment of isolates can also be managed by using a web interface provided by the Registry. The web interface should be started up separately in a different port.
 
 \subsection{Message Queuing System (MQS)}
 Since, the basis of this system is message passing, the Message Queuing System is an important part of this framework. The Message Queuing System is an isolate that fetches messages from message broker system and dispatches to respective the isolate system, of connected node, where the isolate belongs. Whenever a new isolate system starts up, the isolate system opens up a new WebSocket connection with the message queuing system.
