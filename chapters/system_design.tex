@@ -44,7 +44,7 @@ the ‘Registry’. The message to stop an isolate is also forwarded to the cont
 But, when the shutdown command for the isolate system is triggered by the user via web or REST interface, the isolate system closes all the open ports including WebSocket ports and ReceivePorts for isolates, and wait for the ‘Garbage Collector’ to clean up the memory reserved by it.
 
   \subsubsection{Controller}
-  Every Isolate System has a single controller, which is spawned by the IsolateSystem. A controller stays idle until it receives a message to create and isolate from the IsolateSystem. Basically, a controller spawns and manages all the Routers of an isolate system. Additionally, a controller also takes care of ‘hot deployment’ feature and spawns a ‘FileMonitor’ for a Router if the feature is enabled. When a RESTART message is received from a FileMonitor, the controller sends a RESART_ALL message to the designated Router, which restarts all the Worker Isolates the Router has spawned.
+  Every Isolate System has a single controller, which is spawned by the IsolateSystem. A controller stays idle until it receives a message to create and isolate from the IsolateSystem. Basically, a controller spawns and manages all the Routers of an isolate system. Additionally, a controller also takes care of ‘hot deployment’ feature and spawns a ‘FileMonitor’ for a Router if the feature is enabled. When a RESTART message is received from a FileMonitor, the controller sends a RESART\textunderscore{}ALL message to the designated Router, which restarts all the Worker Isolates the Router has spawned.
   The controller is also responsible for replying to the query of list of isolates an isolate system is running. It achives this by keeping a detailed record of each Router and number of Worker Isolates each Router is handling.
 
   \subsubsection{Router}
@@ -129,6 +129,7 @@ Because of the ability to spawning an isolate in. Two isolates, although, runnin
 \section{Typical Message Flow in the System}
 The framework is based on Fire-and-Forget principle of message sending.
 The message is serialized before sending via a SendPort of an Isolate.
+
 \subsection{Enqueuing a Message}
 Sample format of message at different levels:
 
