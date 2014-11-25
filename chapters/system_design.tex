@@ -20,10 +20,32 @@ The Framework is designed to be distributed in nature with the concepts of Actor
 The framework comprises of an Isolate System, a Registry, a Message Queuing System and a Message Broker System.
   \subsection{IsolateSystem}
   An Isolate System is analogous to an actor system. Just as actor system is comprised of a group of actors working together, a group of related isolates form an isolate system. A ‘Bootstrapper’ in physical node can bootstrap several Isolate Systems. Nevertheless, a logical Isolate System is not limited to a single physical node. The isolates spawned by an Isolate System can be distributed across several remote systems.
-  When an Isolate System is bootstrapped, it spawn controller
+  Each Isolate system has its unique id, which is a UUID. It is generated when the isolate system is bootstrapped. For bootstrapping, isolate system needs the WebSocket path to Message Queuing System, and a ‘name’ for itself. The name should not be confused with the uniqueId as IsolateSystem with same name can exist in other nodes but the uniqueId is unique for a particular instance of Isolate System.
+  When an Isolate System is bootstrapped, it does several things. It generates a new Id which is unique for itself, then opens up a ‘ReceivePort’ and listens for any messages in that port so that it can receive to incoming messages from ‘Controller’. Then it tries to connect to Message Queuing System. If the Message Queuing System could not be connected, it simply keeps on retrying at certain interval. Furthermore, if after establishing connection with the MQS, the connection is lost in between because of a network issue or a hardware failure, the IsolateSystem automatically keeps on trying to re-establish the connection at regular interval. The connection to MQS via websocket takes place asynchronously thus whether the connection is established or not, it simply goes on and spawns a controller.
+
+  \subsubsection{Adding an Isolate to the Isolate System}
+  When an Isolate System is first initialized, it is an empty system without any isolates running in it. Isolates can be added with appropriate load balancer once the isolate system has been initialized. The ‘addIsolate’ function can be used to startup isolates into the system. It requires following arguments:
+  \begin{description}
+    \item{\itshape{name}} \textendash{} A name for pool of isolates. A deployed isolate has its own name but overall the name is concatenated with the name of isoalte system to denote the hierarchy. For instance, an isolate with name ‘account’ becomes ‘bank/account’ where ‘bank’ is the name of the isolate system.
+    \item{\itshape{sourceUri}} \textendash{} The location of the source code from which the isolate shall be spawned. The path can either be absolute path to the local file system or the full http or https URI.
+    \item{\itshape{workersPaths}} \textendash{} List of destinations where each of the isolates should be spawned. To spawn locally ‘localhost’ should be used, whereas to spawn in remote node, WebSocket path like: “ws://192.168.2.9:42042/activator” should be used. The number copy of isolates that should be spawned is determined by the length of this list. If multiple copies of isolates should be spawned in a machine, the location can be repeated. For instance [“localhost”, “localhost”]; this list results in spawning of two identical isolates in local machine which is load balanced by the type of router chosen.
+    \item{\itshape{routerType}} \textendash{} The type of load balancing technique that one would like to use to effectively distribute incoming messages. The framework, by default, provides three types of routers: Round-Robin, Random and Broadcast. For instance, to use the ‘Random’ router provided by the framework ‘Router.RANDOM’ can be used as the value for routerType. If the user wants to use his custom Router instead of using the options provided by the framework, absolute path to the location of source code, which can also be URI, of the Custom router implementation can be provided as
+    \item{\itshape{hotDeployment}} \textendash{} This argument is optional and is by default set to true. Setting it to true enables continuous monitoring of the source code for any change. If any change in source code is identified, the  instances of isolates, spawned by this ‘addIsolate’ function, in current isolate system will be restarted, without the need of restarting.
+    \item{\itshape{args}} \textendash{} Custom additional arguments to be passed into each instance of spawned isolate. This argument is also optional and can be safely ignored.
+  \end{description}
+
+  \subsubsection{Message Handling in IsolateSystem}
+  Typically, the message in an IsolateSystem can arrive from three sources: Message Queuing System via WebSocket, Controller via ReceivePort or Bootstrapper via direct function call. As Dart is a single threaded programming language, only one message is handled at a time.
+  The messages arriving from MQS is deserialized from JSON string to Map data type before further processing. As the message received from the MQS contains the source queue, the source queue is parsed and transformed to name of corresponding isolate of the queue (as of current version, the queue name corresponds to the name of the isolate) and then forwarded to the Controller that this instance of IsolateSystem has spawned.
+  The messages arriving from Controller as either messages that should be enqueued or dequeue requests from the isolates that have completed certain task and are free to accept another message. For the messages that are supposed to be enqueued, the target isolate's name is converted to the name of the queue and then sent to the MQS via WebSocket. For the dequeue requests, the sender of the message is identified, which is then converted to corresponding queue name and the fetch request is forwarded to MQS via WebSocket.
+  The Bootstrapper of a node that creates an Isolate System can send messages to isolate system by directly invoking the functions provided by the IsolateSystem.
+The Bootstrapper can request the information about the isolates this instance of isolate system is running. For which, the IsolateSystem delegates the message to Controller. This request is triggered when a user requests a List of isolates running in an isolate system via a web interface or via RESTful web service of
+the ‘Registry’. The message to stop an isolate is also forwarded to the controller as the IsolateSystem does not directly manage the running isolates. Thus, the message is forwarded to the Controller which is next in the hierarchy.
+But, when the shutdown command for the isolate system is triggered by the user via web or REST interface, the isolate system closes all the open ports including WebSocket ports and ReceivePorts for isolates, and wait for the ‘Garbage Collector’ to clean up the memory reserved by it.
 
   \subsubsection{Controller}
-  A controller creates routers locally and instructs them to create a certain number of local as well as remote workers with a specific routing policy. Whenever a message arrives in the controller, it delegates the message to the proper router, which then delegates the message to an isolate using the specified routing policy. A Controller handles multiple routers.
+  Every Isolate System has a single controller, which is spawned by the IsolateSystem. A controller stays idle until it receives a message to create and isolate from the IsolateSystem. Basically, a controller spawns and manages all the Routers of an isolate system. Additionally, a controller also takes care of ‘hot deployment’ feature and spawns a ‘FileMonitor’ for a Router if the feature is enabled. When a RESTART message is received from a FileMonitor, the controller sends a RESART_ALL message to the designated Router, which restarts all the Worker Isolates the Router has spawned.
+  The controller is also responsible for replying to the query of list of isolates an isolate system is running. It achives this by keeping a detailed record of each Router and number of Worker Isolates each Router is handling.
 
   \subsubsection{Router}
   A router is spawned by the controller. It spawns and is responsible for a group of identical workers. Since an isolate is single threaded, multiple instances of an isolate can be created by a router for concurrency. When a message arrives to a router from a controller, the router, based on its defined routing policy, delegates the message to one of the worker isolates.
@@ -101,7 +123,7 @@ Relocation of Isolates or an IsolateSystem during runtime i.e. killing a set of 
 
 \end{itemize}
 \subsection{Remote Isolates}
-The Isolates in Dart lack functionality of communicating with remote isolates over a network. The isolates in this framework have an ability to communicate with the isoaltes that may be running in some remote Virtual Machine. So, there can be isolates running in any node. The communication underneath is taken care of by the framework and the implementer who is using this framework does not have to worry if an isolate is remotely spawned or locally spawned.
+The Isolates in Dart lack functionality of communicating with remote isolates over a network. The isolates in this framework have an ability to communicate with the isolates that may be running in some remote Virtual Machine. So, there can be isolates running in any node. The communication underneath is taken care of by the framework and the implementer who is using this framework does not have to worry if an isolate is remotely spawned or locally spawned.
 Because of the ability to spawning an isolate in. Two isolates, although, running in two different virtual machines, can still belong to same logical isolate system.
 
 \section{Typical Message Flow in the System}
@@ -109,13 +131,25 @@ The framework is based on Fire-and-Forget principle of message sending.
 The message is serialized before sending via a SendPort of an Isolate.
 \subsection{Enqueuing a Message}
 Sample format of message at different levels:
-Extension of Worker:
+
+Extension of Worker: “Test” - A string
+
 Worker:
+{senderType: senderType.worker, id: mysystem/producer/88f52440-5060-11e4-f396-97cebb949945, action: action.send, payload: {sender: mysystem/producer, to: mysystem/consumer, message: Test, replyTo: null}}
+
 Router:
+{senderType: senderType.router, id: mysystem/producer, action: action.send, payload: {sender: mysystem/producer, to: mysystem/consumer, message: Test, replyTo: null}}
+
 Controller:
+{senderType: senderType.controller, id: mysystem/producer, action: action.send, payload: {sender: mysystem/producer, to: mysystem/consumer, message: Test, replyTo: null}}
+
 IsolateSystem:
+{targetQueue: mysystem.consumer, action: action.enqueue, payload: {sender: mysystem/producer, message: Test, replyTo: null}}
+
 MessageQueuingSystem:
+
 Enqueuer:
+
 
 \subsection{Dequeuing a Message}
 Sample format of message at different levels:
@@ -172,3 +206,5 @@ As the current implementation of Isolates in Dart does not provide the features 
   \subsection{STOMP}
   \subsection{Path}
   \subsection{}
+
+\section{Sample Implementation of Worker using the Framework}

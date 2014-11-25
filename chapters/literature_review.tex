@@ -299,6 +299,11 @@ Some of its important features are:
   Modern web browsers, even on mobile platforms, run on multi-core CPUs. To take advantage of all those cores, developers traditionally use shared-memory threads running concurrently. However, shared-state concurrency is error prone and can lead to complicated code.
   Instead of threads, all Dart code runs inside of isolates. Each isolate has its own memory heap, ensuring that no isolate’s state is accessible from any other isolate. ~\parencite{laddWalrath}
 
+  \subsubsection{Spawning an Isolate}
+  * Using top level function -> Isolate.spawn
+  * Using URI and spawn from file -> Isolate.spawnUri()
+    -> Really cool feature
+    
   \subsubsection{SendPort of Isolate}
   \subsubsection{ReceivePort of Isolate}
   \subsubsection{Communication Between Two Isolates}
