@@ -33,7 +33,7 @@ In the actor model, concurrency is inherent because of the way it is designed. A
 
 \subsection{Error Handling in Actor Model}
 
-Error handling in actor model is based on "let it crash" philosophy. The isolated, shared nothing trait of actors allows a single actor to fail without affecting any other actors. Furthermore, the actor model itself can be used for fault tolerance, by spawning hierarchy trees of actors for supervision. Once an actor crashes, the supervising actor receives a messages and can react. A supervisor usually handles the error in actors by restarting the actor, stopping the actor, ignoring the error or escalating the error to its own supervisor. \url{http://berb.github.io/diploma-thesis/original/054_actors.html}
+Error handling in actor model is based on “let it crash” philosophy. The isolated, shared nothing trait of actors allows a single actor to fail without affecting any other actors. Furthermore, the actor model itself can be used for fault tolerance, by spawning hierarchy trees of actors for supervision. Once an actor crashes, the supervising actor receives a messages and can react. A supervisor usually handles the error in actors by restarting the actor, stopping the actor, ignoring the error or escalating the error to its own supervisor. \url{http://berb.github.io/diploma-thesis/original/054_actors.html}
 
 Several programming languages like Act 1, 2 and 3, Acttalk etc were created when actor system was newly introduced by Hewitt and Agha.
 
@@ -303,7 +303,7 @@ Some of its important features are:
   * Using top level function -> Isolate.spawn
   * Using URI and spawn from file -> Isolate.spawnUri()
     -> Really cool feature
-    
+
   \subsubsection{SendPort of Isolate}
   \subsubsection{ReceivePort of Isolate}
   \subsubsection{Communication Between Two Isolates}

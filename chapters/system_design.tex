@@ -22,6 +22,7 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
   An Isolate System is analogous to an actor system. Just as actor system is comprised of a group of actors working together, a group of related isolates form an isolate system. A ‘Bootstrapper’ in physical node can bootstrap several Isolate Systems. Nevertheless, a logical Isolate System is not limited to a single physical node. The isolates spawned by an Isolate System can be distributed across several remote systems.
   Each Isolate system has its unique id, which is a UUID. It is generated when the isolate system is bootstrapped. For bootstrapping, isolate system needs the WebSocket path to Message Queuing System, and a ‘name’ for itself. The name should not be confused with the uniqueId as IsolateSystem with same name can exist in other nodes but the uniqueId is unique for a particular instance of Isolate System.
   When an Isolate System is bootstrapped, it does several things. It generates a new Id which is unique for itself, then opens up a ‘ReceivePort’ and listens for any messages in that port so that it can receive to incoming messages from ‘Controller’. Then it tries to connect to Message Queuing System. If the Message Queuing System could not be connected, it simply keeps on retrying at certain interval. Furthermore, if after establishing connection with the MQS, the connection is lost in between because of a network issue or a hardware failure, the IsolateSystem automatically keeps on trying to re-establish the connection at regular interval. The connection to MQS via WebSocket takes place asynchronously thus whether the connection is established or not, it simply goes on and spawns a controller.
+  An Isolate System is a top level Isolate which spawn controllers. The Controller spawns Routers. Routers spawn the Worker isolates.
 
   \subsubsection{Adding an Isolate to the Isolate System}
   When an Isolate System is first initialized, it is an empty system without any isolates running in it. Isolates can be added with appropriate load balancer once the isolate system has been initialized. The ‘addIsolate’ function can be used to startup isolates into the system. It requires following arguments:
@@ -79,7 +80,15 @@ But, when the shutdown command for the isolate system is triggered by the user v
 \subsection{The Registry}
 The Isolate Registry is a central node where other nodes, with Bootstrappers running, connect and register themselves. The registry simply keeps the record of the connected nodes and queries them about the running isolate systems when required. The registry provides RESTful API and a web interface~/footnote{the web interface can be opted out as it is started separately} through which one can have an overview of the full system and manage the deployments of the isolate systems as well as individual isolates.
 
+The basic tasks that a Registry carries out are:
+\begin{itemize}
+  \item Bootstrap an isolate system, during runtime, in local or remote virtual machine
+  \item Provide a way to deploy, update or remove an ‘isolate system’
+  \item Return information about the isolate systems running isolates by querying the individual isolate systems of a node
+\end{itemize}
+
   \subsubsection{RESTful API of Registry}
+  \label{subsec:restApi}
   The registry provides a REST API to perform the operations on the connected nodes. One can send a ‘GET’ request to the Registry to fetch the list of the nodes that are connected to the Registry. And then use that list to deploy an isolate system or add an isolate to already deployed system by sending ‘POST’ request.
   \begin{itemize}
   \item GET list of connected nodes
@@ -179,34 +188,39 @@ The Isolate Registry is a central node where other nodes, with Bootstrappers run
     \end{lstlisting}
   \end{description}
 
-The functions of Registry are:
-\begin{itemize}
-  \item Bootstrap an isolate system, during runtime, in local or remote virtual machine
-  \item Provide a way to deploy, update or remove an ‘isolate system’
-  \item Return information about the isolate systems running isolates by querying the individual isolate systems of a node
-\end{itemize}
-
 The registry does not need to persist any data as all the information about isolate systems are queried and generated “on the fly”.
 
-  \subsubsection{Management Interface}
-  The deployment of isolates can also be managed by using a web interface provided by the Registry. The web interface should be started up separately in a different port.
+  \subsubsection{The Web Interface for the Registry}
+  The deployment of isolates can also be managed by using a web interface provided by the Registry. The Web Interface should be started up separately in a different port. The Web Interface, internally communicates with the Registry via the REST API~[\ref{subsec:restApi}] which is exposed by the Registry.
+  <A Screenshot here or in Appendix>
 
 \subsection{Message Queuing System (MQS)}
-Since, the basis of this system is message passing, the Message Queuing System is an important part of this framework. The Message Queuing System is an isolate that fetches messages from message broker system and dispatches to respective the isolate system, of connected node, where the isolate belongs. Whenever a new isolate system starts up, the isolate system opens up a new WebSocket connection with the message queuing system.
-It consists of two major components: Enqueuer \textendash{} which enqueues messages and Dequeuer \textendash{} which dequeues messages
+  Since, the basis of this system is message passing, the Message Queuing System is an important component of this framework. The Message Queuing System is an isolate that fetches messages from message broker system and dispatches to respective isolate of the isolate system. Whenever a new isolate system starts up, the isolate system opens up a new WebSocket connection with the Message Queuing System. The message exchange between the Isolate System and MQS takes place via the WebSocket connection. A header with the unique-id of an isolate system is added to the message as soon as it is received from an isolate system to identify origin of the message. If the message is was sent for enqueuing the header is ignored and simply the message with destination queue is forwarded the ‘Enqueuer’ isolate. Whereas, if the message is a dequeue request, the unique-id of the isolate system is also forwarded to a ‘Dequeuer’ isolate. The unique-id of isolate system used to identify the exact port through which the request arrived. Thus, making sure that the dequeued message is sent to the correct requester. This is especially useful if a cluster of identical isolate systems is running on different nodes.
+  The Message Queuing System needs to be started up separately with command line arguments to connect to message broker system. The required command line arguments are ip address, port, username and password to connect to Message Broker System. The ‘prefetchCount’ is an optional argument which defaults to 1, if not provided explicitly. A ‘prefetchCount’ is a Quality of Service header for Message Broker System which allows a subscriber of a queue to hold the amount of unacknowledged messages as defined in prefetchCount.
+
+** Passing of sockets to isolates is not possible, so the main isolate has to pipe all the input/output data.
+in this case MQS is the main isolate which has to handle all incoming and outgoing messages.
+
   \subsubsection{Enqueuer}
-  Enqueuer is a separate isolate. A Message Queuing System has only one enqueuer, which basically receives message from the MQS and sends message to message broker system \textendash{} RabbitMQ~\ref{sec:rabbitmq} via STOMP~\ref{sec:stomp} protocol.
+  Enqueuer is a separate isolate. A Message Queuing System has only one enqueuer, which basically receives message from the MQS and sends message to message broker system \textendash{} RabbitMQ[~\ref{sec:rabbitmq}] via STOMP~[\ref{sec:stomp}] protocol.
 
   \subsubsection{Dequeuer}
-  As opposed to Enqueuer, a Message Queuing System maintains several Dequeuers.
+  As opposed to Enqueuer, a Message Queuing System maintains each dequeuer for each topic, which corresponds to the each Router running in the isolate system. Whenever a message arrives from a new isolate, a new dequeuer isolate is spawned by the MQS. The new dequeuer then subscribes to a new message queue in the message broker system via STOMP~[\ref{sec:stomp}] protocol. If the queue did not exist in the message broker system, a new queue is automatically created. If a dequeuer is idle for too long, i.e. if the Dequeuer isolate has not received any dequeue requests for certain interval\footnote{by default the timeout is 10 seconds}, then the Dequeuer isolate for that particular queue is shutdown. Nevertheless, as soon as a request for dequeue is received by MQS, a new Dequeuer is spawned, if one does not exists yet.
+  The dequeuer subscribes messages from Message Broker System with such options that the new messages do not arrive to the subscriber unless previously dequeued messages have been acknowledged. This throttles the flow of messages from message broker system and keeps the itself and the isolates from being overwhelmed by large number of messages, which might induce ‘out of memory’ issues.
+  Messages in dequeuer keeps on arriving as long as there are messages in the queue and the messages are being acknowledged. The messages that are in buffer of dequeuer stay in unacknowledged unless they are flushed and sent out to the requesting isolate of an isolate system. As soon as a message is acknowledged the dequeuer receives another message from the message broker.
+
+  \subsubsection{Multiple Instances of MQS}
+  It is possible for a system to have multiple Message Queuing Systems for scaling up the system. In case there are multiple MQS and if there are multiple identical isolate systems connected to different MQS, each MQS will have a Dequeuer which subscribes to same queue. Nevertheless, a message is dispatched by the message broker system to only one of the dequeuers and it is distributed in round robin fashion. Thus messages are fairly distributed among the subscribers.
 
 \subsection{Activator}
-  An activator, basically, brings a node to “life”. It starts up two isolates: Systembootstrapper and IsolateDeployer. Every node that is supposed to be running an Isolate System or become a part of Isolate System by running isolates must be running an Activator. Nevertheless, starting up of SystemBootstrapper and IsolateDeployer separately is also possible.
+  An activator simply starts up two isolates: a Systembootstrapper and an IsolateDeployer. Every node that is supposed to be running an Isolate System or become a part of Isolate System by running isolates must be running an Activator. The Activator must be passed the WebSocket address of the Registry as a command line argument. Nevertheless, starting up of SystemBootstrapper and IsolateDeployer separately is also possible.
+
   \subsubsection{SystemBootstrapper}
-When a SystemBootstrapper is started, it registers itself to the ‘Registry’.
+When a SystemBootstrapper is started, it registers itself to the ‘Registry’ via a WebSocket connection. The path of the WebSocket connection is either forwarded from the Activator that spawned SystemBootstrapper. If a SystemBootstrapper is started separately then the path of the Registry can be passed as a command line argument.
+
   \subsubsection{IsolateDeployer}
-An Isolate Deployer deploys a single isolate in a remote node. It expands the isolate system beyond a physical node, as the isolate system can deploy number of instances of an isolate in different nodes.
-An Isolate Deployer running in a remote machine can handle requests from multiple ‘Proxy Workers’ from other systems. Each ‘Proxy Worker’ opens up a separate WebSocket channel with the Isolate Deployer
+An Isolate Deployer starts up a Worker Isolate in a node. The Isolate is spawned, without local isolate system, as a part of an isolate system running in another node. This functionality expands the isolate system beyond a physical system, as the isolate system can deploy number of instances of an isolate in several different nodes.
+  An Isolate Deployer running in a remote machine can handle requests from multiple ‘Proxy Workers’ from other systems. Each ‘Proxy Worker’ opens up a separate WebSocket channel with the Isolate Deployer.
 
 \section{Key Features}
 \subsection{Hot Deployment of Isolates and Isolate Systems}
@@ -227,7 +241,7 @@ The Isolates in Dart lack functionality of communicating with remote isolates ov
 Because of the ability to spawning an isolate in. Two isolates, although, running in two different virtual machines, can still belong to same logical isolate system.
 
 \section{Typical Message Flow in the System}
-The framework is based on Fire-and-Forget principle of message sending.
+The framework is based on ‘fire-and-forget’ principle of message sending.
 The message is serialized before sending via a SendPort of an Isolate.
 
 \subsection{Enqueuing a Message}
@@ -272,7 +286,7 @@ For instance, a sample use case can be, when an Isolate is maintaining a port co
 \subsection{Replying to a Message}
 
 \subsection{Control Messages}
-As the current implementation of Isolates in Dart does not provide the features to send the control messages like KILL, PING, . Although, it is not implemented yet, as these features are mentioned in documentation of
+As the current implementation of Isolates in Dart does not provide the features to send the control messages like KILL, PING, RESTART. Although, it is not implemented yet, as these features are mentioned in documentation of
 \subsubsection{KILL}
 \subsubsection{RESTART}
 \subsubsection{PING}
@@ -301,11 +315,38 @@ As the current implementation of Isolates in Dart does not provide the features 
 
   \end{description}
 \subsection{Clustering}
-
+Clustering can be achieved in the framework by deploying replicas of an isolate system in different nodes. Where each node can be either be connected to same MQS or differnt instance of the MQS.
+[?Further, the MQS can again be connected to same instance of a Message Broker System of another instance of the Message Broker System but belongs to same cluster.]
 
 \section{Dart Libraries Used in Construction}
   \subsection{STOMP}
   \subsection{Path}
   \subsection{}
 
-\section{Sample Implementation of Worker using the Framework}
+\section{A Sample Implementation of Worker using the Framework}
+\begin{lstlisting}[language=java,firstnumber=1]
+    import 'dart:isolate';
+    import 'package:isolatesystem/worker/Worker.dart';
+
+    main(List<String> args, SendPort sendPort) {
+      Consumer printerIsolate = new Consumer(args, sendPort);
+    }
+
+    class Consumer extends Worker {
+      Consumer(List<String> args, SendPort sendPort) : super(args, sendPort);
+
+      @override
+      onReceive(message) {
+        switch(message['action']) {
+          case "print":
+            print("message['content']");
+            break;
+          case "send_back":
+            reply(message['content']);
+            break;
+        }
+        done();
+      }
+    }
+
+\end{lstlisting}
