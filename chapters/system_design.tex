@@ -1,23 +1,26 @@
 \chapter{System Design}\label{chapter:general_design_decisions}
 
 \section{Core Design Decisions}
-The Framework is designed to be distributed in nature with the concepts of Actors. It should follow the standard actor programming concept and have the inherently distributed nature. The framework itself should be built using the concept of message passing to alleviate any possibility of concurrency issues, thus thread-safe.
+The Framework is designed to be distributed in nature with the concepts of Actors[\autoref{sec:actorProgramming}]. It should follow the standard actor programming concept and have the inherently distributed nature. The framework itself should be built using the concept of message passing to alleviate any possibility of concurrency issues, thus thread-safe.
 \begin{itemize}
-  \item The framework does not guarantee the delivery of a message.
-  \item All the messages send by the framework is based on ‘fire and forget’concept.
-  \item A message is delivered at most once.
-  \item A message is always routed through Message Queuing System, even though the target isolate can belong to same isolate system in the same logical or physical node.
-  \item A message is only fetched after an isolate sends a PULL request. Nonetheless, the delivery of message to an isolate is based on the implementation of the load balancer \textendash{} i.e. router.
+  \item The framework may not guarantee the delivery of a message.
+  \item All the messages sent by the framework will be based on ‘fire and forget’ concept.
+  \item A message shall be delivered at most once.
+  \item A message should always be routed through Message Queuing System, even though the target isolate may belong to same isolate system in the same logical or physical node.
+  \item Feeding of message to an isolate should be based on pull mechanism, not push mechanism.
+  \item Exceptions thrown at child isolates shall be handled by a spawnee of that isolate. Thus implementing the idea of supervision and “let it crash” ideology.
 \end{itemize}
 
-\section{Architectural Overview}
+\section{The Framework}
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/componentDiagram}
   \caption[architecture]{Architecture of the framework}
+  \label{fig:architecture}
 \end{figure}
-\section{The Framework}
-The framework comprises of an Isolate System, a Registry, a Message Queuing System and a Message Broker System.
+
+
+The framework comprises of an Isolate System, a Registry, a Message Queuing System, a Message Broker System and an Activator. The \autoref{fig:architecture} depicts the general overview of different components and sub-components of the framework.
   \subsection{IsolateSystem}
   An Isolate System is analogous to an actor system. Just as actor system is comprised of a group of actors working together, a group of related isolates form an isolate system. A ‘Bootstrapper’ in physical node can bootstrap several Isolate Systems. Nevertheless, a logical Isolate System is not limited to a single physical node. The isolates spawned by an Isolate System can be distributed across several remote systems.
   Each Isolate system has its unique id, which is a UUID. It is generated when the isolate system is bootstrapped. For bootstrapping, isolate system needs the WebSocket path to Message Queuing System, and a ‘name’ for itself. The name should not be confused with the uniqueId as IsolateSystem with same name can exist in other nodes but the uniqueId is unique for a particular instance of Isolate System.
