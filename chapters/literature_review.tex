@@ -1,5 +1,9 @@
 \chapter{Literature Review}\label{chapter:literature_review}
 
+\section{Message Passing Paradigm}
+\label{sec:messagePassing}
+Message passing for parallel programming as well as distributed computing paradigm is very flexible, universal, can be highly efficient...
+TODO:
 \section{Actor Programming Model}
 \label{sec:actorProgramming}
 Actor programming model is a programming paradigm designed for concurrent computation. The concept of an actor was originally introduced by Carl Hewitt\cite{hewitt} and he along with Agha\cite{agha} have been involved in development of both the actor theory as well as its implementation. An actor is a fundamental unit of computation. It is neither an operating system process nor a thread, but a lightweight process. It has to embody three essential things:
@@ -52,12 +56,17 @@ Another feature of the actor model is the possibility to scale the actor system 
 
 Since actors may carry out their actions in parallel and messages may be reordered, actor based systems are entirely concurrent. Each actors lives totally separated from all other actors and only messages, which are conceptually different from actors, are passed between them. So two actors may be executed by a single thread on a single chip that alternates execution between the two of them or they may be executed parallel within two data centers on both ends of the world. The actors themselves can and should not know, they simply exchange messages. This property makes it easy to scale actor based systems out of a single core to millions of them in multiple data centers. In an ideal case you simply change the configuration of the system and you are done without any need to modify the code. [MartinThurau]
 
+\section{“Let it Crash” Ideology}
+The concept of “let it crash” ...
+TODO
+\label{sec:letItCrash}
+
 \section{Erlang}
 Erlang is one of the first fairly popular programming languages that was based on the actor model.\cite{vinoski} It was developed by Joe Armstrong in 1986 at the Ericsson Computer Science Laboratory but was made open-source only in 1998. It was chiefly used in telephony applications as it was built to solve the problems of availability as well as scalability that existed in such applications.~\parencite{armstrong}
 
 Erlang was designed for writing concurrent programs that “run forever”. It uses concurrent processes to structure the program. These processes have no shared memory and communicate by asynchronous message passing. Erlang processes are lightweight and belong to the language, not the operating system. It has mechanisms to allow programs to change code “on the fly” so that programs can evolve and change as they run. These mechanisms simplify the construction of software for implementing non-stop systems.~\parencite{armstrong}
 
-Error handling in Erlang is different from conventional programming languages. In Erlang, it is based on a “let is crash” philosophy \cite{armstrong}.
+Error handling in Erlang is different from conventional programming languages. In Erlang, it is based on a “let it crash” philosophy \cite{armstrong}.
 
 \section{Scala Actors}
 Scala is a statically typed programming language which integrates functional and object-oriented programming quite well.\cite{Odersky}
@@ -290,6 +299,7 @@ Some of its important features are:
   Messages are the sole means of communication among isolates. Messages are sent by invoking specific methods in the Dart libraries; there is no specific syntax for sending a message.
   In other words, the methods supporting sending messages embody primitives of Dart that are not accessible to ordinary code, much like the methods that spawn isolates.
   \subsection{Isolates}~\parencite{dartEcma}
+  \label{sec:isolates}
   Dart code is always single threaded. There is no shared-state concurrency in Dart. Concurrency is supported via actor-like entities called isolates.
   An isolate is a unit of concurrency. It has its own memory and its own thread of control. Isolates communicate by message passing. No state is ever shared between isolates. Isolates are created by spawning.
   Spawning an isolate is accomplished via what is syntactically an ordinary library call, invoking one of the functions 'spawnUri()' or 'spawnFunction()' defined in the 'dart:isolate' library. However, such calls have the semantic effect of creating a new isolate with its own memory and thread of control.
