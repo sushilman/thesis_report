@@ -2,39 +2,48 @@
 
 \section{Message Passing Paradigm}
 \label{sec:messagePassing}
-Message passing for parallel programming as well as distributed computing paradigm is very flexible, universal, can be highly efficient...
-TODO:
+  Message passing is simply sending a message from one process, component or actor to another. Based on the received message, may it be using the pattern of message or the content of if, the recipient of the message chooses further processing.
+
+  Message passing is the loosest type of coupling. The modules are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. This improves the scalability and efficiency of the system.
+
+  Generally, systems that implement message passing paradigm are easily scalable and quite efficient. Such systems are easy to replicate and thus the fault tolerance can be improved. \cite{Armstrong:2010:ERL:1810891.1810910}
+
+  The lack of shared state and division of the system into well-isolated communicating components make it easy to understand the system’s overall architecture and separate the problems within the system. \cite{Armstrong:2010:ERL:1810891.1810910}
+
+  Message passing can either by synchronous or asynchronous. Synchronous message passing is communication between two components when one both component work together at same time. The sender is usually blocked until it gets a reply from the receiver. Whereas, in asynchronous message passing the sender simply sends a message and carries on with further processes. Thus, an asynchronous message passing is non-blocking in nature.
+
 \section{Actor Programming Model}
 \label{sec:actorProgramming}
-Actor programming model is a programming paradigm designed for concurrent computation. The concept of an actor was originally introduced by Carl Hewitt\cite{hewitt} and he along with Agha\cite{agha} have been involved in development of both the actor theory as well as its implementation. An actor is a fundamental unit of computation. It is neither an operating system process nor a thread, but a lightweight process. It has to embody three essential things:
+  Actor programming model is a programming paradigm designed for concurrent computation. The concept of an actor was originally introduced by Carl Hewitt\cite{hewitt} and he along with Agha\cite{agha} have been involved in development of both the actor theory as well as its implementation.
+
+  An actor is a fundamental unit of computation. It is neither an operating system process nor a thread, but a lightweight process. It embodies three essential things:
 \begin{itemize}
   \item Processing
   \item Storage
   \item Communication
 \end{itemize}
-Actors have addresses, each actor can have multiple addresses or multiple addresses can belong to one actor. Actors communicate with each other in a non-blocking way by message passing, thus removing the need of explicit locks. An actor can send message to actors in another system or it can also send message to itself for recursion. An actor can send messages only to addresses that it receives in the message, addresses that it already had before it received the message or addresses of actors that it creates while processing the message. Each actor has a mailbox. A mailbox is a queue of messages that have been sent by other actors or processes and not yet consumed, where mailbox is also an actor. The order in which the messages are delivered is non-deterministic.
-When an actor receives a message it can:
-(Essentially, an actor is a computational agent which carries out its actions in response to accepting a communication. The actions it may carry out are:)~\parencite{hewitt}
+  Actors have addresses and there is a many-to-may relationship between actors and addresses. i.e Each actor can have multiple addresses and multiple addresses can belong to one actor.
+
+  Actors communicate with each other in a non-blocking way by asynchronous message passing, which removes the need of explicit locks. An actor can send message to actors in same system or another system. An actor can also send message to itself, which is how a recursion is achieved. An actor can send a message to target actor only if it has the address of target actor. Agha ~[\parencite{agha}, p35] lists that there are three ways in which an actor, upon accepting a message, can know the address of the target actor:
+  \begin{itemize}
+    \item the target was known to the actor a before it accepted the  message
+    \item the target became known when the message was accepted because it was contained in the message or
+    \item the target is the mail address of a new actor created as a result of accepting the message
+  \end{itemize}
+
+  To buffer incoming messages, each actor has a mailbox. A mailbox is a queue of messages that have been sent by other actors or processes and not yet consumed, where mailbox is also an actor. The order in which the messages are delivered is non-deterministic.~\cite{hewittVideo}
+
+After receiving a message, an actor may perform following actions.~\parencite{hewitt}
 \begin{itemize}
   \item Create other actors
   \item Send messages to itself, other known actors or reply to actor who sent the message
-  \item Designate how it is going to handle next message, i.e. Specify replacement behavior
+  \item Designate how it is going to handle next message, i.e. Specify a replacement behavior
 \end{itemize}
 
+Actors do not have shared mutable state. All mutable state is private to the actor and all shared state is immutable. Actor communicate with each other asynchronous message passing which is also immutable. Each actor processes only one message at a time, and unless it is a broadcast message, a message is not processed two times.
 
-There are three ways in which an actor A, upon accepting a communication K, can know of a target to which it can send a communication. These are:~\parencite{agha}
-\begin{itemize}
-  \item the target was known to the actor a before it accepted the communication
-  \item the target became known when the message was accepted because it was contained in the message or
-  \item the target is the mail address of a new actor created as a result of accepting the message
-\end{itemize}
-
-Actors do not have shared mutable state. All mutable state is private to the actor and all shared state is immutable
-Actor communicate with each other asynchronous message passing which is immutable.
-Each actor processes only one message at a time, and unless it is a broadcast message, a message is not processed two times.
-
-An actor alone does nothing much, they must come in a system. An actor system is a group of actors working together in certain hierarchy.
-In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that the message sent to an actor will arrive sequentially.
+  An actor alone does nothing much, they co-exist in a system. An actor system is a group of actors working together in certain hierarchy.
+  In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that the message sent to an actor will arrive sequentially.~\cite{hewittVideo}
 
 \subsection{Error Handling in Actor Model}
 
@@ -67,6 +76,7 @@ Erlang is one of the first fairly popular programming languages that was based o
 Erlang was designed for writing concurrent programs that “run forever”. It uses concurrent processes to structure the program. These processes have no shared memory and communicate by asynchronous message passing. Erlang processes are lightweight and belong to the language, not the operating system. It has mechanisms to allow programs to change code “on the fly” so that programs can evolve and change as they run. These mechanisms simplify the construction of software for implementing non-stop systems.~\parencite{armstrong}
 
 Error handling in Erlang is different from conventional programming languages. In Erlang, it is based on a “let it crash” philosophy \cite{armstrong}.
+\cite{Armstrong:2010:ERL:1810891.1810910}
 
 \section{Scala Actors}
 Scala is a statically typed programming language which integrates functional and object-oriented programming quite well.\cite{Odersky}
