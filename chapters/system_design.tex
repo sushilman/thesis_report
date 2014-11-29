@@ -33,9 +33,44 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
   The bootstrapping of an isolate system includes: generating a new id which is unique for itself, opening up a ‘ReceivePort’, and connecting to a ‘Message Queuing System’. After opening up a ‘ReceivePort’, the isolate system starts listening on that port for messages so that it can receive incoming messages from ‘Controller’. While connecting to the Message Queuing System, if a connectin could not be established, it simply keeps on retrying at certain interval. Furthermore, should the connection be lost at any time after being connected with the MQS, the Isolate System automatically keeps on trying to re-establish the connection at regular interval. Since, the connection to MQS takes place asynchronously, the isolate system simply moves forward and spawns a controller, regardless of the establishment of connection with the MQS.
 
   \subsubsection{Adding Worker Isolates to The Isolate System}
-  As an isolate system is a top level isolate, it spawns a Controller. The Controller spawns one or several Routers and each Router spawns Worker isolates.
+  As an isolate system is a top level isolate, it spawns a controller. The controller spawns one or several routers and each router spawns a worker isolates. The \autoref{fig:addIsolateSequence} shows the message flow sequence in different components while starting up an isolate system and deploying a worker isolate in it.
 
-  When an isolate system is first initialized, it is an empty system without any Workers running in it. The Workers can be added with appropriate load balancer once the isolate system has been initialized. The ‘addIsolate’ function can be used to startup isolates into the system. It requires following arguments:
+  \begin{figure}[H]
+    \centering
+    \tiny
+  \begin{sequencediagram}
+  \newinst[0.5]{u}{Developer}
+  \newinst[0.5]{reg}{Registry}
+  \newinst[0.5]{b}{Bootstrapper}
+  \newinst[0.5]{s}{Isolate System}
+  \newinst[0.5]{c}{Controller}
+  \newinst[0.5]{r}{Router}
+  \newinst[0.5]{w}{Worker}
+
+    \mess{b}{connect and register}{reg}
+    \mess{u}{deploy isolate}{reg}
+    \mess{reg}{initialize isolate system}{b}
+    \mess{reg}{add isolate}{b}
+    \mess{s}{spawn controller}{c}
+    \mess{c}{SendPort}{s}
+
+    \begin{call}{b}{addIsolate()}{s}{IsolateRef}
+    \end{call}
+    \mess{s}{add isolate}{c}
+    \mess{c}{spawn router}{r}
+    \mess{r}{SendPort}{c}
+
+
+    \mess{r}{spawn worker}{w}
+    \mess{w}{SendPort}{r}
+
+  \end{sequencediagram}
+    \caption{Adding a Worker isolate to an isolate system}
+  \end{figure}
+  \label{fig:addIsolateSequence}
+  \normalsize
+
+  When an isolate system is first initialized, it is an empty system without any Workers running in it. The Workers can be added with appropriate load balancer once the isolate system has been initialized. The ‘addIsolate’ method is used to startup isolates into the system. It requires following arguments:
   \begin{description}
     \item{\itshape{name}} \textendash{} A name for pool of isolates. A deployed isolate has its own name but overall the name is concatenated with the name of isolate system to denote the hierarchy. For instance, an isolate with name ‘account’ becomes ‘bank/account’ where ‘bank’ is the name of the isolate system.
     \item{\itshape{sourceUri}} \textendash{} The location of the source code from which the isolate shall be spawned. The path can either be absolute path to the local file system or the full http or https URI.
@@ -117,7 +152,13 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
 
   \subsubsection{Proxy}
   A ‘Proxy’ is the special type of a Worker isolate. When a Worker isolate is supposed to be spawned in a remote node, the router instead spawns a Proxy isolate in local node. Once the Proxy isolate is created, it connects to the ‘Isolate Deployer’ of the remote node where the Worker isolate is intended to be spawned. After establishing connection over a WebSocket with Isolate Deployer of the remote node, the proxy isolate forwards the request to spawn the worker isolate to the Isolate Deployer. After successful spawning of isolate in the remote node, the proxy isolate simply forward the messages that is sent to it by the spawner router. Each proxy worker maintains a separate WebSocket connection with an ‘Isolate Deployer’.\\
-  <Insert a diagram here>
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/proxy}
+    \caption[Proxy Worker]{A Proxy Worker}
+    \label{fig:proxy}
+  \end{figure}
 
   \subsubsection{FileMonitor}
   \label{subsubsec:fileMonitor}
