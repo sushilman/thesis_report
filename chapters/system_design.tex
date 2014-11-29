@@ -9,7 +9,7 @@ The Framework is designed to be distributed in nature with the concepts of Actor
   \item A message shall be delivered at most once.
   \item A message should always be routed through Message Queuing System, even though the target isolate may belong to same isolate system in the same logical or physical node.
   \item Feeding of message to an isolate should be based on pull mechanism, not push mechanism.
-  \item Exceptions thrown at child isolates shall be handled by a ‘spawnee’ of that isolate. Thus implementing the idea of supervision and “let it crash” ideology[~\autoref{sec:letItCrash}].
+  \item Exceptions thrown at child isolates shall be handled by a ‘spawnee’ of that isolate. Hence, implementing the idea of supervision and “let it crash” ideology[~\autoref{sec:letItCrash}].
 \end{itemize}
 
 \section{The Framework}
@@ -54,12 +54,11 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
     \mess{s}{spawn controller}{c}
     \mess{c}{SendPort}{s}
 
-    \begin{call}{b}{addIsolate()}{s}{IsolateRef}
+    \begin{call}{b}{addIsolate()}{s}{}
     \end{call}
     \mess{s}{add isolate}{c}
     \mess{c}{spawn router}{r}
     \mess{r}{SendPort}{c}
-
 
     \mess{r}{spawn worker}{w}
     \mess{w}{SendPort}{r}
@@ -70,7 +69,7 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
   \label{fig:addIsolateSequence}
   \normalsize
 
-  When an isolate system is first initialized, it is an empty system without any Workers running in it. The Workers can be added with appropriate load balancer once the isolate system has been initialized. The ‘addIsolate’ method is used to startup isolates into the system. It requires following arguments:
+  When an isolate system is first initialized, it is an empty system without any Workers running in it. The Workers can be added with appropriate load balancer once the isolate system has been initialized. The ‘addIsolate’ method starts up worker isolates into the isolate system. It requires following arguments:
   \begin{description}
     \item{\itshape{name}} \textendash{} A name for pool of isolates. A deployed isolate has its own name but overall the name is concatenated with the name of isolate system to denote the hierarchy. For instance, an isolate with name ‘account’ becomes ‘bank/account’ where ‘bank’ is the name of the isolate system.
     \item{\itshape{sourceUri}} \textendash{} The location of the source code from which the isolate shall be spawned. The path can either be absolute path to the local file system or the full http or https URI.
@@ -92,7 +91,7 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
   Another type of message is the message to terminate a worker isolate, which is also forwarded to the controller as the isolate system does not directly manage the running worker isolates. Thus, the message is forwarded to the controller which is next in the hierarchy. In contrast, when the shutdown command for the isolate system is triggered via web or REST interface, the isolate system closes all the open ports including WebSocket ports and ReceivePorts, and then wait for the ‘Garbage Collector’ to and clean up the memory reserved by it.
 
   \subsubsection{Controller}
-  Every isolate system has a single controller, which is spawned by the top level isolate of an isolate system. A controller stays idle until it receives a message to create an isolate. Basically, a controller spawns and manages all the ‘Routers’ of an isolate system. Additionally, a controller takes care of ‘hot deployment’ feature for which it spawns a ‘FileMonitor’ for each Router if the feature is enabled. When a RESTART message is received from a FileMonitor, the controller sends a RESART\textunderscore{}ALL message to the designated Router, which restarts all the Worker isolates the Router has spawned.
+  Every isolate system has a single controller, which is spawned by the top level isolate of the isolate system. A controller stays idle until it receives a message to create an isolate. Basically, a controller spawns and manages all the routers of an isolate system. Additionally, a controller takes care of the ‘hot deployment’ feature for which it spawns a ‘FileMonitor’ for each router if the feature is enabled. When a RESTART message is received from a FileMonitor, the controller sends a RESTART\textunderscore{}ALL message to the designated router, which restarts all the Worker isolates the router has spawned.
 
   A controller is also responsible for replying to the query of list of isolates an isolate system is running. It achieves this by keeping a detailed record of each Router and number of Worker isolates each Router is handling, which is updated as soon as an isolate is killed or a new isolate is added.
 
@@ -101,15 +100,20 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
   \subsubsection{Router}
   A router is spawned by a controller. The router creates and is responsible for a group of identical Workers isolates. Since an isolate is single threaded, creation of multiple instances of an isolate is desirable for concurrency. When a message arrives in a router from a controller, the router, based on its defined routing policy, delegates the message to one of the worker isolates. The routing policy can be chosen at the time of deployment of a worker isolate.
 
-  A router uses a routing policy to distribute message among the group of isolates it is handling. The default routing policies that are available in the framework are:
-
-  \begin{description}
-    \item{Round Robin Router} \textemdash{} Messages are passed in round-robin fashion to its Worker isolates.
-
-    \item{Random Router} \textemdash{} Randomly picks one of its Worker isolates and sends the message to that Worker isolate.
-
-    \item{Broadcast Router} \textemdash{} Replicates and sends message to all of its Worker isolates.
-  \end{description}
+  A router uses a routing policy to distribute message among the group of isolates it is handling. The default routing policies that are available in the framework are listed in the \autoref{tab:routers}
+\begin{table}[htsb]
+  \caption[Routing techniques provided by the framework]{List of routing techniques provided by the framework}\label{tab:routers}
+  \centering
+  \begin{tabular}{l l}
+    \toprule
+      Router & Description \\
+    \midrule
+      Round Robin &  Messages are passed in round-robin fashion to its \\ & Worker isolates.\\
+      Random &  Randomly picks one of its Worker isolates and sends\\ & the message to that Worker isolate.\\
+      Broadcast & Replicates and sends message to all of its Worker isolates.\\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
     In addition to the available routing policies of the framework, it is also possible to add a new Routing technique by simply extending the ‘Router’ class which requires ‘selectWorker’ function to be implemented. The overridden ‘selectWorker’ function may either return a list of Workers or a single Worker. The ability to implement a custom router opens up possibilities for numerous load balancing techniques. For instance, a simple multicasting router that replicates a message only to the Workers that are spawned locally can be implemented by selecting such Workers using their deployment paths and returning them as a ‘List’.
 
@@ -181,7 +185,7 @@ The basic tasks that a registry carries out are:
 
   The REST endpoints exposed by the registry are listed in table~\autoref{tab:endpoints}.
   \begin{table}[htsb]
-    \caption[endpoints]{List of endpoints exposed by the registry}\label{tab:endpoints}
+    \caption[Endpoints exposed by the registry]{List of endpoints exposed by the registry}\label{tab:endpoints}
     \centering
     \begin{tabular}{l l}
       \toprule
@@ -321,12 +325,12 @@ Since, in Dart\footnote{Dart version 1.7.2} the passing of sockets to isolates i
   It is possible for a system to have multiple Message Queuing Systems for scaling up the system. If there are multiple identical isolate systems connected to different instances of MQS, each MQS will have a dequeuer which subscribes to the same queue. Nevertheless, a message is dispatched by the message broker system to only one of the dequeuers, which is distributed in round robin fashion. Thus, messages are fairly distributed among the subscribers.
 
 \subsection{Activator}
-  An activator simply starts up two isolates: a ‘System Bootstrapper’ and an ‘Isolate Deployer’. Every node that is supposed to be running an Isolate System or become a part of isolate system by running isolates must be running an Activator. The activator requires a WebSocket address of the Registry as a command line argument. Nevertheless, it is also possible to start up of System Bootstrapper and Isolate Deployer separately.
+  An activator simply starts up two isolates: a ‘System Bootstrapper’ and an ‘Isolate Deployer’. Every node that is supposed to be running an Isolate System or become a part of isolate system by running isolates must be running an Activator. The activator requires a WebSocket address of the Registry as a command line argument. Nevertheless, it is also possible to start up System Bootstrapper and Isolate Deployer separately.
 
   \subsubsection{System Bootstrapper}
   The System Bootstrapper registers itself to the ‘Registry’ via a WebSocket connection as soon as it is started. The activator forwards the path of the WebSocket to the system bootstrapper. But, if a System Bootstrapper is started separately then the path of the Registry should be passed as a command line argument.
 
-  \subsubsection{IsolateDeployer}
+  \subsubsection{Isolate Deployer}
 An Isolate Deployer starts up a Worker isolate in a node. The isolate is spawned without a local isolate system and as a part of an isolate system running in another node. This functionality expands the isolate system beyond a physical system. An isolate system can deploy number of instances of an isolate in several different nodes.
 
   An isolate deployer running in a remote machine is able to handle requests from multiple ‘Proxies’ from several isolate systems. Each proxy opens up a separate WebSocket channel with the isolate deployer.
@@ -340,7 +344,7 @@ It is possible for the source code, of an isolate, to reside in a remote reposit
   This hot deployment capability improves the availability of an application. Whenever there is any change in a component of an application, the whole application does not need to be re-deployed, instead, only a set of isolates that should be updated is restarted at runtime. This increases overall up-time of the application and keeps other components working even in the time of modifications.
 
 \subsection{Migration of Isolates and Isolate Systems}
-  Relocation of Worker isolates or an isolate system during runtime i.e. killing a set of Worker isolates or an isolate system at one node and bringing up same set of Worker isolates in another node is the migration of isolates or isolate system. The concept of hot deployment and migration brings enormous possibilities in a distributed system. Some of them are listed below:
+  Relocation of Worker isolates or an isolate system during runtime i.e. killing a set of Worker isolates or an isolate system at one node and bringing up same set of Worker isolates in another node is the migration of isolates or isolate system. The concept of hot deployment and migration brings enormous possibilities in a distributed system. Some of them are:
 
 \begin{itemize}
 
@@ -348,21 +352,75 @@ It is possible for the source code, of an isolate, to reside in a remote reposit
 
   \item Related and dependent isolates can be migrated to the same server, if it is evident that it improves performance of the entire system.
 
-  \item In case of hardware failure on a system which is running a certain set of isolates, migration of actors during runtime can make the application survive the hardware failure.
+  \item In case of hardware failure on a system which is running a certain set of isolates, migration of worker isolates during runtime can make the application survive the hardware failure.
 
 \end{itemize}
 
 \subsection{Remote Isolates}
 \label{subsec:remoteIsolate}
-  The current isolate implementation in Dart cannot communicate with other isolates over a network. The Worker isolates in this framework have an ability to communicate with the isolates that may be running in a remote node. So, there can be isolates running in any node. The communication underneath is taken care of by the framework so the implementer of this framework does not have to worry if an isolate is remotely spawned or locally spawned.
+  The current isolate implementation in Dart\footnote{Dart version 1.7.2} cannot communicate with other isolates over a network. The Worker isolates in this framework have an ability to communicate with the isolates that may be running in a remote node. So, there can be isolates running in any node. The communication underneath is taken care of by the framework so the implementer of this framework does not have to worry if an isolate is remotely spawned or locally spawned.
 
   Two isolates, although, running in two different virtual machines, can still belong to a same logical isolate system.
 
 \section{Typical Message Flow in the System}
-The framework is based on ‘fire-and-forget’ principle of message sending.
-A message is serialized to JSON string before sending via a SendPort of an isolate.
+The framework is based on ‘fire-and-forget’ principle of message sending. The \autoref{fig:enqueueMessage} shows a simple message flow while enqueuing a message and the \autoref{fig:dequeueMessage} shows the process of dequeuing a message.
+A message is serialized to JSON string before sending via a SendPort of an isolate and deserialized after receiving from ReceivePort.
 
-<TODO: Sequence diagram>
+\begin{figure}[H]
+  \centering
+  \tiny
+\begin{sequencediagram}
+\newinst[0.5]{w}{Worker (Entry point)}
+\newinst[0.5]{r}{Router}
+\newinst[0.5]{c}{Controller}
+\newinst[0.5]{s}{Isolate System}
+\newinst[0.5]{m}{MQS}
+\newinst[0.5]{e}{Enqueuer}
+\newinst[0.5]{rab}{RabbitMQ}
+
+  % \mess{u}{send message}{w}
+  \mess{w}{serialize and send message}{r}
+  \mess{r}{delegate message}{c}
+  \mess{c}{delegate message}{s}
+  \mess{s}{delegate message}{m}
+  \mess{m}{delegate message}{e}
+  \mess{e}{enqueue message}{rab}
+
+\end{sequencediagram}
+  \caption{Enqueuing a message}
+\end{figure}
+\label{fig:enqueueMessage}
+\normalsize
+
+\begin{figure}[H]
+  \centering
+  \tiny
+\begin{sequencediagram}
+\newinst[0.5]{w}{Idle Worker}
+\newinst[0.5]{r}{Router}
+\newinst[0.5]{c}{Controller}
+\newinst[0.5]{s}{Isolate System}
+\newinst[0.5]{m}{MQS}
+\newinst[0.5]{deq}{Dequeuer}
+\newinst[0.5]{rab}{RabbitMQ}
+
+  \mess{w}{done}{r}
+  \mess{r}{dequeue request}{c}
+  \mess{c}{dequeue request}{s}
+  \mess{s}{dequeue request}{m}
+  \mess{m}{dequeue request}{deq}
+  \mess{deq}{acknowledge buffered messages}{rab}
+  \mess{deq}{flush buffered messages}{m}
+  \mess{rab}{new messages}{deq}
+  \mess{m}{dequeued messages}{s}
+  \mess{s}{dequeued messages}{c}
+  \mess{c}{dequeued messages}{r}
+  \mess{r}{route dequeued messages}{w}
+\end{sequencediagram}
+  \caption{Dequeuing a message}
+\end{figure}
+\label{fig:dequeueMessage}
+\normalsize
 
 \subsection{Sample message formats}
 
@@ -473,12 +531,12 @@ A message is serialized to JSON string before sending via a SendPort of an isola
   \item By deploying worker isolates in several remote nodes. i.e. taking advantage of the concept of ‘Remote Isolates’~[\autoref{subsec:remoteIsolate}].
   \item By deploying replicas of an isolate system in different nodes. An isolate system with same name can exist in another node even though they connect to the same MQS.
   \item The Message Queuing System itself, can also be replicated where replicas of isolate system may connect to different instance MQS.
-  \item Since, several instances of RabbitMQ\autoref{sec:rabbitmq} can form a logical group, sharing common configuration, properties, users, queues etc., a cluster of message broker system can be formed. Which allows, Message Queuing Systems to connect to the different member of a cluster.
+  \item Since, several instances of RabbitMQ~[\autoref{sec:rabbitmq}] can form a logical group, sharing common configuration, properties, users, queues etc., a cluster of message broker system can be formed. Which allows, Message Queuing Systems to connect to the different member of a cluster.
   \end{itemize}
 
 \section{Dart Libraries Used in Construction}
 \begin{table}[htsb]
-  \caption[libraries]{List of libraries directly used by the framework}\label{tab:libraries}
+  \caption[Dependent libraries of the framework]{List of libraries directly used by the framework}\label{tab:libraries}
   \centering
   \begin{tabular}{l l}
     \toprule
