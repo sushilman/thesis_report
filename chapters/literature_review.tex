@@ -2,11 +2,10 @@
 
 \section{Message Passing Paradigm}
 \label{sec:messagePassing}
-  Message passing is simply sending a message from one process, component or actor to another. Based on the received message, may it be using the pattern of message or the content of if, the recipient of the message chooses further processing.
+  Message passing is simply sending a message from one process, component or actor to another. The recipient of the message chooses further processing based on the pattern or content of the message.
+  Message passing is the loosest type of coupling. The components of a system are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement message passing paradigm are easily scalable and efficient. Such systems are easy to replicate and thus fault tolerance can be improved~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
-  Message passing is the loosest type of coupling. The modules are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement message passing paradigm are easily scalable and quite efficient. Such systems are easy to replicate and thus the fault tolerance can be improved~\cite{Armstrong:2010:ERL:1810891.1810910}.
-
-  The systems which communicate solely by message passing do not have a shared state. Such systems can be easily divided into isolated components. This makes the overall architechture of a system easy to understand and simplifies the separation of problems within the system~\cite{Armstrong:2010:ERL:1810891.1810910}.
+  The systems which communicate solely by message passing do not have a shared state. Such systems can be easily divided into isolated components. This makes the overall architecture of a system easy to understand and simplifies the separation of problems within the system~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
   Message passing can either be synchronous or asynchronous. Synchronous message passing is the communication between two components where both the sender and the receiver of a message are ready to communicate. As the sender of a message has to wait for a response from the receiver, the sender is usually blocked until it gets a reply. Whereas, in asynchronous message passing, the sender simply sends a message and carries on with further processes. The receiver does not have to be ready to accept the message when the sender sends it.~\cite{agha} Thus, an asynchronous message passing is non-blocking in nature.
 
@@ -20,9 +19,9 @@
   \item Storage
   \item Communication
 \end{itemize}
-  Actors have addresses and there is a many-to-may relationship between actors and addresses. i.e Each actor can have multiple addresses and multiple addresses can belong to one actor.
+  Actors have addresses and there is a many-to-many relationship between actors and addresses. i.e Each actor can have multiple addresses and multiple addresses can belong to one actor.
 
-  Actors communicate with each other in a non-blocking way by asynchronous message passing, which removes the need of explicit locks. An actor can send message to actors in same system or another system. An actor can also send message to itself, which is how a recursion is achieved. An actor can send a message to target actor only if it has the address of target actor. Agha~(\cite{agha}, p35) lists that there are three ways in which an actor, upon accepting a message, can know the address of the target actor:
+  Actors communicate with each other in a non-blocking way by asynchronous message passing, which removes the need of explicit locks. An actor can send message to actors in same system or another system. An actor can also send message to itself, which is how a recursion is achieved. An actor can send a message to target actor only if it has the address of target actor. Agha~(\cite{agha}, p35) lists three ways in which an actor, upon accepting a message, can know the address of the target actor:
   \begin{itemize}
     \item the target was known to the actor a before it accepted the message
     \item the target became known when the message was accepted because it was contained in the message, or,
@@ -34,26 +33,26 @@
 After receiving a message, an actor may perform following actions.~\parencite{hewitt}
 \begin{itemize}
   \item Create other actors
-  \item Send messages to itself, other known actors or reply to actor who sent the message
+  \item Send messages to itself, other known actors or reply to the actor who sent the message
   \item Designate how it is going to handle next message, i.e. Specify a replacement behavior
 \end{itemize}
 
 Actors do not have a shared mutable state. All mutable state is private to the actor and all shared state is immutable. Actors communicate with each other by asynchronous message passing which is also immutable. Each actor processes only one message at a time, and unless it is a broadcast message, a message is not processed multiple times.
 
-  An actor alone does nothing much, they must co-exist in a system. An actor system is a group of actors working together in certain hierarchy.
+  An actor exists in a system. An actor system is a group of actors working together in certain hierarchy.
   In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that the message sent to an actor will arrive sequentially~\cite{hewittVideo}.
+
+  Several programming languages like Act 1, 2 and 3, Acttalk etc. were created when actor system was newly introduced by Hewitt and Agha~\cite{agha, hewitt}.
 
 \subsection{Error Handling in Actor Model}
 Exception handling in actor model is based on idea of embracing the failures. The idea of embracing failures is also known as “let it crash” paradigm~[\autoref{subsec:letItCrash}]. As the actors do not have shared state, this allows individual actor to fail without causing disruptions in the system. Since, an actor in an actor system is typically organized in a hierarchical structure, the actor which created a child actor can be used for supervising it. The idea of supervision in a hierarchical actor system helps to make the actor system fault tolerant~\cite{Erb2012}. When an actor throws an exception the supervisor can respond to the exception in different ways. In Akka~[\autoref{sec:akka}], the supervising actor usually reacts by either simply ignoring the exception and let the actor continue, restarting the actor or by escalating the error to its supervisor.
 
   The “let it crash” style of programming is a non-defensive programming, which is implemented successfully in Erlang~[\autoref{sec:erlang}].
 
-  Several programming languages like Act 1, 2 and 3, Acttalk etc. were created when actor system was newly introduced by Hewitt and Agha~\cite{agha, hewitt}.
-
-\subsection{Difference from thread-based programming model}
+\subsection{Differences from thread-based programming model}
 \subsubsection{Thread-based Concurrency}
   \label{subsec:thread}
-  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have a shared memory, concurrent modifications and accesses of the data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situations, such programming languages have locks. The locks make only single thread, out of many, to run sequentially at a time for a section of program code~\cite{ambientTalk}.
+  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have a shared memory, concurrent modifications and accesses of the data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situations, such programming languages have locks. The locks make only single thread, to run sequentially, at a time for a section of program code~\cite{ambientTalk}.
 
   Generally, the thread-based programming models are easy to understand and implement. But, the resulting program behavior is difficult to understand because of implicit context switches and release of locks, which may even lead to a deadlock situation~\cite{ambientTalk}.
 
@@ -95,9 +94,9 @@ Scala is a statically typed programming language which integrates functional as 
 
   The scala actors library provide concurrent programming model based on actors~[\autoref{sec:actorProgramming}]. The actors in scala are fully inter-operable with the mainstream virtual machine threads~\cite{Haller}. Scala actors are lightweight and support around 240 times more actors to run simultaneously compared to virtual machine threads~\cite{Haller}.
 
-  The Scala Actors library provides both asynchronous and synchronous message sends (the latter are implemented by exchanging several asynchronous messages). Moreover, actors may communicate using futures where requests are handled asynchronously, but return a representation (the future) that allows to await the reply~\cite{scalaActors}.
+  Both synchronous and asynchronous message passing can be used to in scala actors. The synchronous message passing is implemented by exchanging several asynchronous messages. The actors in scala can also communicate using ‘futures’. When a future is used the requests are handled asynchronously and the sender immediately gets a representation of the future which allows sender to wait for the reply.~\cite{scalaActors}
 
-  The scala actor library is now deprecated and will be removed in future Scala releases\footnote{Scala actors are deprecated in version 2.10, \fullcite{scalaActorsAPI}}. This is to promote the use of Akka actors~[\autoref{sec:akka}].
+  The Scala Actors library is now deprecated and will be removed in future Scala releases\footnote{Scala actors are deprecated in version 2.10, \fullcite{scalaActorsAPI}}. The deprecation is in favor of the use of Akka actors~[\autoref{sec:akka}].
 
 \section{Akka Toolkit}
 \label{sec:akka}
