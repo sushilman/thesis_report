@@ -4,13 +4,11 @@
 \label{sec:messagePassing}
   Message passing is simply sending a message from one process, component or actor to another. Based on the received message, may it be using the pattern of message or the content of if, the recipient of the message chooses further processing.
 
-  Message passing is the loosest type of coupling. The modules are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. This improves the scalability and efficiency of the system.
+  Message passing is the loosest type of coupling. The modules are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement message passing paradigm are easily scalable and quite efficient. Such systems are easy to replicate and thus the fault tolerance can be improved~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
-  Generally, systems that implement message passing paradigm are easily scalable and quite efficient. Such systems are easy to replicate and thus the fault tolerance can be improved. \cite{Armstrong:2010:ERL:1810891.1810910}
+  The systems which communicate solely by message passing do not have a shared state. Such systems can be easily divided into isolated components. This makes the overall architechture of a system easy to understand and simplifies the separation of problems within the system~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
-  The lack of shared state and division of the system into well-isolated communicating components make it easy to understand the system’s overall architecture and separate the problems within the system. \cite{Armstrong:2010:ERL:1810891.1810910}
-
-  Message passing can either by synchronous or asynchronous. Synchronous message passing is communication between two components when one both component work together at same time. The sender is usually blocked until it gets a reply from the receiver. Whereas, in asynchronous message passing the sender simply sends a message and carries on with further processes. Thus, an asynchronous message passing is non-blocking in nature.
+  Message passing can either be synchronous or asynchronous. Synchronous message passing is the communication between two components where both the sender and the receiver of a message are ready to communicate. As the sender of a message has to wait for a response from the receiver, the sender is usually blocked until it gets a reply. Whereas, in asynchronous message passing, the sender simply sends a message and carries on with further processes. The receiver does not have to be ready to accept the message when the sender sends it.~\cite{agha} Thus, an asynchronous message passing is non-blocking in nature.
 
 \section{Actor Programming Model}
 \label{sec:actorProgramming}
@@ -24,14 +22,14 @@
 \end{itemize}
   Actors have addresses and there is a many-to-may relationship between actors and addresses. i.e Each actor can have multiple addresses and multiple addresses can belong to one actor.
 
-  Actors communicate with each other in a non-blocking way by asynchronous message passing, which removes the need of explicit locks. An actor can send message to actors in same system or another system. An actor can also send message to itself, which is how a recursion is achieved. An actor can send a message to target actor only if it has the address of target actor. Agha ~[\parencite{agha}, p35] lists that there are three ways in which an actor, upon accepting a message, can know the address of the target actor:
+  Actors communicate with each other in a non-blocking way by asynchronous message passing, which removes the need of explicit locks. An actor can send message to actors in same system or another system. An actor can also send message to itself, which is how a recursion is achieved. An actor can send a message to target actor only if it has the address of target actor. Agha~(\cite{agha}, p35) lists that there are three ways in which an actor, upon accepting a message, can know the address of the target actor:
   \begin{itemize}
-    \item the target was known to the actor a before it accepted the  message
-    \item the target became known when the message was accepted because it was contained in the message or
-    \item the target is the mail address of a new actor created as a result of accepting the message
+    \item the target was known to the actor a before it accepted the message
+    \item the target became known when the message was accepted because it was contained in the message, or,
+    \item the target is the new actor created as a result of accepting the message
   \end{itemize}
 
-  To buffer incoming messages, each actor has a mailbox. A mailbox is a queue of messages that have been sent by other actors or processes and not yet consumed, where mailbox is also an actor. The order in which the messages are delivered is non-deterministic.~\cite{hewittVideo}
+  To buffer incoming messages, each actor has a mailbox. A mailbox is a queue of messages that have been sent by other actors or processes and not yet consumed, where mailbox is also an actor. The order in which the messages are delivered is non-deterministic~\cite{hewittVideo}.
 
 After receiving a message, an actor may perform following actions.~\parencite{hewitt}
 \begin{itemize}
@@ -40,60 +38,70 @@ After receiving a message, an actor may perform following actions.~\parencite{he
   \item Designate how it is going to handle next message, i.e. Specify a replacement behavior
 \end{itemize}
 
-Actors do not have shared mutable state. All mutable state is private to the actor and all shared state is immutable. Actor communicate with each other asynchronous message passing which is also immutable. Each actor processes only one message at a time, and unless it is a broadcast message, a message is not processed two times.
+Actors do not have a shared mutable state. All mutable state is private to the actor and all shared state is immutable. Actors communicate with each other by asynchronous message passing which is also immutable. Each actor processes only one message at a time, and unless it is a broadcast message, a message is not processed multiple times.
 
-  An actor alone does nothing much, they co-exist in a system. An actor system is a group of actors working together in certain hierarchy.
-  In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that the message sent to an actor will arrive sequentially.~\cite{hewittVideo}
+  An actor alone does nothing much, they must co-exist in a system. An actor system is a group of actors working together in certain hierarchy.
+  In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that the message sent to an actor will arrive sequentially~\cite{hewittVideo}.
 
 \subsection{Error Handling in Actor Model}
+Exception handling in actor model is based on idea of embracing the failures. The idea of embracing failures is also known as “let it crash” paradigm~[\autoref{subsec:letItCrash}]. As the actors do not have shared state, this allows individual actor to fail without causing disruptions in the system. Since, an actor in an actor system is typically organized in a hierarchical structure, the actor which created a child actor can be used for supervising it. The idea of supervision in a hierarchical actor system helps to make the actor system fault tolerant~\cite{Erb2012}. When an actor throws an exception the supervisor can respond to the exception in different ways. In Akka~[\autoref{sec:akka}], the supervising actor usually reacts by either simply ignoring the exception and let the actor continue, restarting the actor or by escalating the error to its supervisor.
 
-Error handling in actor model is based on “let it crash” philosophy. The isolated, shared nothing trait of actors allows a single actor to fail without affecting any other actors. Furthermore, the actor model itself can be used for fault tolerance, by spawning hierarchy trees of actors for supervision. Once an actor crashes, the supervising actor receives a messages and can react. A supervisor usually handles the error in actors by restarting the actor, stopping the actor, ignoring the error or escalating the error to its own supervisor. \url{http://berb.github.io/diploma-thesis/original/054_actors.html}
+  The “let it crash” style of programming is a non-defensive programming, which is implemented successfully in Erlang~[\autoref{sec:erlang}].
 
-Several programming languages like Act 1, 2 and 3, Acttalk etc were created when actor system was newly introduced by Hewitt and Agha.
+  Several programming languages like Act 1, 2 and 3, Acttalk etc. were created when actor system was newly introduced by Hewitt and Agha~\cite{agha, hewitt}.
 
-\subsection{Differences From Conventional Programming Languages}
-In traditional programming languages, the control flow of a concurrent program is divided over a number of threads. Each thread operates concurrently and control can switch from one thread to another non-deterministically. If two threads have access to the same data (objects), they might cause erroneous behavior (so-called race conditions) because of this non-determinacy. Therefore, thread-based programming languages introduce locks (in the form of monitors, semaphores, ...) which enable the construction of so-called critical sections, which are pieces of program code in which only one thread can run sequentially at a time.
+\subsection{Difference from thread-based programming model}
+\subsubsection{Thread-based Concurrency}
+  \label{subsec:thread}
+  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have a shared memory, concurrent modifications and accesses of the data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situations, such programming languages have locks. The locks make only single thread, out of many, to run sequentially at a time for a section of program code~\cite{ambientTalk}.
 
-The advantages of the thread-based model are that the model itself is easy to understand, it is efficiently implementable and it can be used to create very fine-grained synchronization (e.g. multiple readers/one writer). The disadvantages are that the resulting program behavior is very hard to understand because of implicit context switches, interleaved acquisition/release of locks which may lead to deadlock, etc. \url{http://soft.vub.ac.be/amop/at/tutorial/actors#threads_vs_actors}
+  Generally, the thread-based programming models are easy to understand and implement. But, the resulting program behavior is difficult to understand because of implicit context switches and release of locks, which may even lead to a deadlock situation~\cite{ambientTalk}.
 
-\subsection{Actors for Concurrency}
-When the application servers use the actor model, each incoming request represents a new actor. For parallelizing request operations, the actor spawns new actors and assigns work via messages. This enables parallel I/O-bound operations as well as parallel computations. Often, the flow of a single request represents a more or less complex message flow between multiple actors, using messaging patterns such as scatter/gather, router, enricher or aggregator [Hoh03].
+\subsubsection{Actors based Concurrency}
+\label{subsec:actorConcurrency}
+  Concurrency in actor based programming languages are inherent because of using asynchronous message-passing, pipelining, and the dynamic creation of actors.
+The concurrency in actors through pipelining is only constrained by the logical limits and the available hardware resources~\cite{agha}. The actors may carry out their activities in parallel as each actor resides in a completely separated space from the other actors, they are connected only via messages.
 
-However, implementing request logic using actors differs clearly from sequential request logic implementations. The necessary coordination of multiple actors and the less apparent flow of execution due to asynchronous messaging provides an arguably less comfortable, but more realistic abstraction towards concurrency
+  The actor based programming liberates the programmer from going into coding details about the parallelism and threads~\cite{agha}.
 
-Another feature of the actor model is the possibility to scale the actor system as a whole by adding new machines. For instance, Erlang enables virtual machines to spawn a distributed system. In this case, remote actors can hold isolated application state, but accessible via messaging for all other actors of the entire system. \url{http://berb.github.io/diploma-thesis/original/054_actors.html#impl}
+  As actors do not have shared state, thus the ‘race condition’ as discussed in \autoref{subsec:thread}, do not arise in actor based programming.
 
-Since actors may carry out their actions in parallel and messages may be reordered, actor based systems are entirely concurrent. Each actors lives totally separated from all other actors and only messages, which are conceptually different from actors, are passed between them. So two actors may be executed by a single thread on a single chip that alternates execution between the two of them or they may be executed parallel within two data centers on both ends of the world. The actors themselves can and should not know, they simply exchange messages. This property makes it easy to scale actor based systems out of a single core to millions of them in multiple data centers. In an ideal case you simply change the configuration of the system and you are done without any need to modify the code. [MartinThurau]
-
-\section{“Let it Crash” Ideology}
-The concept of “let it crash” ...
-TODO
-\label{sec:letItCrash}
+\subsection{Scaling up actor based systems}
+  As actor based systems are highly concurrent~[\autoref{subsec:actorConcurrency}], it is easy to scale actor based systems from a single core system to several of them across multiple data centers around the globe. The ideal case would be to just let a new system join the actor system and let it run some more actors during runtime, without the need of taking down the running system. The actors themselves do not need to know the physical location of other actors as they simply exchange messages based on the logical addresses. This makes them easy to scale up and out.
 
 \section{Erlang}
-Erlang is one of the first fairly popular programming languages that was based on the actor model.\cite{vinoski} It was developed by Joe Armstrong in 1986 at the Ericsson Computer Science Laboratory but was made open-source only in 1998. It was chiefly used in telephony applications as it was built to solve the problems of availability as well as scalability that existed in such applications.~\parencite{armstrong}
+\label{sec:erlang}
+  Erlang is one of the first fairly popular programming languages that was based on the actor model\cite{vinoski}. It was developed by Joe Armstrong in 1986 at the Ericsson Computer Science Laboratory but was made open-source only in 1998. It was chiefly used in telephony applications as it was built to solve the problems of availability as well as scalability that existed in such applications.~\parencite{armstrong}
 
-Erlang was designed for writing concurrent programs that “run forever”. It uses concurrent processes to structure the program. These processes have no shared memory and communicate by asynchronous message passing. Erlang processes are lightweight and belong to the language, not the operating system. It has mechanisms to allow programs to change code “on the fly” so that programs can evolve and change as they run. These mechanisms simplify the construction of software for implementing non-stop systems.~\parencite{armstrong}
+  Erlang ‘processes,’ which are essentially user-space threads rather than Unix processes or kernel threads, communicate only via message passing.
 
-Error handling in Erlang is different from conventional programming languages. In Erlang, it is based on a “let it crash” philosophy \cite{armstrong}.
-\cite{Armstrong:2010:ERL:1810891.1810910}
+  Erlang was designed for the writing applications that require high availability - as Armstrong mentions it in his \cite{armstrong} the programs that “run forever”. It uses concurrent processes, which have no shared memory and communicate only via asynchronous message passing. This idea is similar to the actors model proposed by Agha and Hewitt~\autoref{sec:actorProgramming}. Thus, programs written in Erlang are concurrent, distributed, fault tolerant and thread safe. The concurrency is built into the language itself, not the the operating system~\cite{Armstrong:2010:ERL:1810891.1810910}.
+
+  When an application developed in Erlang is deployed in a multicore computer, it automatically takes advantage of those multiple cores. The Erlang “processes” spread over the cores and so the programmers do not have to worry about threads~\cite{Armstrong:2010:ERL:1810891.1810910}. Erlang has mechanisms to let the programs update themselves without taking the system offline. The new changes in an application can be added while the system is up, which improves the availability of whole system. Thus, simplifying the construction of software for implementing non-stop systems~\cite{armstrong}.
+
+  Error handling in Erlang is different from most of the other programming languages. The error handling is based on a “let it crash” philosophy~\autoref{subsec:letItCrash} which is a non-defensive style of programming~\cite{armstrong, Armstrong:2010:ERL:1810891.1810910}.
+
+\subsection{“Let it Crash” Philosophy}
+\label{subsec:letItCrash}
+  The core idea in “Let it Crash” philosophy is to let the failing processes crash and make other processes, which observe this process, detect the crashes and fix them~\cite{Armstrong:2010:ERL:1810891.1810910}. This idea is in sharp contrast to other programming languages, where programmers implement exception handlers and prevent a process from getting terminated.
+
+  The concept of “let it crash” leads to clear and compact coding
+~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
 \section{Scala Actors}
-Scala is a statically typed programming language which integrates functional and object-oriented programming quite well.\cite{Odersky}
+Scala is a statically typed programming language which integrates functional as well as object-oriented programming\cite{Odersky}. Scala has its own library for actor programming.
 
-In Scala, templates for actors with user-defined behavior are normal class definitions which extend the predefined Actor class.
-The Scala Actors library provides both asynchronous and synchronous message sends (the latter are implemented by exchanging several asynchronous messages). Moreover, actors may communicate using futures where requests are handled asynchronously, but return a representation (the future) that allows to await the reply.~\parencite{scalaActors}
+  In Scala, templates for actors with user-defined behavior are normal class definitions which extend the predefined Actor class.
 
-The actor implementation of Scala is not part of the language core, but part of its standard library. This means that actor library itself is implemented in Scala. One initial challenge of Scala actors has been introduced by the constraints of multithreading in the Java Virtual Machine (JVM). The number of possible threads is limited, there is no cooperative scheduling available and threads are conceptually less lightweight than actors are supposed to be. As a result, Scala provides a single concept of an actor, but two different mechanisms for message handling.~\parencite{Haller}
+  The scala actors library provide concurrent programming model based on actors~[\autoref{sec:actorProgramming}]. The actors in scala are fully inter-operable with the mainstream virtual machine threads~\cite{Haller}. Scala actors are lightweight and support around 240 times more actors to run simultaneously compared to virtual machine threads~\cite{Haller}.
 
-\subsection*{Thread-based Actors}
-When actors call thread-blocking operations, such as receive (or even wait), the worker thread that is executing the current actor (self) is blocked. This means basically that the actor is represented as a blocked thread. Depending on the number of actors you want to use, you might want to avoid this, since most JVMs cannot handle more than a few thousand threads on standard hardware.
+  The Scala Actors library provides both asynchronous and synchronous message sends (the latter are implemented by exchanging several asynchronous messages). Moreover, actors may communicate using futures where requests are handled asynchronously, but return a representation (the future) that allows to await the reply~\cite{scalaActors}.
 
-\subsection*{Event-driven Actors}
-The react primitive allows and event-driven execution strategy, which does not directly couple actors to threads. Instead, a thread pool can be used for a number of actors. This approach uses a continuation closure to encapsulate the actor and its state. However, this mechanism has several limitations and obscures the control flow.~\cite{Haller} Conceptually, this implementation is very similar to an event loop backed by a thread pool. Actors represent event handlers and messages resemble events. \url{http://berb.github.io/diploma-thesis/original/054_actors.html#impl}
+  The scala actor library is now deprecated and will be removed in future Scala releases\footnote{Scala actors are deprecated in version 2.10, \fullcite{scalaActorsAPI}}. This is to promote the use of Akka actors~[\autoref{sec:akka}].
 
-\section{Akka Toolkit}[MartinThurau]
-Akka is a toolkit for building concurrent, distributed application on the JVM using the actor model. It provides the developer with a well defined API to develop large concurrent systems and allow for easy scaling out of a single machine.
+\section{Akka Toolkit}
+\label{sec:akka}
+Akka is a toolkit and runtime for building highly concurrent, distributed and resilient message-drive applications on the JVM. Akka uses lightweight actors for concurrency. The actors in Akka are based on Hewitt's and Agha's model~\cite{agha, hewitt} of actor programming. It provides the developer with a well defined API to develop large concurrent systems and allow for easy scaling out of a single machine.
   \subsection{Actor Model in Akka}[MartinThurau]
 The actor model is implemented in Akka with respect to the definition above. However, there are certain parts of this implementation that have subtle differences in them. Before we take a look at them, lets first start with a simple code example on how an actor actually looks if you implement it with Akka. After all, that concept is abstract enough so an example will certainly help to build a mental model of it. Listing 1 shows an example of “Hello World” using a single actor. The example is written in Java.
 
@@ -261,7 +269,7 @@ Sample Akka Config and Code for Remote Actors: ~\parencite{akkaHome}
   Dart programs may be statically checked. The static checker will report some violations of the type rules, but such violations do not abort compilation or preclude execution.
   Dart programs may be executed in one of two modes: production mode or checked mode. In production mode, static type annotations have absolutely no effect on execution with the exception of reflection and structural type tests.
   \begin{enumerate}
-  \item Reified type information reflects the types of objects at runtime and may always be queried by dynamic typechecking constructs (the analogs of in- stanceOf, casts, typecase etc. in other languages). Reified type information includes class declarations, the runtime type (aka class) of an object, and type arguments to constructors.
+  \item Reified type information reflects the types of objects at runtime and may always be queried by dynamic type checking constructs (the analogs of in- stanceOf, casts, typecase etc. in other languages). Reified type information includes class declarations, the runtime type (aka class) of an object, and type arguments to constructors.
   \item Static type annotations determine the types of variables and function decla- rations (including methods and constructors).
   \item Production mode respects optional typing. Static type annotations do not affect runtime behavior.
   \end{enumerate}
@@ -390,7 +398,7 @@ AMQP defaults to sending all the messages it can to any consumer that looks read
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/rabbitmqPrefetch}
-  \caption[rabbitPerformance]{Chart showing performance variation when prefetch count is changed in the consumer\footnotemark}
+  \caption[Chart showing performance variation when prefetch count is changed in the consumer]{Chart showing performance variation when prefetch count is changed in the consumer\footnotemark}
 \end{figure}
 \footnotetext{\fullcite{rabbitmqPerformance}}
 
