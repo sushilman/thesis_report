@@ -388,8 +388,8 @@ A message is serialized to JSON string before sending via a SendPort of an isola
 
 \end{sequencediagram}
   \caption{Enqueuing a message}
+  \label{fig:enqueueMessage}
 \end{figure}
-\label{fig:enqueueMessage}
 \normalsize
 
 \begin{figure}[H]
@@ -418,8 +418,8 @@ A message is serialized to JSON string before sending via a SendPort of an isola
   \mess{r}{route dequeued messages}{w}
 \end{sequencediagram}
   \caption{Dequeuing a message}
+  \label{fig:dequeueMessage}
 \end{figure}
-\label{fig:dequeueMessage}
 \normalsize
 
 \subsection{Sample message formats}
@@ -440,12 +440,12 @@ A message is serialized to JSON string before sending via a SendPort of an isola
 
 \item Router:
 \begin{lstlisting}[language=json,numbers=none]
-\{senderType: senderType.router, id: sampleSystem/producer, action: action.send, payload: \{sender: sampleSystem/producer, to: sampleSystem/consumer, message: Test, replyTo: null\}\}
+{senderType: senderType.router, id: sampleSystem/producer, action: action.send, payload: {sender: sampleSystem/producer, to: sampleSystem/consumer, message: Test, replyTo: null\}\}
 \end{lstlisting}
 
 \item Controller:
 \begin{lstlisting}[language=json,numbers=none]
-\{senderType: senderType.controller, id: sampleSystem/producer, action: action.send, payload: \{sender: sampleSystem/producer, to: sampleSystem/consumer, message: Test, replyTo: null\}\}
+{senderType: senderType.controller, id: sampleSystem/producer, action: action.send, payload: {sender: sampleSystem/producer, to: sampleSystem/consumer, message: Test, replyTo: null\}\}
 \end{lstlisting}
 
 \item Top level isolate:
@@ -533,7 +533,7 @@ A message is serialized to JSON string before sending via a SendPort of an isola
   \item The Message Queuing System itself, can also be replicated where replicas of isolate system may connect to different instance MQS.
   \item Since, several instances of RabbitMQ~[\autoref{sec:rabbitmq}] can form a logical group, sharing common configuration, properties, users, queues etc., a cluster of message broker system can be formed. Which allows, Message Queuing Systems to connect to the different member of a cluster.
   \end{itemize}
-
+<TODO: a simple diagram>
 \section{Dart Libraries Used in Construction}
 \begin{table}[htsb]
   \caption[Dependent libraries of the framework]{List of libraries directly used by the framework}\label{tab:libraries}
