@@ -165,7 +165,7 @@ Here, ‘at-most-once delivery’ means that a message is either not delivered a
 
   \subsection{Actor Supervision and Monitoring}
   \label{subsec:supervisionMonitoring}
-  The supervising actor in akka delegates tasks to its subordinates. It is also responsible for monitoring them for failures. When a child actor detects a failure, it suspends itself as well as its child actors and sends a message to its supervisor about the failure. According to Akka Java documentation\fullcite{akkaJavaDoc}, upon receiving the failure, the supervisor may opt to perform one of the four choices:~\cite{akkaJavaDoc}
+  The supervising actor in akka delegates tasks to its subordinates. It is also responsible for monitoring them for failures. When a child actor detects a failure, it suspends itself as well as its child actors and sends a message to its supervisor about the failure. According to Akka Java documentation\footnote{\fullcite{akkaJavaDoc}}, upon receiving the failure, the supervisor may opt to perform one of the four choices:~\cite{akkaJavaDoc}
   \begin{enumerate}
     \item Resume the subordinate, keeping its accumulated internal state
     \item Restart the subordinate, clearing out its accumulated internal state
@@ -173,26 +173,35 @@ Here, ‘at-most-once delivery’ means that a message is either not delivered a
     \item Escalate the failure, thereby failing itself
   \end{enumerate}
 
-  When an actor is restarted by the supervising actor, the message that the actor was processing during the time of failure is lost and is not processed again. However, the messages that were in the mailbox of the actor remains safe and new actor resumes processing the other messages in the mailbox. ~\cite{akkaJavaDoc}
+  When an actor is restarted by the supervising actor, the message that the actor was processing during the time of failure is lost and is not processed again. However, the messages that were in the mailbox of the actor remains safe and new actor resumes processing the other messages in the mailbox~\cite{akkaJavaDoc}.
 
-  \subsection{Routers} [MartinThurau]
-  Routers are specialized actors that act as a load balancer for the actors that it supervises. Akka provides several routing techniques by default.
+  \subsection{Routers}
+  Routers are specialized actors that act as a load balancer for the actors that it supervises. Akka provides several built-in routing techniques:~\cite{akkaJavaDoc}
+  \begin{itemize}
+    \item Round Robin Router
+    \item Random Router
+    \item Smallest Mailbox Router
+    \item Broadcast Router
+    \item Scatter Gather First Completed Router
+    \item Tail Chopping Router
+    \item Consistent Hashing Router
+  \end{itemize}
 
-  Routers are a special type of actor that route incoming messages to other actors. They are indeed a "load balancer". One can either implement his own router or use some of the implementations that Akka provides. There are some simple ones in example, that can be used to load balance messages to a number of actors (on different hosts) this way distributing the workload. In Addition to these simple “distributing” routers there are others that broadcast messages to all actors or broadcast them and wait for the first result to complete.
-
-  Routers can also be used to automatically adjust the number of actors depending on the number of messages by spawning or stopping actors.
-
-  \subsection{Event Bus}
-  Additionally to the whole message passing Akka provides an event bus that allows parts of the code to publish events to the event bus and other parts may independently subscribe to certain events and get notified if these events occur.
-  This features can be used to decouple actors from each other but have them be able to pass information around using the event bus.
+It is also possible to use custom implementation of a router by extending \emph{RoutingLogic} class from Akka's routing library.
 
   \subsection{Remote Actors in Akka}
-  Akka Remoting is a communication module for connecting actor systems in a peer-to-peer fashion, and it is the foundation for Akka Clustering. The design of remoting is driven by two (related) design decisions:
-  1. Communication between involved systems is symmetric: if a system A can connect to a system B then system B must also be able to connect to system A independently.
-  2. The role of the communicating systems are symmetric in regards to connection patterns: there is no system that only accepts connections, and there is no system that only initiates connections.~\parencite{akkaJavaDoc}
+  Actors in akka are location transparent; they reside in a logical hierarchy of an actor system through which the physical location of an actor in the network can be determined. The location transparency allows the akka applications to be developed locally but deployed into distributed systems simply by changing configurations.~\cite{akkaJavaDoc}
 
-Actors are location transparent and distributable by design. This means that you can write your application without hardcoding how it will be deployed and distributed, and then later just configure your actor system against a certain topology with all of the application’s semantics, including actor supervision, retained.
-Sample Akka Config and Code for Remote Actors: ~\parencite{akkaHome}
+  Actor systems in akka communicate in a peer-to-peer fashion and it is the foundation for Akka Clustering. Akka's Java Documentation\footnote{~\fullcite{akkaJavaDoc}} lists the two design decisions for remoting:
+\begin{enumerate}
+
+  \item Communication between involved systems is symmetric: if system A can connect to system B then system B must also be able to connect to system A independently.
+
+  \item The role of the communicating systems are symmetric in regards to connection patterns: there is no system that only accepts connections, and there is no system that only initiates connections.
+
+\end{enumerate}
+
+A sample Akka Configuration and Code for Remote Actors: \footnote{Source: \fullcite{akkaHome}}
 
 \begin{lstlisting}
   // ------------------------------
@@ -240,17 +249,9 @@ Sample Akka Config and Code for Remote Actors: ~\parencite{akkaHome}
   greeter.tell(new Greeting("Sonny Rollins"), ActorRef.noSender());
 \end{lstlisting}
 
-  \subsection{Akka in Distributed Systems}
-
   \subsection{Clustering in Akka}
-  Akka Cluster provides a fault-tolerant decentralized peer-to-peer based cluster membership service with no single point of failure or single point of bottleneck. It does this using gossip protocols and an automatic failure detector.
+  Akka does not have any central point of reference. It uses peer-to-peer based gossip protocol to form a cluster. Thus, there is no single point of failure or single point of bottleneck in the system. But, adding a new member in a distributed system requires significant amount of time because of the nature of the gossip protocol. In a benchmark\footnote{\fullcite{akkaBenchmark}} performed by Patrik Nordwall\footnote{Patrick Nordwall is a developer of Akka at Typesafe}, adding nodes to a cluster of at least 1500 nodes took around 15 to 20 seconds in average.
 
-  node A logical member of a cluster. There could be multiple nodes on a physical machine. Defined by a host- name:port:uid tuple.
-  cluster A set of nodes joined together through the membership service.
-  leader A single node in the cluster that acts as the leader. Managing cluster convergence, partitions [*], fail-over [*], rebalancing [*] etc.
-
-For more refer:
-http://backstopmedia.booktype.pro/developing-an-akka-edge/chapter-10-clusters/
 
 \section{The Dart Language}
   \subsection{Overview}
