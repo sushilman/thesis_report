@@ -52,7 +52,7 @@ Exception handling in actor model is based on idea of embracing the failures. Th
 \subsection{Differences from thread-based programming model}
 \subsubsection{Thread-based Concurrency}
   \label{subsec:thread}
-  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have a shared memory, concurrent modifications and accesses of the data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situations, such programming languages have locks. The locks make only single thread, to run sequentially, at a time for a section of program code~\cite{ambientTalk}.
+  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have a shared memory, concurrent modifications and accesses of the data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situations, such programming languages have locks. The locks let only a single thread at a time to run sequentially for a section of program code~\cite{ambientTalk}.
 
   Generally, the thread-based programming models are easy to understand and implement. But, the resulting program behavior is difficult to understand because of implicit context switches and release of locks, which may even lead to a deadlock situation~\cite{ambientTalk}.
 
@@ -70,7 +70,7 @@ The concurrency in actors through pipelining is only constrained by the logical 
 
 \section{Erlang}
 \label{sec:erlang}
-  Erlang is one of the first fairly popular programming languages that was based on the actor model\cite{vinoski}. It was developed by Joe Armstrong in 1986 at the Ericsson Computer Science Laboratory but was made open-source only in 1998. It was chiefly used in telephony applications as it was built to solve the problems of availability as well as scalability that existed in such applications.~\parencite{armstrong}
+  Erlang is the first popular programming language that was based on the actor model\cite{vinoski}. It was developed by Joe Armstrong in 1986 at the Ericsson Computer Science Laboratory and was made open-source in 1998. It was chiefly used in telephony applications as it was built to solve the problems of availability as well as scalability that existed in such applications.~\parencite{armstrong}
 
   Erlang ‘processes,’ which are essentially user-space threads rather than Unix processes or kernel threads, communicate only via message passing.
 
@@ -100,14 +100,17 @@ Scala is a statically typed programming language which integrates functional as 
 
 \section{Akka Toolkit}
 \label{sec:akka}
-Akka is a toolkit and runtime for building highly concurrent, distributed and resilient message-drive applications on the JVM. Akka uses lightweight actors for concurrency. The actors in Akka are based on Hewitt's and Agha's model~\cite{agha, hewitt} of actor programming. It provides the developer with a well defined API to develop large concurrent systems and allow for easy scaling out of a single machine.
-  \subsection{Actor Model in Akka}[MartinThurau]
-The actor model is implemented in Akka with respect to the definition above. However, there are certain parts of this implementation that have subtle differences in them. Before we take a look at them, lets first start with a simple code example on how an actor actually looks if you implement it with Akka. After all, that concept is abstract enough so an example will certainly help to build a mental model of it. Listing 1 shows an example of “Hello World” using a single actor. The example is written in Java.
+Akka is a toolkit and runtime for building highly concurrent, distributed and resilient message-drive applications on the JVM. Akka uses lightweight actors for concurrency. The actors in Akka are based on Hewitt's and Agha's model~\cite{agha, hewitt} of actor programming. Akka provides a well defined API for developers to develop large concurrent systems, which allows for easy scaling out.
+  Akka is available for Scala as well as Java.
 
-All basic classes of Akka actors are available with an single import in line 1. The actual Actor is implemented in the lines 3 to 8. We only need to extend the class Actor and override the receive method. This method is called each time a message is received by the actor. The method does pattern matching on the received message to decide what to do. In this case, whenever a message is received that contains a single string a message is printed to the console.[MartinThurau]
+  \subsection{Actor Model in Akka}
+  In Akka, actors are objects which encapsulate state and behavior. Similar to Hewitt's and Agha's actor model~[\autoref{sec:actorProgramming}], the akka actors communicate only by message sending which are placed into the recipient’s mailbox. Akka actors are the stringent form of object-oriented programming~\cite{akkaActorSystem}.
 
-Akka Sample Java Code:~\parencite{akkaHome}
-\begin{lstlisting}
+  The ‘ActorRef’ in akka, represents an actor. It holds a reference to an actor. Its purpose is to facilitate the message sending to the actor it refers. An actor can also refer to itself using \emph{self}. ~\cite{akkaJavaDoc}
+
+  The \autoref{lst:akkaHelloWorld}~\footnote{Source: \fullcite{akkaHome}}, is a simple example of how actor programming in Akka is realized. In this example, the ‘GreetingActor’ is an actor which extends ‘UntypedActor’ must implement the \emph{onReceive()} method. The \emph{onReceive()} method is invoked for each message that is received by this actor. After receiving a message, the actor performs pattern matching to decide which code to execute. As in this example, if the message is a type of ‘Greeting’ object, it is concatenated with the string “Hello” otherwise, it is simply ignored.
+
+\begin{lstlisting}[caption=A simple example of actor programming in akka~\cite{akkaHome}, label=lst:akkaHelloWorld]
 public class Greeting implements Serializable {
   public final String who;
   public Greeting(String who) { this.who = who; }
@@ -127,69 +130,54 @@ ActorRef greeter = system.actorOf(Props.create(GreetingActor.class), "greeter");
 greeter.tell(new Greeting("Charlie Parker"), ActorRef.noSender());
 \end{lstlisting}
 
-  \subsection{Actor System}[\url{http://www.toptal.com/scala/concurrency-and-fault-tolerance-made-easy-an-intro-to-akka}]
-  Taking a complex problem and recursively splitting it into smaller sub-problems is a sound problem solving technique in general. In an actor-based design, use of this technique facilitates the logical organization of actors into a hierarchical structure known as an Actor System. The actor system provides the infrastructure through which actors interact with one another.
-  Actors are objects which encapsulate state and behavior, they communicate exclusively by exchanging messages which are placed into the recipient’s mailbox. In a sense, actors are the most stringent form of object-oriented programming, but it serves better to view them as persons: while modeling a solution with actors, envision a group of people and assign sub-tasks to them, arrange their functions into an organizational structure and think about how to escalate failure (all with the benefit of not actually dealing with people, which means that we need not concern ourselves with their emotional state or moral issues). The result can then serve as a mental scaffolding for building the software implementation. ~\parencite{akkaJavaDoc}
-  "An ActorSystem is a heavyweight structure that will allocate 1…N Threads, so create one per logical application."
-  The quintessential feature of actor systems is that tasks are split up and delegated until they become small enough to be handled in one piece. In doing so, not only is the task itself clearly structured, but the resulting actors can be reasoned about in terms of which messages they should process, how they should react normally and how failure should be handled. If one actor does not have the means for dealing with a certain situation, it sends a corresponding failure message to its supervisor, asking for help. The recursive structure then allows to handle failure at the right level.~\parencite{akkaJavaDoc}
-  An actor system manages the resources it is configured to use in order to run the actors which it contains. There may be millions of actors within one such system, after all the mantra is to view them as abundant and they weigh in at an overhead of only roughly 300 bytes per instance. Naturally, the exact order in which messages are processed in large systems is not controllable by the application author, but this is also not intended. Take a step back and relax while Akka does the heavy lifting under the hood.~\parencite{akkaJavaDoc}
 
-  <Insert Actor System Diagram Here>
+  \subsection{Actor System}
+      An actor system in Akka is like an organization of actors where actors are arranged in a hierarchical structure. An actor, which performs certain task usually split up the task into smaller pieces. For this, it starts up other actors as its child actors, which it supervises~\autoref{subsec:supervisionMonitoring}. As the actor which creates a new actor is the supervisor of the new actor, it is implicit that there can be only one supervisor of an actor.
 
-  \subsection{Message Passing}[MartinThurau]
-  An Actor in Akka is modeled as single object of functionality. Each actor has an event driven message inbox (called mailbox) that holds all incoming message until they are processed. Within the actor there is an function that takes out one message and acts accordingly. Each actor is identified by a so called ActorRef. This references are created whenever one actor creates another actor and are additionally added automatically to each message that is sent between two actors identifying the sender of the message.
+  By splitting up the tasks, the tasks become clear and structured. Furthermore, the resulting actors also becomes simplified and specialized in terms of which messages it should process and how it should react normally. It also becomes easy to handle the failures. If an actor cannot cope with a failure, it is escalated up in the hierarchy to its supervisor which is recursive unless it reaches up to the actor which can handle the failure.~\cite{akkaJavaDoc}
 
-  Messages in Akka can be from any type. You should however be aware that these object will not be copied when to actors run on the same physical system so it is possible to create a situation where two actors share some kind of data.
+  An actor instance in akka takes up roughly 300 bytes of memory, because of which it is possible to spawn millions of them in one actor system. As an actor system can grow very large and distributed, the order of message processing is not guaranteed.~\cite{akkaJavaDoc}
 
-  Akka chooses to implement some message ordering guarantees for certain kinds of messages. Specifically Akka provides a guaranteed ordering for any two pairs of actors. So if actor A sends two messages M1 and M2 to actor B, M1 will be received before M2. However, this only is the case if the receivers uses a simple FIFO mailbox and not one of the other mailboxes that allow prioritizing certain messages so this featured should be used carefully.
+  An example of the arrangement of actors in hierarchical structure is shown in~\autoref{fig:actorSystem}. The ‘{$\backslash$}’ is known as the “root guardian” and \emph{$\backslash$user} is known as the “user guradian”. Any actor created by a user falls under the user guradian. For instance, in the~\autoref{fig:actorSystem}, \emph{actorA} and \emph{actorB} are actors created by user, hence their supervisor is \emph{$\backslash$user}. Again, the actors \emph{actor1} and \emph{actor2} are the child actors of \emph{actorB}. The address of an actor in akka is arranged like the filesystem hierarchy. Hence, the supervision hierarchy as well as the path leading to the actor is comprehensible from its address.
 
-  These are the rules for message sends (i.e. the tell or ! method, which also underlies the ask pattern): \cite{akkaJavaDoc}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{figures/actorSystem}
+  \caption[Hierarchy in actor system]{Hierarchy in actor system~\cite{akkaJavaDoc}}
+  \label{fig:actorSystem}
+\end{figure}
+
+  \subsection{Message Passing in Akka}
+  In Akka, every actor has an event driven message inbox known as the ‘mailbox’. The mailbox buffers all the incoming messages until they are processed. When a message is sent from one actor to the other, the reference to the sender (an ActorRef), is automatically added to the message by default. Thus, during the message processing the recipient actor has a reference to the sender actor through the \emph{sender} method.~\cite{akkaJavaDoc}
+
+  Akka guarantees the order of direct message delivery between two actors. It is only applicable when the mailbox implementation in receiver is FIFO mailbox and the communication takes place only between the two actors without the involvement of intermediatory actors. For instance, if an actor A1 sends messages M1, M2 and M3 to actor A2. The message M1 will be delivered before M2 and the message M2 before M3. Meanwhile if another actor A3 sends messages M4, M5 and M6 to A2 at the same time, the order of message delivery of M4, M5 and M6 will also be sequential. Nevertheless, there is no guarantee that the messages sent by A1 is delivered before the messages from A3; even if all of the messages from A1 were sent before A3 started sending messages to A1. Provided that the message sending from A1 and A3 are independent of each other. ~\cite{akkaJavaDoc}
+
+  The Akka's documentation for Java, the rules mentioned for message sending are: \cite{akkaJavaDoc}
   \begin{itemize}
     \item at-most-once delivery, i.e. no guaranteed delivery
     \item message ordering per sender–receiver pair
   \end{itemize}
 
-  When it comes to describing the semantics of a delivery mechanism, there are three basic categories:
-  \begin{itemize}
-  \item at-most-once delivery means that for each message handed to the mechanism, that message is delivered zero or one times; in more casual terms it means that messages may be lost.
-  \item  at-least-once delivery means that for each message handed to the mechanism potentially multiple attempts are made at delivering it, such that at least one succeeds; again, in more casual terms this means that messages may be duplicated but not lost.
-  \item  exactly-once delivery means that for each message handed to the mechanism exactly one delivery is made to the recipient; the message can neither be lost nor duplicated.
-  \end{itemize}
-  The first one is the cheapest—highest performance, least implementation overhead—because it can be done in a fire-and-forget fashion without keeping state at the sending end or in the transport mechanism. The second one requires retries to counter transport losses, which means keeping state at the sending end and having an acknowledgement mechanism at the receiving end. The third is most expensive—and has consequently worst performance—because in addition to the second it requires state to be kept at the receiving end in order to filter out duplicate deliveries.
-\subsubsection{Why no guaranteed Delivery?}
-At the core of the problem lies the question what exactly this guarantee shall mean: \cite{akkaJavaDoc}
-1. The message is sent out on the network?
-2. The message is received by the other host?
-3. The message is put into the target actor’s mailbox?
-4. The message is starting to be processed by the target actor?
-5. The message is processed successfully by the target actor?
+Here, ‘at-most-once delivery’ means that a message is either not delivered at all (i.e. lost) or delivered only once. Thus, there is no duplicate delivery of a message.
 
-  \subsection{Shared Data}[MartinThurau]
-  Since Akka runs on top of the JVM and is implemented as a simply library it is not possible for Akka to strictly enforce a true data separation between actors (other then inspecting every single message which would certainly hurt performance). If an actor creates a mutable data structure and sends a reference to this structure to another actor (using a message that contains the reference to the structure) and both actors run on the same VM these two actors will share the same underlying data structure, thus breaking the encapsulation of the actors. This will most certainly create hard to reproduce bugs (since all actors run concurrent and the process could likely become indeterministic) so this is strongly discouraged. Additionally, this problem goes away if two communicating actors don’t run within the same JVM, since the data in the messages is then actually serialized and send over to the other JVM.
+  \subsection{Shared mutable state}
+  Since Akka runs on top of the Java Virtual Machine(JVM), there are some pitfalls that the programmer should be aware enough to avoid, which akka cannot enforce. The messages used to communicate between the actors should be immutable. If it is made mutable and the reference of it is sent by the sender to an actor which resides on same JVM, bugs such as race conditions and even some incomprehensible bugs might appear. Also, the sender method must not be closed over, if the block of code could be run in another thread, for instance sending message to sender actor inside a ‘Future’ block. In such cases, the sender reference must be captured into a local variable first. As the reference and behavior of sender can change over time.~\cite{akkaJavaDoc}
 
   \subsection{Actor Supervision and Monitoring}
-  As described in Actor Systems supervision describes a dependency relationship between actors: the supervisor delegates tasks to subordinates and therefore must respond to their failures. When a subordinate detects a failure (i.e. throws an exception), it suspends itself and all its subordinates and sends a message to its supervisor, signaling failure. Depending on the nature of the work to be supervised and the nature of the failure, the supervisor has a choice of the following four options:
+  \label{subsec:supervisionMonitoring}
+  The supervising actor in akka delegates tasks to its subordinates. It is also responsible for monitoring them for failures. When a child actor detects a failure, it suspends itself as well as its child actors and sends a message to its supervisor about the failure. According to Akka Java documentation\fullcite{akkaJavaDoc}, upon receiving the failure, the supervisor may opt to perform one of the four choices:~\cite{akkaJavaDoc}
   \begin{enumerate}
     \item Resume the subordinate, keeping its accumulated internal state
     \item Restart the subordinate, clearing out its accumulated internal state
     \item Stop the subordinate permanently
     \item Escalate the failure, thereby failing itself
   \end{enumerate}
-  It is important to always view an actor as part of a supervision hierarchy, which explains the existence of the fourth choice (as a supervisor also is subordinate to another supervisor higher up) and has implications on the first three: resuming an actor resumes all its subordinates, restarting an actor entails restarting all its subordinates (but see below for more details), similarly terminating an actor will also terminate all its subordinates. It should be noted that the default behavior of the preRestart hook of the Actor class is to terminate all its children before restarting, but this hook can be overridden; the recursive restart applies to all children left after this hook has been executed.
 
-  [MartingThurau] In Akka each running actor has a supervisor which is the parent actor that created the current one. So each given actor is part of a hierarchy of supervisor: the one parent that created the actor and all child actors, that were created by itself were it is the supervisor. But what does supervision mean? A supervisor created the children so it either delegated some kind of work to them or is a least somehow interested in them. This means it is responsible for watching its subordinates and handling problem that they themselves can not handle.
-  If an actor detects a failure (i.e. if an exception is thrown) it suspends itself and all its children and signals a failure to its supervisor. The supervisor can now choose how to respond this particular failure by
-  \begin{itemize}
-    \item simply resuming the subordinate. In this case the subordinate keeps all its internals state and will continue were it left of.
-    \item restarting the subordinate. The subordinate will in this case clear all it’s internal state.
-    \item terminate the subordinate permanently.
-    \item escalate the failure to its own supervisor.
-  \end{itemize}
-  It has to be noted that in Akka there is no way to put a message back into the inbox. So if a actor signals a failure the current message may be lost. Also it is important to note that restarting an actor will reset all it’s internal state but not it’s mailbox. So the “new” actor will continue to process all messages in the mailbox after the restart is complete. Additionally, restarting an actor will create a new actor behind the same ActorRef so other actors that had a reference to the restarted actor can and will not know, that the actor has been restarted. If this wouldn’t be the case you would have to notify all other actors whenever a single actor crashed so that they could update eventually stored references.
-  However, there might by certain situations where some actor wants to be notified an other actor is permanently stopped. For this cases Akka provides a feature called DeathWatch were the watching actor is notified by a special message type, that is delivered to its inbox.
-  If we recap that each actor must have a parent actor the supervises it, we notice a chicken-and-egg problem: Who starts the first actor? This is done by a special actor (that is in fact not a real actor) called the “bubble-walker” (because he lives “outside the bubble”) which in turn will receive all failures that were escalated to the top level. If the bubble walker ever gets such a failure he will terminate all actors which effectively stops the system.
+  When an actor is restarted by the supervising actor, the message that the actor was processing during the time of failure is lost and is not processed again. However, the messages that were in the mailbox of the actor remains safe and new actor resumes processing the other messages in the mailbox. ~\cite{akkaJavaDoc}
 
   \subsection{Routers} [MartinThurau]
+  Routers are specialized actors that act as a load balancer for the actors that it supervises. Akka provides several routing techniques by default.
+
   Routers are a special type of actor that route incoming messages to other actors. They are indeed a "load balancer". One can either implement his own router or use some of the implementations that Akka provides. There are some simple ones in example, that can be used to load balance messages to a number of actors (on different hosts) this way distributing the workload. In Addition to these simple “distributing” routers there are others that broadcast messages to all actors or broadcast them and wait for the first result to complete.
 
   Routers can also be used to automatically adjust the number of actors depending on the number of messages by spawning or stopping actors.
@@ -261,6 +249,8 @@ Sample Akka Config and Code for Remote Actors: ~\parencite{akkaHome}
   cluster A set of nodes joined together through the membership service.
   leader A single node in the cluster that acts as the leader. Managing cluster convergence, partitions [*], fail-over [*], rebalancing [*] etc.
 
+For more refer:
+http://backstopmedia.booktype.pro/developing-an-akka-edge/chapter-10-clusters/
 
 \section{The Dart Language}
   \subsection{Overview}
