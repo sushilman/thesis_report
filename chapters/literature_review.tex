@@ -255,117 +255,135 @@ A sample Akka Configuration and Code for Remote Actors: \footnote{Source: \fullc
 
 \section{The Dart Language}
   \subsection{Overview}
-  Dart is an open-source, class-based, single-inheritance, pure object-oriented programming language developed by Google. Dart is optionally typed and supports reified generics. The runtime type of every object is represented as an instance of class Type which can be obtained by calling the getter runtimeType declared in class Object, the root of the Dart class hierarchy.
-  Dart programs may be statically checked. The static checker will report some violations of the type rules, but such violations do not abort compilation or preclude execution.
-  Dart programs may be executed in one of two modes: production mode or checked mode. In production mode, static type annotations have absolutely no effect on execution with the exception of reflection and structural type tests.
-  \begin{enumerate}
-  \item Reified type information reflects the types of objects at runtime and may always be queried by dynamic type checking constructs (the analogs of in- stanceOf, casts, typecase etc. in other languages). Reified type information includes class declarations, the runtime type (aka class) of an object, and type arguments to constructors.
-  \item Static type annotations determine the types of variables and function decla- rations (including methods and constructors).
-  \item Production mode respects optional typing. Static type annotations do not affect runtime behavior.
-  \end{enumerate}
-~\parencite{dartEcma}
-Dart programs are organized in a modular fashion into units called libraries. Libraries are units of encapsulation and may be mutually recursive.
-\newline
--> Garbage collection !
+  Dart is an open-source, class-based, single-inheritance, pure object-oriented programming language developed by Google~\cite{dartEcma}. Dart language is inspired by Smalltalk, Strongtalk, Erlang, C\# and JavaScript~\cite{sethladd}.
 
-Developers of dart believe that JavaScript has been pushed to its limit and the web apps developed in JavaScript are far too slow even though JavaScript engines are quite fast. They claim Dart offers a better solution to build larger and more complex web apps.[7]
+  Dart codes are not compiled before running; the Dart Virtual Machine(VM) reads and executes the source code. Dart provides a homogeneous system that encompass both client as well as server as the Dart VM (Virtual Machine) can be embedded in browsers. A version of Chromium – ‘Dartium’ already has Dart VM built into it~\cite{sethladd}.
+
+  Programs in Dart are optionally typed. They can be executed in two modes checked mode and production mode. In checked mode incorrect static type annotations produce compile time errors. Whereas, in production mode, type annotations are completely ignored~\cite{dartEcma}.
+
+  Furthermore, Dart allows developers to code in a uniform way for both server as well as client since Dart Virtual Machine (VM) can be embedded in browsers. A variant of Chromium browser — Dartium browser has an embedded Dart VM.
+
+  Dart has automatic garbage collecting system, which means the memory occupied by objects which are not in use and which do not have any reference are reclaimed periodically.
+
+  Developers of dart believe that JavaScript has been pushed to its limit and the web apps developed in JavaScript are far too slow even though JavaScript engines are fast. They claim Dart offers a better solution to build larger and more complex web apps\cite{laddWalrath}.
+
 Some of its important features are:
   \begin{itemize}
-  \item Familiar syntax, thus easy to learn
-  \item Compiles (Translates) to JavaScript
-  \item Runs in client as well as on server
-  \item Dart supports types, but it is optional
-  \item Can scale from small script to large and complex applications • Support safe concurrency with isolates.
+    \item Easy to learn syntax
+    \item Compiles (Translates) to JavaScript
+    \item Runs in client as well as on server
+    \item Dart supports types, but it is optional
+    \item Can scale from small script to large and complex applications
+    \item Support safe concurrency with isolates
+    \item Support of code sharing
   \end{itemize}
-
-  Dart provides a homogeneous system that encompass both client as well as server as the Dart VM (Virtual Machine) can be embedded in browsers. A version of Chromium – ’Dartium’ already has Dart VM built into it.
 
   \subsection{Advantages of Dart}
-  * Translates to JavaScript so that the code can be run in the web-browsers that do not have Dart VM yet
-  * Currently in 20th position in most popular programming languages
-  * Optionally typed language
-
-  \subsubsection{Important Concepts}
   \begin{itemize}
-  \item Everything you can place in a variable is an object, and every object is an instance of a class. Even numbers, functions, and null are objects. All objects inherit from the Object class.
-  \item Specifying static types (such as num in the preceding example) clarifies your intent and enables static checking by tools, but it’s optional. (You might notice when you’re debugging your code that variables with no specified type get a special type: dynamic.)
-  \item Dart parses all your code before running it. You can provide tips to Dart—for example, by using types or compile-time constants—to catch errors or help your code run faster.
-  \item Dart supports top-level functions (such as main()), as well as functions tied to a class or object (static and instance methods, respectively). You can also create functions within functions (nested or local functions).
-  \item Similarly, Dart supports top-level variables, as well as variables tied to a class or object (static and instance variables). Instance variables are sometimes known as fields or properties.
-  \item Unlike Java, Dart doesn’t have the keywords public, protected, and private. If an identifier starts with an underscore (\textunderscore), it’s private to its library.
-  \end{itemize}
-
-  \subsection{Dart and JavaScript}
-  Dart is a web programming language developed by Google. It is a fairly new language and competes with JavaScript. The code written in Dart can also be translated, using a tool – ’dart2js’, to JavaScript code so that it can run in any modern browser. Furthermore, Dart allows developers to code in a uniform way for both server as well as client since Dart Virtual Machine (VM) can be embedded in browsers. A variant of Chromium — Dartium browser has an embedded Dart VM.
-
-  \subsection{Asynchronous Programming in Dart}
-  Asynchronous programming often uses callback functions, but Dart provides alternatives: Future and Stream objects. A Future is like a promise for a result to be provided sometime in the future. A Stream is a way to get a sequence of values, such as events. Future, Stream, and more are in the dart:async library.
-  The dart:async library works in both web apps and command-line apps
-
-
-  \subsection{Asynchronous Message Sending}
-  Messages are the sole means of communication among isolates. Messages are sent by invoking specific methods in the Dart libraries; there is no specific syntax for sending a message.
-  In other words, the methods supporting sending messages embody primitives of Dart that are not accessible to ordinary code, much like the methods that spawn isolates.
-  \subsection{Isolates}~\parencite{dartEcma}
-  \label{sec:isolates}
-  Dart code is always single threaded. There is no shared-state concurrency in Dart. Concurrency is supported via actor-like entities called isolates.
-  An isolate is a unit of concurrency. It has its own memory and its own thread of control. Isolates communicate by message passing. No state is ever shared between isolates. Isolates are created by spawning.
-  Spawning an isolate is accomplished via what is syntactically an ordinary library call, invoking one of the functions 'spawnUri()' or 'spawnFunction()' defined in the 'dart:isolate' library. However, such calls have the semantic effect of creating a new isolate with its own memory and thread of control.
-  The newly spawned isolate shares the same code as the spawner isolate. \cite{dartApiIsolate}
-  An isolate’s memory is finite, as is the space available to its thread’s call stack. It is possible for a running isolate to exhaust its memory or stack, resulting in a run-time error that cannot be effectively caught, which will force the isolate to be suspended.
-  These peculiar characteristics of isolates make them closer to ideal actors of Hewitt’s actor model, however the hidden message passing system takes them farther from being ideal actors.In Dart, when an isolate is spawned, usually the initial message contains a sending port, so that spawner and "spawnee" can communicate with each other. The "spawnee" can later use the same port to reply to the spawner. An isolate can spawn another isolate which can further spawn other isolates and have control over them. Thus, the spawner can supervise the "spawnee". The spawner can pause the "spawnee" or terminate it.
-
-  Modern web browsers, even on mobile platforms, run on multi-core CPUs. To take advantage of all those cores, developers traditionally use shared-memory threads running concurrently. However, shared-state concurrency is error prone and can lead to complicated code.
-  Instead of threads, all Dart code runs inside of isolates. Each isolate has its own memory heap, ensuring that no isolate’s state is accessible from any other isolate. ~\parencite{laddWalrath}
-
-  \subsubsection{Spawning an Isolate}
-  * Using top level function -> Isolate.spawn
-  * Using URI and spawn from file -> Isolate.spawnUri()
-    -> Really cool feature
-
-  \subsubsection{SendPort of Isolate}
-  \subsubsection{ReceivePort of Isolate}
-  \subsubsection{Communication Between Two Isolates}
-  TODO: A Sample Code with Isolates
-
-  \subsubsection{Limitations of Isolates}
-  Although the communication between Isolates takes place exclusively by asynchronous message passing, which perfectly suits for distributed systems. There is no possibility of communication with isolate spawned in another dart virtual machine. A message exchange between two isolates is possible only if the isolates are spawned locally in the same dart virtual machine. Thus, a hindrance in making them distributed.
-
-  \subsubsection{Difference from Actor}
-Although, not having shared state, and making message-passing as the only way to communicate between isolates, the Dart isolates differ from actors in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but spawning isolates in Dart takes significant amount of time and resource. The implementation of actor which are found in other languages like Erlang and Akka framework can be considered much closer to Hewitt's actor model. The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions[citation needed!] where as in dart it only reaches up to few hundred [100?]. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an Isolate in Dart is \textemdash{} similar to a thread with properties like an actor.
-
-\section{RabbitMQ - A Message Broker System}
-RabbitMQ is a messaging broker that serves as an intermediary for messaging. It gives your applications a common platform to send and receive messages, and your messages a safe place to live until received.\url{http://www.pivotal.io/products/pivotal-rabbitmq}
-A message broker is an intermediary program that translates a message from the formal messaging protocol of the sender to the formal messaging protocol of the receiver. \url{http://whatis.techtarget.com/definition/message-broker}
-Messaging enables software applications to connect and scale. Applications can connect to each other, as components of a larger application, or to user devices and data. Messaging is asynchronous, decoupling applications by separating sending and receiving data. In RabbitMQ, messages are routed through exchanges before arriving at queues. RabbitMQ features several built-in exchange types for typical routing logic.\cite{rabbitmqFeatures}
-\begin{itemize}
-  \item Several RabbitMQ servers on a local network can be clustered together, forming a single logical broker.
-  \item Queues can be mirrored across several machines in a cluster, ensuring that even in the event of hardware failure the messages are safe.
-  \item RabbitMQ can transmit messages over HTTP in different ways, one of them is by using WebSockets.
+    \item Translates to JavaScript so that the code can be run in the web-browsers that do not have Dart VM yet
+    \item Currently in 20th position in most popular programming languages
+    \item Optionally typed language
 \end{itemize}
 
-RabbitMQ support several protocols for enqueuing and dequeuing messages:
+  \subsection{Dart and JavaScript}
+  Codes written in Dart can be translated to JavaScript using a tool – ‘dart2js’. The ‘dart2js’ is bundled with the Dart SDK. As the popular web browsers like Mozilla Firefox, Google Chrome, Safari do not have Dart Virtual Machine embedded, the ability to translate source code from Dart to JavaScript lets the dart programs run in any modern browser without needing to manually port it to JavaScript.
+
+  \subsection{Asynchronous Programming in Dart}
+  Most programming languages use callback functions for asynchronous programming. Dart provides some additional alternatives along with callback functions \textendash Future and Stream objects. A ‘Future’ is a promise for a result which will be returned after arbitrary amount of time. A ‘Stream’ is a way to get a sequence of values, such as events, data from ports etc.
+
+  \subsection{Isolates}
+  \label{sec:isolates}
+  Although Dart programs are single threaded, concurrency is supported via actor-like entities called isolates. An isolate has its own memory and own thread of control. Message passing is the sole way to communicate between isolates. No state is ever shared between isolates. Isolates are created by spawning~\cite{dartEcma}.
+
+  An isolate has its own heap memory different from the main isolate (the top level isolate). It is possible for the child isolate to throw exceptions and errors such as by exhausting its memory. If the exceptions are not handled properly, it forces the isolate to be shutdown.
+
+  In Dart, when an isolate is spawned, usually the initial message contains a sending port, so that spawner and “spawnee” can communicate with each other. The “spawnee” can later use the same port to reply to the spawner. An isolate can spawn another isolate which can further spawn other isolates and have control over them. Thus, the spawner can supervise the “spawnee”. The spawner can pause the “spawnee” or terminate it~\cite{dartApiIsolate}.
+
+  Modern web browsers, even on mobile platforms, run on multi-core CPUs. To take advantage of all those cores, developers traditionally use shared-memory threads running concurrently. However, shared-state concurrency is error prone and can lead to complicated code.
+  Instead of threads, all Dart code runs inside of isolates. Each isolate has its own memory heap, ensuring that no isolate’s state is accessible from any other isolate~\parencite{laddWalrath}.
+
+  \subsubsection{Spawning an Isolate}
+    There are two ways to spawn an isolate: using \emph{Isolate.spawnUri()} or using \emph{Isolate.spawn()}. The \emph{Isolate.spawn()} uses top level function to spawn an isolate. The top level function may reside in the same class or may belong to another class. The \emph{Isolate.spawnUri()} spawns an isolate using the source code of a file from given location. The location can be a remote http/https URI or a path to source file in local disk. To spawn an isolate using \emph{Isolate.spawnUri()}, the source file must have an entry point function \emph{main()}.
+    The newly spawned isolate shares the same code as the spawner isolate\cite{dartApiIsolate}.
+
+  \subsubsection{Communication Between Two Isolates}
+  After an isolate is spawned, it is recommended to send its SendPort to the spawner isolate so that the “spawner” and “spawnee” can communicate via message passing. SendPort and ReceivePort are used by the isolates to communicate with each other. The sender isolate uses the SendPort of the ReceivePort of the target isolate to send a message.
+
+  The example in \autoref{lst:isolateSample} shows how an isolate is spawned using \emph{spawnUri()} and how to perform basic communications between two isolates in Dart. As shown in this example, the message sending is performed after the SendPorts are exchanged between the isolates.
+
+\begin{lstlisting}[caption=A simple example of isolate communication in dart, label=lst:isolateSample]
+
+  //sample.dart
+  import 'dart:isolate';
+
+  main(var args, SendPort sendPort) {
+    ReceivePort receivePort = new ReceivePort();
+    SendPort sendport;
+    sendPort.send(receivePort.sendPort);
+
+    receivePort.listen((var message) {
+      if(message is SendPort) {
+        sendPort = message;
+      } else if(message is String) {
+        print("Received: $message");
+      } else {
+        sendPort.send("Unknown Message");
+      }
+    });
+  }
+
+  //app.dart
+  import 'dart:isolate';
+
+  main() {
+    ReceivePort receivePort = new ReceivePort();
+    SendPort sendPort;  Isolate.spawnUri(Uri.parse("sample.dart"),null,receivePort.sendPort); // Spawns an isolate from sample.dart file
+
+    receivePort.listen((var message) {
+      if(message is SendPort){
+        sendPort = message;
+        sendPort.send(receivePort.sendPort);
+        sendPort.send("Hello");
+        sendPort.send(["a", "list", "datatype"]);
+      } else if(message is String) {
+        print("Reply: $message");
+      }
+    });
+  }
+\end{lstlisting}
+
+  \subsubsection{Difference from Actor}
+  Although, Dart isolates have not shared state and use message-passing as the only means of communication between two isolates, the isolates differ from actors~\autoref{actorProgramming} in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but spawning isolates in Dart takes significant amount of time and resource. The implementation of actor found in other languages like Erlang~[\autoref{sec:erlang}] and Akka toolkit~[\autoref{sec:akka}] can be considered much closer to Hewitt's actor model.
+
+  The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions~\cite{akkaHome} whereas, isolate in dart takes up around 5 to 7 MegaBytes\footnote{Based on the memory consumption by the isolates from \autoref{lst:isolateSample}} of memeory, the number of isolates per GigaByte of heap can only reache up to few hundreds. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an isolate in Dart is \textemdash{} similar to a threads with properties like an actor.
+
+  \subsubsection{Limitations of Isolates}
+  Even though communication between two isolates takes place exclusively by asynchronous message passing, which perfectly suits for distributed systems, there is no implementation of communication with isolate spawned in another Dart virtual machine. A message exchange between two isolates via SendPort/ReceivePort is possible only if the isolates are spawned locally in the same Dart virtual machine. Thus, a hindrance in making them distributed.
+
+\section{RabbitMQ - A Message Broker System}
+  RabbitMQ is an open-source simple message broker software that implements Advanced Message Queuing Protocol(AMQP). It serves as an intermediary for messaging for applications or components of an application so that they can connect with each other, while keeping them loosely coupled. It give applications a common platform to send and receive messages, and keeps the messages until received.~\cite{rabbitmqFeatures}
+
+  Messaging enables software applications to connect and scale. Applications can connect to each other, as components of a larger application, or to user devices and data. Messaging is asynchronous, decoupling applications by separating sending and receiving data. In RabbitMQ, messages are routed through exchanges before arriving at queues. RabbitMQ features several built-in exchange types for typical routing logic.~\cite{rabbitmqFeatures}
+
+  RabbitMQ allows several servers of a local network to form a cluster. The cluster forms a single logical broker and queues are mirrored across several machines, which means the applications that uses it may connect to any of the servers that belong to the cluster.~\cite{rabbitmqFeatures}
+
+RabbitMQ supports several protocols for enqueuing and dequeuing messages:
 \begin{itemize}
-  \item AMQP (Several versions)
-  Stands for Advanced Message Queuing Protocol. Designed as an open replacement for existing proprietary messaging middleware. Two of the most important reasons to use AMQP are reliability and interoperability. As the name implies, it provides a wide range of features related to messaging, including reliable queuing, topic-based publish-and-subscribe messaging, flexible routing, transactions, and security. AMQP exchanges route messages directly—in fanout form, by topic, and also based on headers.\cite{andyPiperVmware}
+  \item AMQP (Several versions)\\
+  The Advanced Message Queuing Protocol (AMQP) was designed to provide reliability and interoperability. It provides messaging, including reliable queuing, topic-based publish-and-subscribe messaging, flexible routing, transactions, and security. AMQP exchanges route messages based on topic and headers.\cite{andyPiperVmware}
+  Despite the fact that there are many different language implementations\footnote{Python, Java, Ruby, PHP, C#, Erlang etc.~\cite{rabbitmqGetstarted}} and examples for using AMQP in RabbitMQ, it is still not available for the Dart language.
 
-  There’s a lot of fine-grained control possible with such a rich feature set. You can restrict access to queues, manage their depth, and more. Features like message properties, annotations and headers make it a good fit for a wide range of enterprise applications. This protocol was designed for reliability at the many large companies who depend on messaging to integrate applications and move data around their organization. In the case of RabbitMQ, there are many different language implementations and great samples available, making it a good choice for building large scale, reliable, resilient, or clustered messaging infrastructures.
+  \item STOMP\\
+  STOMP~[\autoref{sec:stomp}] is a text-based messaging protocol emphasizing (protocol) simplicity. More about STOMP is discussed in \autoref{sec:stomp}
 
-  \item STOMP~\ref{sec:stomp}
-  STOMP is a text-based messaging protocol emphasizing (protocol) simplicity. It defines little in the way of messaging semantics, but is easy to implement and very easy to implement partially (it's the only protocol that can be used by hand over telnet).
+  RabbitMQ supports STOMP via a plugin \textendash{} ‘rabbitmq\textunderscore{}stomp’.
 
-  RabbitMQ supports STOMP (all current versions) via a plugin.
-  \item MQTT
-  (Message Queue Telemetry Transport) was originally developed out of IBM’s pervasive computing team and their work with partners in the industrial sector. Over the past couple of years the protocol has been moved into the open source community, seen significant growth in popularity as mobile applications have taken off, and it is in the process of moving into the hands of a standards body.
-
-  The design principles and aims of MQTT are much more simple and focused than those of AMQP—it provides publish-and-subscribe messaging (no queues, in spite of the name) and was specifically designed for resource-constrained devices and low bandwidth, high latency networks such as dial up lines and satellite links, for example. Basically, it can be used effectively in embedded systems. \cite{andyPiperVmware}
-
-  MQTT is a binary protocol emphasizing lightweight publish / subscribe messaging, targetted towards clients in constrained devices. It has well defined messaging semantics for publish / subscribe, but not for other messaging idioms.
-
+  \item MQTT\\
+  (Message Queue Telemetry Transport) was originally developed out of IBM’s pervasive computing team and their work with partners in the industrial sector. It provides lightweight publish-and-subscribe messaging (no queues), targeted for resource devices with low resources. Hence, the design principles and aims of MQTT are simpler and more focused than those of AMQP.~\cite{andyPiperVmware}
 
   RabbitMQ supports MQTT 3.1 via a plugin.
-  \item HTTP
-  HTTP is of course not a messaging protocol. However, RabbitMQ can transmit messages over HTTP in three ways:
+  \item HTTP\\
+  It is obvious that HTTP is not a messaging protocol. Nevertheless, with the help of the listed methods that use HTTP as their substructure, RabbitMQ can transmit messages over HTTP.
 
   \begin{description}
     \item[Management Plugin] The management plugin supports a simple HTTP API to send and receive messages. This is primarily intended for diagnostic purposes but can be used for low volume messaging without reliable delivery.
