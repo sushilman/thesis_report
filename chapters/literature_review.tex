@@ -371,7 +371,7 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
 \begin{itemize}
   \item AMQP (Several versions)\\
   The Advanced Message Queuing Protocol (AMQP) was designed to provide reliability and interoperability. It provides messaging, including reliable queuing, topic-based publish-and-subscribe messaging, flexible routing, transactions, and security. AMQP exchanges route messages based on topic and headers.\cite{andyPiperVmware}
-  Despite the fact that there are many different language implementations\footnote{Python, Java, Ruby, PHP, C#, Erlang etc.~\cite{rabbitmqGetstarted}} and examples for using AMQP in RabbitMQ, it is still not available for the Dart language.
+  Despite the fact that there are many different language implementations\footnote{Python, Java, Ruby, PHP, C\#, Erlang etc.~\cite{rabbitmqGetstarted}} and examples for using AMQP in RabbitMQ, it is still not available for the Dart language.
 
   \item STOMP\\
   STOMP~[\autoref{sec:stomp}] is a text-based messaging protocol emphasizing (protocol) simplicity. More about STOMP is discussed in \autoref{sec:stomp}
@@ -386,7 +386,7 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
   It is obvious that HTTP is not a messaging protocol. Nevertheless, with the help of the listed methods that use HTTP as their substructure, RabbitMQ can transmit messages over HTTP.
 
   \begin{description}
-    \item[Management Plugin] The management plugin supports a simple HTTP API to send and receive messages. This is primarily intended for diagnostic purposes but can be used for low volume messaging without reliable delivery.
+    \item[Management Plugin] It supports a simple HTTP API to send and receive messages. This is primarily intended for diagnostic purposes but can be used for low volume messaging without reliable delivery.
     \item [Web-STOMP Plugin] The Web-STOMP plugin supports STOMP messaging to the browser, using WebSockets or one of the fallback mechanisms supported by SockJS.
     \item [JSON-RPC channel Plugin] The JSON-RPC channel plugin supports AMQP 0-9-1 messaging over JSON-RPC to the browser. Note that since JSON RPC is a synchronous protocol, some parts of AMQP that depend on asynchronous delivery to the client are emulated by polling.
   \end{description}

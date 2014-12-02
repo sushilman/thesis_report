@@ -518,7 +518,7 @@ A message is serialized to JSON string before sending via a SendPort of an isola
 
     When a Worker isolate finishes processing queued messages and encounters the KILL message, the isolate closes its ReceivePort\footnote{A Worker Isolate receives message from Router via a ReceivePort} and stays idle. After sometime it gets ‘Garbage Collected’ and is cleaned up. But, sometimes the garbage collector cannot clean up the isolate and the memory leak occurs. Thus, as a workaround for this, a custom Exception is thrown deliberately by the isolate to terminate itself. The exception is thrown only after it closes all the ports. This workaround forcefully terminates the isolate and releases the memory occupied by the isolate.
 
-    The framework provides \emph{beforeKill()} method, which can be overridden to perform custom operations before terminating an isolate.
+    The abstract Worker class provides \emph{beforeKill()} method, which can be overridden to perform custom operations before terminating an isolate.
 
     \item How RESTART works?\\
     Restarting an isolate is basically a combined process of killing an isolate and spawning it up again. However, during the restart, after issuing the KILL message, the messages may keep coming from the controller to the router. These messages are buffered in the router itself. The buffered messages are flushed and sent out once the Worker isolates are spawned. For instance, when the ‘Hot Deployment’\autoref{subsec:hotDeployment} feature is enabled, if the source code of the isolate is modified and saved, the each of the isolates that the router has spawned gets restarted. During which the messages that arrive after RESTART message are buffered in the router.
