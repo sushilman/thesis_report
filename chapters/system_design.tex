@@ -318,7 +318,7 @@ Since, in Dart\footnote{Dart version 1.7.2} the passing of sockets to isolates i
 
   If a dequeuer is idle for too long, i.e. if the Dequeuer isolate has not received any dequeue requests for certain interval\footnote{by default the timeout is 10 seconds}, then the MQS terminates the dequeuer isolate for that particular queue. Nevertheless, as soon as the MQS receives a dequeue request, it spawns a new Dequeuer, if one does not exist yet.
 
-  The dequeuer subscribes messages from Message Broker System with such options that the new messages do not arrive to the subscriber unless previously dequeued messages have been acknowledged. This throttles the flow of messages from message broker system and keeps itself and the isolates from being overwhelmed by large number of messages, which might induce ‘out of memory’ issues.
+  The dequeuer subscribes messages from Message Broker System with such options that the new messages do not arrive to the subscriber unless previously dequeued messages have been acknowledged. This throttles the flow of messages from message broker system and keeps itself and the isolates from being overwhelmed by a large number of messages, which might induce ‘out of memory’ issues.
 
   Messages in dequeuer keeps on arriving as long as there are messages in the queue and the messages are being acknowledged. The messages that are in the buffer of dequeuer stay in unacknowledged state unless they are flushed and sent out to the requesting isolate of an isolate system. As soon as a message is acknowledged the dequeuer receives another message from the message broker.
 
