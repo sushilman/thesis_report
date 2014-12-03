@@ -150,7 +150,7 @@ greeter.tell(new Greeting("Charlie Parker"), ActorRef.noSender());
   \subsection{Message Passing in Akka}
   In Akka, every actor has an event driven message inbox known as the ‘mailbox’. The mailbox buffers all the incoming messages until they are processed. When a message is sent from one actor to the other, the reference to the sender (an ActorRef), is automatically added to the message by default. Thus, during the message processing the recipient actor has a reference to the sender actor through the \emph{sender} method.~\cite{akkaJavaDoc}
 
-  Akka guarantees the order of direct message delivery between two actors. It is only applicable when the mailbox implementation in receiver is FIFO mailbox and the communication takes place only between the two actors without the involvement of intermediatory actors. For instance, if an actor A1 sends messages M1, M2 and M3 to actor A2. The message M1 will be delivered before M2 and the message M2 before M3. Meanwhile if another actor A3 sends messages M4, M5 and M6 to A2 at the same time, the order of message delivery of M4, M5 and M6 will also be sequential. Nevertheless, there is no guarantee that the messages sent by A1 is delivered before the messages from A3; even if all of the messages from A1 were sent before A3 started sending messages to A1. Provided that the message sending from A1 and A3 are independent of each other. ~\cite{akkaJavaDoc}
+  Akka guarantees the order of direct message delivery between two actors. It is only applicable when the mailbox implementation in receiver is FIFO mailbox and the communication takes place only between the two actors without the involvement of intermediatory actors. For instance, if an actor A1 sends messages M1, M2 and M3 to actor A2. The message M1 will be delivered before M2 and the message M2 before M3. Meanwhile, if another actor A3 sends messages M4, M5 and M6 to A2 at the same time, the order of message delivery of M4, M5 and M6 will also be sequential. Nevertheless, there is no guarantee that the messages sent by A1 is delivered before the messages from A3; even if all of the messages from A1 were sent before A3 started sending messages to A2. Provided that the message sending from A1 and A3 are independent of each other. ~\cite{akkaJavaDoc}
 
   The Akka's documentation for Java, the rules mentioned for message sending are: \cite{akkaJavaDoc}
   \begin{itemize}
@@ -361,6 +361,7 @@ Some of its important features are:
   Even though communication between two isolates takes place exclusively by asynchronous message passing, which perfectly suits for distributed systems, there is no implementation of communication with isolate spawned in another Dart virtual machine. A message exchange between two isolates via SendPort/ReceivePort is possible only if the isolates are spawned locally in the same Dart virtual machine. Thus, a hindrance in making them distributed.
 
 \section{RabbitMQ - A Message Broker System}
+\label{sec:rabbitmq}
   RabbitMQ is an open-source simple message broker software that implements Advanced Message Queuing Protocol(AMQP). It serves as an intermediary for messaging for applications or components of an application so that they can connect with each other, while keeping them loosely coupled. It give applications a common platform to send and receive messages, and keeps the messages until received.~\cite{rabbitmqFeatures}
 
   Messaging enables software applications to connect and scale. Applications can connect to each other, as components of a larger application, or to user devices and data. Messaging is asynchronous, decoupling applications by separating sending and receiving data. In RabbitMQ, messages are routed through exchanges before arriving at queues. RabbitMQ features several built-in exchange types for typical routing logic.~\cite{rabbitmqFeatures}
@@ -374,130 +375,72 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
   Despite the fact that there are many different language implementations\footnote{Python, Java, Ruby, PHP, C\#, Erlang etc.~\cite{rabbitmqGetstarted}} and examples for using AMQP in RabbitMQ, it is still not available for the Dart language.
 
   \item STOMP\\
-  STOMP~[\autoref{sec:stomp}] is a text-based messaging protocol emphasizing (protocol) simplicity. More about STOMP is discussed in \autoref{sec:stomp}
+  STOMP~[\autoref{sec:stomp}] is a text-based messaging protocol emphasizing simplicity. More about STOMP is discussed in \autoref{sec:stomp}.
 
   RabbitMQ supports STOMP via a plugin \textendash{} ‘rabbitmq\textunderscore{}stomp’.
 
   \item MQTT\\
-  (Message Queue Telemetry Transport) was originally developed out of IBM’s pervasive computing team and their work with partners in the industrial sector. It provides lightweight publish-and-subscribe messaging (no queues), targeted for resource devices with low resources. Hence, the design principles and aims of MQTT are simpler and more focused than those of AMQP.~\cite{andyPiperVmware}
+  (Message Queue Telemetry Transport) was developed by IBM. It provides lightweight publish-and-subscribe messaging, targeted for resource devices with low resources and limited network bandwidth. Hence, the design principles and aims of MQTT are simpler and more focused than those of AMQP.~\cite{andyPiperVmware}
 
   RabbitMQ supports MQTT 3.1 via a plugin.
   \item HTTP\\
-  It is obvious that HTTP is not a messaging protocol. Nevertheless, with the help of the listed methods that use HTTP as their substructure, RabbitMQ can transmit messages over HTTP.
+  It is obvious that HTTP is not a messaging protocol. Nevertheless, with the help of the listed technologies, that use HTTP as their substructure, RabbitMQ can transmit messages over HTTP. ~\cite{rabbitmqProtocols}
 
   \begin{description}
-    \item[Management Plugin] It supports a simple HTTP API to send and receive messages. This is primarily intended for diagnostic purposes but can be used for low volume messaging without reliable delivery.
-    \item [Web-STOMP Plugin] The Web-STOMP plugin supports STOMP messaging to the browser, using WebSockets or one of the fallback mechanisms supported by SockJS.
-    \item [JSON-RPC channel Plugin] The JSON-RPC channel plugin supports AMQP 0-9-1 messaging over JSON-RPC to the browser. Note that since JSON RPC is a synchronous protocol, some parts of AMQP that depend on asynchronous delivery to the client are emulated by polling.
+    \item{Management Plugin}\\
+    It supports a simple HTTP API to send and receive messages. This is primarily intended for diagnostic purposes but can be used for low volume messaging without reliable delivery.
+    \item{Web-STOMP Plugin}\\
+    The plugin supports STOMP messaging to the browser using WebSockets. For the older browsers that do not have support for WebSockets, fallback mechanisms provided by SockJS\footnote{SockJS is a JavaScript library that emulates WebSocket in browsers} is used.
+    \item{JSON-RPC channel Plugin}\\
+    This plugin support AMQP 0-9-1 messaging over JSON-RPC\footnote{JSON-RPC is JSON encoded Remote Procedure Call protocol}. It is a synchronous protocol, thus the asynchronous delivery property of AMQP is emulated by polling.
   \end{description}
 \end{itemize}
-  \subsection{Message Queues in RabbitMQ}
-  What is a queue?
-  How are they enqueued?
-  How are they dequeued?
 
-  If the queue receives messages at a faster rate than it can pump out to consumers then things get slower. As the queue grows, it will require more memory. Additionally, if a queue receives a spike of publications, then the queue must spend time dealing with those publications, which takes CPU time away from sending existing messages out to consumers: a queue of a million messages will be able to be drained out to ready consumers at a much higher rate if there are no publications arriving at the queue to distract it. Not exactly rocket science, but worth remembering that publications arriving at a queue can reduce the rate at which the queue drives its consumers.\cite{sizingYourRabbits}
+  \subsection{Message Queues in RabbitMQ}
+  In RabbitMQ, a queue is a mailbox name, where the messages are stored. It can buffer large quantity of messages bounded only by the available resources of the machine.
+
+  RabbitMQ receives messages from a client via one of protocols described in [\autoref{rabbitmq}]. The client specifies the name of the queue, while sending the message, where the message should be enqueued. Meanwhile, the subscribing client of the queue receives a message either as soon as the message is available in the queue, or when the client sends request for dequeue, or only after acknowledging previously dequeued message. This depends upon the parameters used during subscription to the queue.
+
+  If inflow of messages in a queue is faster compared to the outflow of the messages to its subscribers, both enqueuing as well as dequeuing gets slower. Since, the messages are buffered into memory, as the quantity of messages increases, the consumption of the memory also increases. Besides, if there is a sudden increase in the inflow of messages, the incoming messages take more CPU time which results in the overall decrease of outflow of messages to consumers~\cite{sizingYourRabbits}.
 
   \subsection{RabbitMQ and prefetch-count}
   \label{sec:rabbitmq}
-  The default QoS prefetch setting gives clients an unlimited buffer, and that can result in poor behavior and performance. But what should you set the QoS prefetch buffer size to? The goal is to keep the consumers saturated with work, but to minimize the client's buffer size so that more messages stay in RabbitMQ's queue and are thus available for new consumers or to just be sent out to consumers as they become free.
+  The prefetch-count Quality of Service (QoS) setting in RabbitMQ by default is set to unlimited. Which means, the RabbitMQ empties the queue as fast as possible to the consumer. Setting the prefetch-count to unlimited might result in ‘out of memory’ or ‘stack overflow’ errors in the consumers. Again, setting the prefetch-count too low can hamper the performance of the whole application while setting it too high can cause the ‘out of memory’ exceptions. Hence, based on the requirement and design of the consumer application, appropriate prefetch-count should be dertermined.
 
-AMQP defaults to sending all the messages it can to any consumer that looks ready to accept them. The maximum number of these unacknowledged messages per channel can be limited by setting the prefetch count. However, small prefetch counts can hurt performance. Here is the result of a benchmark \footnote{posted by Simon MacMullen on April 25th, 2012 at 2:47 pm} which shows how the throughput of a queue varies when prefetch count is changed when there are different number of consumers.
+  The \autoref{fig:rabbitmqBenchmark} is the result of a benchmark\footnote{posted by Simon MacMullen on April 25th, 2012 at 2:47 pm} that shows how the throughput of a queue varies when prefetch count is changed for different number of consumers.
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/rabbitmqPrefetch}
   \caption[Chart showing performance variation when prefetch count is changed in the consumer]{Chart showing performance variation when prefetch count is changed in the consumer\footnotemark}
+  \label{fig:rabbitmqBenchmark}
 \end{figure}
 \footnotetext{\fullcite{rabbitmqPerformance}}
 
 \section{STOMP}
 \label{sec:stomp}
-STOMP is the Simple (or Streaming) Text Orientated Messaging Protocol.
-STOMP provides an interoperable wire format so that STOMP clients can communicate with any STOMP message broker to provide easy and widespread messaging interoperability among many languages, platforms and brokers. ~\parencite{stomp}
-STOMP is a simple interoperable protocol designed for asynchronous message passing between clients via mediating servers. It defines a text based wire-format for messages passed between these clients and servers.
-It is an alternative to other open messaging protocols such as AMQP and implementation specific wire protocols used in JMS brokers such as OpenWire. It distinguishes itself by covering a small subset of commonly used messaging operations rather than providing a comprehensive messaging API.
-The main philosophies driving the design of STOMP are simplicity and interoperability.
-STOMP is designed to be a lightweight protocol that is easy to implement both on the client and server side in a wide range of languages. This implies, in particular, that there are not many constraints on the architecture of servers and many features such as destination naming and reliability semantics are implementation specific.
+  STOMP stands for Simple (or Streaming) Text Orientated Messaging Protocol. It is an alternative to other open messaging protocols such as AMQP. It provides an interoperable format for STOMP clients to communicate with a message broker system that supports STOMP. It provides interoperability among different languages, platforms and brokers.~\cite{stomp}
+  STOMP is designed to be a lightweight protocol that is easy to implement in both client and server.
   \subsection{Protocol Overview}
-STOMP is a frame based protocol, with frames modeled on HTTP. A frame consists of a command, a set of optional headers and an optional body. STOMP is text based but also allows for the transmission of binary messages. The default encoding for STOMP is UTF-8, but it supports the specification of alternative encodings for message bodies.
-A STOMP server is modeled as a set of destinations to which messages can be sent. The STOMP protocol treats destinations as opaque string and their syntax is server implementation specific. Additionally STOMP does not define what the delivery semantics of destinations should be. The delivery, or “message exchange”, semantics of destinations can vary from server to server and even from destination to destination. This allows servers to be creative with the semantics that they can support with STOMP.
-STOMP does not, however, deal in queues and topics—it uses a SEND semantic with a “destination” string. The broker must map onto something that it understands internally such as a topic, queue, or exchange. Consumers then SUBSCRIBE to those destinations. Since those destinations are not mandated in the specification, different brokers may support different flavors of destination. So, it’s not always straightforward to port code between brokers. \cite{andyPiperVmware}
-
-A STOMP client is a user-agent which can act in two (possibly simultaneous) modes:
-\begin{itemize}
-  \item as a producer, sending messages to a destination on the server via a SEND frame
-  \item as a consumer, sending a SUBSCRIBE frame for a given destination and receiving messages from the server as MESSAGE frames.
-\end{itemize}
+  STOMP is a frame based protocol. A frame consists of a command, a set of optional headers and an optional body. STOMP is text based but it allows the transmission of binary messages~\cite{stomp}.
+  A STOMP client can either be producer or consumer. As a producer  a message can be sent to a destination to server using SEND frame. Meanwhile, as a consumer, SUBSCRIBE frame should be sent for subscription of a message for a given destination. Then, the messages are received as MESSAGE frames.
 
   \subsection{STOMP Library for Dart}
-  Given that dart is fairly new language, it does not yet have AMPQ client that can be used with RabbitMQ. As mentioned above in section~\ref{sec:rabbitmq} RabbitMQ also supports STOMP Protocol. An open source STOMP client in dart is available which was created by ‘Potix corporation’. It can perform most of the basic with a message broker system like connecting, creating queue, subscribing, enqueuing as well as dequeuing. Although it has those basic functionalities, it still has some limitations and incompleteness like lack of support of ‘Heartbeat’, only support STOMP version 1.2 or above.
+  \label{subsec:stompForDart}
+  Given that dart is a fairly new language, there is no AMQP client for RabbitMQ yet. As mentioned above in section~\ref{sec:rabbitmq} RabbitMQ also supports STOMP. An open source STOMP client\footnote{https://github.com/rikulo/stomp} in dart is available created by ‘Potix corporation’. It can perform most of the basic operations with message broker system like connecting, creating queue, subscribing, enqueuing and dequeuing. Although it has those basic functionalities, it still has some limitations and incompleteness like lack of support of ‘Heartbeat’ and it only supports STOMP version 1.2 or above.
 
-\section{WebSockets}
-The WebSocket Protocol enables two-way communication between a client running untrusted code in a controlled environment to a remote host that has opted-in to communications from that code.  The security model used for this is the origin-based security model commonly used by web browsers.  The protocol consists of an opening handshake followed by basic message framing, layered over TCP. The goal of this technology is to provide a mechanism for browser-based applications that need two-way communication with servers that does not rely on opening multiple HTTP connections (e.g., using XMLHttpRequest or <iframe>s and long polling).~\parencite{rfc6455}
-The WebSocket Protocol provides a single TCP connection for traffic in both directions. Combined with the WebSocket API [WSAPI], it provides an alternative to HTTP polling for two-way communication from a web page to a remote server. It can be used for variety of web applications: games, stock tickers, multiuser applications with simultaneous editing, user interfaces exposing server-side services in real time, etc.
 
-The WebSocket Protocol is designed to supersede existing bidirectional communication technologies that use HTTP as a transport layer to benefit from existing infrastructure (proxies, filtering, authentication). Such technologies were implemented as trade-offs between efficiency and reliability because HTTP was not initially meant to be used for bidirectional communication.
+\section{WebSocket}
+  WebSocket protocol enables two-way communication between client and server over a single TCP connection. It uses origin-based security model, which is found in web browsers. It can be used for variety of web applications: games, stock tickers, multiuser applications, user interfaces exposing server-side services in real time, etc.~\cite{rfc6455}
+
+  Since, HTTP was not initially designed for bidirectional communication, the WebSocket Protocol is designed to displace other existing bidirectional communication technologies that are based on HTTP~\cite{rfc6455}.
+
+  WebSocket uses two URI schemes: “ws://” for normal WebSocket connection and “wss://” for secured WebSocket connection~\cite{rfc6455}.
 
 \subsection{Security}
-The WebSocket Protocol uses the origin model used by web browsers to
-restrict which web pages can contact a WebSocket server when the
-WebSocket Protocol is used from a web page.  Naturally, when the
-WebSocket Protocol is used by a dedicated client directly (i.e., not
-from a web page through a web browser), the origin model is not
-useful, as the client can provide any arbitrary origin string.
-It is similarly intended to fail to establish a connection when data
-from other protocols, especially HTTP, is sent to a WebSocket server,
-for example, as might happen if an HTML "form" were submitted to a
-WebSocket server.  This is primarily achieved by requiring that the
-server prove that it read the handshake, which it can only do if the
-handshake contains the appropriate parts, which can only be sent by a
-WebSocket client.  In particular, at the time of writing of this
-specification, fields starting with |Sec-| cannot be set by an
-attacker from a web browser using only HTML and JavaScript APIs such
-as XMLHttpRequest [XMLHttpRequest].
+  The WebSocket Protocol uses the origin model used by web browsers to restrict which web pages can contact a WebSocket server when the WebSocket Protocol is used from a web page~\cite{rfc6455}.
+
+   A WebSocket server reads the handshake sent by client to establish a connection. Thus, an attempt to connection to WebSocket from other protocols cannot succeed if it is not sent by a WebSocket client.~\cite{rfc6455}
 
 \subsection{Establishing a Connection}
-When a connection is to be made to a port that is shared by an HTTP
-server (a situation that is quite likely to occur with traffic to
-ports 80 and 443), the connection will appear to the HTTP server to
-be a regular GET request with an Upgrade offer.  In relatively simple
-setups with just one IP address and a single server for all traffic
-to a single hostname, this might allow a practical way for systems
-based on the WebSocket Protocol to be deployed.  In more elaborate
-setups (e.g., with load balancers and multiple servers), a dedicated
-set of hosts for WebSocket connections separate from the HTTP servers
-is probably easier to manage.  At the time of writing of this
-specification, it should be noted that connections on ports 80 and
-443 have significantly different success rates, with connections on
-port 443 being significantly more likely to succeed, though this may
-change with time.
-
-\subsection{WebSocket URIs}
-This specification defines two URI schemes, using the ABNF syntax
-defined in RFC 5234 [RFC5234], and terminology and ABNF productions
-defined by the URI specification RFC 3986 [RFC3986].
-\newline
-ws-URI = "ws:" "//" host [ ":" port ] path [ "?" query ]\newline
-wss-URI = "wss:" "//" host [ ":" port ] path [ "?" query ]\newline
-\newline
-host = <host, defined in [RFC3986], Section 3.2.2>\newline
-port = <port, defined in [RFC3986], Section 3.2.3>\newline
-path = <path-abempty, defined in [RFC3986], Section 3.3>\newline
-query = <query, defined in [RFC3986], Section 3.4>\newline
-
-The port component is OPTIONAL; the default for "ws" is port 80,
-while the default for "wss" is port 443.
-
-The URI is called "secure" (and it is said that "the secure flag is
-set") if the scheme component matches "wss" case-insensitively.
-
-The "resource-name" (also known as /resource name/ in Section 4.1)
-can be constructed by concatenating the following
-\begin{itemize}
-\item "/" if the path component is empty
-\item the path component
-\item "?" if the query component is non-empty
-\item the query component
-\end{itemize}
-
-\section{RESTful WebServices}
+  When establishing a WebSocket connection, the HTTP server receives a regular GET request with an offer to upgrade to WebSocket. The server responds to the request to complete the handshake and establish the connection. Then the communication takes place in full-duplex mode~\cite{rfc6455}.
+  
