@@ -554,7 +554,12 @@ A message is serialized to JSON string before sending via a SendPort of an isola
 \end{table}
 
 \section{A Sample Implementation of Worker Using The Framework}
-\begin{lstlisting}[language=java,firstnumber=1]
+\autoref{lst:sampleWorker} is an example of implementation of Worker isolate for the framework. The \emph{main()} is an entry point of the isolate, which is invoked when this isolate is spawned by the router. The class \emph{Consumer} overrides the function \emph{onReceive()}, which is called for each incoming message.
+
+  The example shown here prints a message, if the ‘action’
+ set in the \emph{message} variable is “print”. If the ‘action’ set in the \emph{message} variable is “send\textunderscore{}back” then the Worker isolate sends the message back to the sender of the message.
+
+\begin{lstlisting}[language=java,firstnumber=1, caption=A sample Worker isolate that can be deployed in the framework, label=lst:sampleWorker]
     import 'dart:isolate';
     import 'package:isolatesystem/worker/Worker.dart';
 
