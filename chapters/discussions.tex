@@ -30,6 +30,11 @@ In \autoref{fig:result-simultaneous1}, we can see the negative impact of startin
 \subsection{Throughput of Request-Reply}
   The benchmark of request-reply ~\autoref{subsec:request-reply} showed almost linear increment with increase in number of requesters. But, increase in number of suppliers from 1 to 8 had little effect in overall performance. The reason behind this could be the design of the program which uses \emph{ask} method to send message. Based on how \emph{ask} works as discussed in \autoref{subsec:implementationOverview}, even a single supplier might not have been saturated with the number of requesters it could handle. A slight increase was seen with more supplier, but this is quite minimal and could have been affected by any other factors like RabbitMQ performance, change in network latency, etc. There is not enough data and evidence to support the idea of big improvement in throughput with more suppliers. Testing with more number of consumers till the supplier saturate would yield better result and better idea of what affects throughput of request-reply.
 
+\subsection{Round Trip Time of Request-Reply}
+  The observation seen in ~\autoref{fig:result-request-reply-rtt} was quite inconsistent. It is difficult to make any strong conclusions from the result. Nevertheless, it seems that the increase in number of suppliers decreases latency, as seen in case of eight suppliers against the single supplier.
+
+  There could be many factors affecting the result. Even the slight change in network latency can induce a significant change in time required to transfer a message.
+
 
 \section{The Framework}
 
