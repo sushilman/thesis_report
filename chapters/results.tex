@@ -18,7 +18,7 @@ The benchmark results illustrated in this chapter were performed on Amazon EC2 s
 \midrule
       \pbox{30cm}{\relax Message Queuing System} & m3.2xLarge & \pbox{60cm}{8 core CPU, 26 ECU,\\30 GiB Memory, SSD disk}\\
 \midrule
-      \pbox{20cm}{\relax Registry} & m3.xLarge & \pbox{60cm}{2 core CPU, 13 ECU,\\15 GiB Memory, SSD disk}\\
+      \pbox{20cm}{\relax Registry and\\File Server} & m3.xLarge & \pbox{60cm}{2 core CPU, 13 ECU,\\15 GiB Memory, SSD disk}\\
 \midrule
       \pbox{20cm}{\relax Isolate Systems (Nodes)} & m3.xLarge & \pbox{60cm}{2 core CPU, 13 ECU,\\15 GiB Memory, SSD disk}\\
 
@@ -91,23 +91,32 @@ In contrast to results of production throughput of messages in other measurement
 
 
 \subsection{Simultaneous Production and Consumption}
-  In contrast to previous benchmarks, which were measured when there were either only producers or only consumers, the benchmarks \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2} shows the consumption rate and production rate of messages when they are run simultaneously. 
+  In contrast to previous benchmarks, which were measured with either only producers or only consumers, the benchmarks \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2} shows the consumption rate and production rate of messages when they are run simultaneously. Compared to what were seen on \autoref{fig:result-prefetch} and
+  \autoref{fig:result-varyingMqs}, the consumption rate is lower in this case. Nevertheless, the production rate of messages remained almost equal to that was observed in \autoref{fig:result-varyingMqs} with single MQS.
+  If we compare the \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2}, the scaling out of MQS with producers in one MQS and consumers in another had significant positive impact in overall message throughput. Especially, in this case the consumption rate increased by almost ten times than that of using single MQS. A slight increase in production throughput was also observed with the additional MQS.
+
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{figures/07simultaneous1}
+  \includegraphics[width=0.8\textwidth]{figures/07simultaneous1}
+  \caption[Throughput during simultaneous execution in single MQS]{Throughput during simultaneous execution in single MQS}
   \label{fig:result-simultaneous1}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{figures/08simultaneous2}
+  \includegraphics[width=0.8\textwidth]{figures/08simultaneous2}
+  \caption[Throughput during simultaneous execution in two MQS]{Throughput during simultaneous execution in two MQS}
   \label{fig:result-simultaneous2}
 \end{figure}
 
 
 \subsection{Throughput of Request-Reply}
+  The request-reply application used for testing is different from producer-consumer application in terms of how the messages are produced and consumed. In request-reply, a message is produced by the producer only when it receives a request from the requester (and the requester sends request for another message only after it receives the reply) whereas, in producer-consumer application the producer creates messages regardless of existence of consumer. Also, in producer-consumer application any instance of target worker isolate of any node may consume the message as it is designated only by the name of the worker isolate. But, in request-reply the produced message is replied exactly to the same instance of the worker isolate system which sent the request message.
+  For single execution of a message in producer-consumer, the steps required are enqueuing the message from producer and then dequeuing the message by the consumer. Whereas, in case of request-reply, first a request message has to be enqueued and dequeued, as a reply of which, another message will be enqueued and dequeued. Thus, the steps required in request-reply is twice as much as steps required in the producer-consumer case.
+  From \autoref{fig:result-request-reply}, when the number of consumers were increased we can see the linear increment in the production and consumption rate of message. However, adding more suppliers had very little effect in overall throughput. The maximum rise in the throughput by adding suppliers was seen when there were more number of consumers.
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{figures/09request-reply}
+  \includegraphics[width=0.85\textwidth]{figures/09request-reply}
+  \caption[Throughput of request-reply]{Throughput of request-reply}
   \label{fig:result-request-reply}
 \end{figure}
