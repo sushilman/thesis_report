@@ -1,10 +1,19 @@
 \chapter{Discussions}\label{chapter:discussions}
 
 \section{Performance Findings}
-  In the observations made in \autoref{fig:result-prefetch}, the scaling up of throughput scaled up almost linearly up to 8 consumers for every prefetch-count except when the prefetch-count was 16. Adding more consumers after 8 resulted in the decrease of throughput, which is quite similar to the result of benchmark~[\autoref{fig:rabbitmqBenchmark}] of RabbitMQ described in ~\autoref{subsec:rabbitmqPrefetch}. The benchmark of RabbitMQ, the decline of throughput were seen when there are around 8 to 10 consumers.
-  The more consumers we have the more work RabbitMQ has to do to keep track of all of them. Hence, it could be the same reason why we saw the decline in performance with more number of consumers. The number of consumers after which the decline in performance seen also suggests the same.
+\subsection{Effect of Prefetch Count}
+  In the observations made in \autoref{fig:result-prefetch}, the scaling up of throughput scaled up almost linearly up to 8 consumers for every prefetch-count (except when the prefetch-count was 16). Adding more consumers after 8 resulted in the decrease of throughput, which is quite similar to the result of benchmark~[\autoref{fig:rabbitmqBenchmark}] of RabbitMQ described in ~\autoref{subsec:rabbitmqPrefetch}. In the benchmark of RabbitMQ, the decline of throughput were seen when there are around 8 to 10 consumers.
 
+  The greater the number of consumers, the more work required by RabbitMQ to keep track of the consumers. Hence, it could be the same reason we saw the decline in performance with more number of consumers in \autoref{fig:result-prefetch}.
 
+  In a distributed system, the cause of a sudden performance change could be because of number of factors like network speed, the system in which the isolate system is running or because of the bottle necking in a Message Queuing System, which is the gateway of all the messages. But each time the performance seems to drop after around 8 consumers. The number of consumers after which the decline in performance occurred in \autoref{subsec:rabbitmqPrefetch} and \autoref{fig:result-prefetch} suggests that the reason could be because of message broker system requiring to handle too many consumers for a queue.
+
+\subsection{Effect of Message Size}
+  From \autoref{fig:result-consumptionMessageSize} and \autoref{fig:result-productionMessageSize} from \autoref{subsec:messageSize}, we can observe the negative impact of increase in message size. Nevertheless, if we assess the amount by which the performance decreased, we can see that doubling the message size did not cause halving of the performance. Thus, from this finding we can infer that instead of two separate chunks of messages, if we send messages as a big chunk the overall throughput increases. For instance, let's consider the results of 64-bytes messages and 1024-bytes messages. The throughput of 64-bytes messages was 8400 whereas that of 1024 was 3097. If we assume that the 1024-Bytes message was the concatenation of sixteen 64-Bytes messages, then the overall throughput would become 49552 messages per second. The overall increment of throughput by about 6 times! This means that for small messages, time is spent more on processing rather than on Input/Output.
+
+  The similar case for production throughput can be seen in \autoref{fig:result-productionMessageSize}. With similar calculations for 64-bytes messages and 1024-bytes messages, if the messages are chunked together, we can gain approximately 13 times greater throughput.
+
+  Nevertheless, such concatenation may not always be feasible and may prove to be against the fair distribution of messages across systems. However, if it is appropriate to concat multiple messages in certain systems, then finding an optimum size (by considering the other requirements of the application) of a message which gives maximizes throughput might prove to be quite beneficial.
 
 
 \section{The Framework}
