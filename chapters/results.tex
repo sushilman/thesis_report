@@ -61,6 +61,7 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 
 \subsection{Number of Message Queuing Systems}
   The \autoref{fig:result-varyingMqs} is the result obtained by testing message consumption by consumers ranging from 1 to 32 distributed to one to four MQS instances connected to same instance of message broker. Multiple parallel instances of MQS clearly had better message throughput than having a single instance of MQS. Nevertheless, adding more than eight consumers per MQS instance had negative effect, as we can see from the fall of throughputs in the line chart of single MQS and 2 MQS.
+
   The positive impact of scaling out MQS was seen not only on consumption throughput but also on production throughput. \autoref{fig:result-productionRabbit} shows the result of message production throughput by increasing number of producers from one to eight distributed among multiple instances of instances of MQS. The production rate measured here was the rate at which RabbitMQ enqueued the messages, not the rate at which a worker isolate produced messages.
 \begin{figure}[H]
   \centering
@@ -80,6 +81,7 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 \subsection{Production Throughput of Isolates}
 In contrast to results of production throughput of messages in other measurements as seen on \autoref{fig:result-productionMessageSize} and \autoref{fig:result-productionRabbit}, the result shown in
  \autoref{fig:result-productionIsolate} measures the throughput of message production by the isolate system before it is sent to Message Queuing System and to Message Broker System for enqueuing. The production of a message in Worker isolate was throttled, so that there is no immediate ‘out of memory’ error by overwhelming production of messages. The message production was throttled by delaying the production of messages by random amount of time ranging from 20 micro seconds to 500 micro seconds. The observations made here are the average throughput of each worker isolate as well as average throughput of all the producer nodes connecting to single instance of MQS.
+
   As observed in the \autoref{fig:result-productionIsolate}, the total production rate of the messages sharply increased with increase in number of producer nodes. In contrast, the average production of single node was seen lower with higher number of producers.
 
 \begin{figure}[H]
@@ -93,6 +95,7 @@ In contrast to results of production throughput of messages in other measurement
 \subsection{Simultaneous Production and Consumption}
   In contrast to previous benchmarks, which were measured with either only producers or only consumers, the benchmarks \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2} shows the consumption rate and production rate of messages when they are run simultaneously. Compared to what were seen on \autoref{fig:result-prefetch} and
   \autoref{fig:result-varyingMqs}, the consumption rate is lower in this case. Nevertheless, the production rate of messages remained almost equal to that was observed in \autoref{fig:result-varyingMqs} with single MQS.
+
   If we compare the \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2}, the scaling out of MQS with producers in one MQS and consumers in another had significant positive impact in overall message throughput. Especially, in this case the consumption rate increased by almost ten times than that of using single MQS. A slight increase in production throughput was also observed with the additional MQS.
 
 \begin{figure}[H]
@@ -112,7 +115,9 @@ In contrast to results of production throughput of messages in other measurement
 
 \subsection{Throughput of Request-Reply}
   The request-reply application used for testing is different from producer-consumer application in terms of how the messages are produced and consumed. In request-reply, a message is produced by the producer only when it receives a request from the requester (and the requester sends request for another message only after it receives the reply) whereas, in producer-consumer application the producer creates messages regardless of existence of consumer. Also, in producer-consumer application any instance of target worker isolate of any node may consume the message as it is designated only by the name of the worker isolate. But, in request-reply the produced message is replied exactly to the same instance of the worker isolate system which sent the request message.
+
   For single execution of a message in producer-consumer, the steps required are enqueuing the message from producer and then dequeuing the message by the consumer. Whereas, in case of request-reply, first a request message has to be enqueued and dequeued, as a reply of which, another message will be enqueued and dequeued. Thus, the steps required in request-reply is twice as much as steps required in the producer-consumer case.
+
   From \autoref{fig:result-request-reply}, when the number of consumers were increased we can see the linear increment in the production and consumption rate of message. However, adding more suppliers had very little effect in overall throughput. The maximum rise in the throughput by adding suppliers was seen when there were more number of consumers.
 \begin{figure}[H]
   \centering
