@@ -500,6 +500,7 @@ A message is serialized to JSON string before sending via a SendPort of an isola
 \end{description}
 
 \subsection{Some Implementation Overview}
+\label{subsec:implementationOverview}
   Some insight about the implementation of selected functions of the framework:
 
   \begin{description}
@@ -508,7 +509,8 @@ A message is serialized to JSON string before sending via a SendPort of an isola
 
       If the Worker isolate is expecting to consume another message after sending a message, it should send a PULL Request for another message, which can be performed by invoking the ‘done’ function.
 
-      \item How ‘ask’ works?\\
+      \item \label{itm:askWorking}How ‘ask’ works?\\
+
     Ask function has certain subtle differences from the ‘send’ function. The ‘ask’ function should be used when the sender of the message expects something in reply. The abstract Worker class adds the full path of the isolate along with the unique-id of the isolate when an ‘ask’ message is constructed. This is to make sure that the response from the target isolate reaches this particular instance of the isolate. The Router, which can also be called a load balancer, when receives a message with full address of a Worker isolate, routes the message to the isolate with the unique-id contained in the message. The message is simply discarded by the Router, if the isolate with the given unique-id is not found in the list of isolates the Router is maintaining. This is possible when the isolates have been restarted or for some reason the isolate was killed.
 
     \item How ‘reply’ works?\\
