@@ -45,7 +45,7 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 
   The negative effect, on message consumption throughput, of larger message is evident from the  \autoref{fig:result-consumptionMessageSize}. The decrease in message throughput was more prominent between message size of 256 bytes and 512 bytes than that of between 64 bytes and 256 bytes.
 
-  Similar observation can be made from~\autoref{fig:result-productionMessageSize} which is a result of allowing a single worker isolate to create messages, except there is slight rise in the throughput when the message size was increase from 512 bytes to 1024 bytes.
+  Similar observation can be made from~\autoref{fig:result-productionMessageSize} which is a result of allowing a single worker isolate to create messages, except there was a slight rise in the throughput when the message size was increase from 512 bytes to 1024 bytes.
 
 \begin{figure}[H]
   \centering  \includegraphics[width=1\textwidth]{figures/02consumptionMessageSize}
@@ -60,10 +60,12 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 \end{figure}
 
 \subsection{Number of Message Queuing Systems}
-
+  The \autoref{fig:result-varyingMqs} is the result obtained by testing message consumption by consumers ranging from 1 to 32 distributed to one to four MQS instances connected to same instance of message broker. Multiple parallel instances of MQS clearly had better message throughput than having a single instance of MQS. Nevertheless, adding more than eight consumers per MQS instance had negative effect, as we can see from the fall of throughputs in the line chart of single MQS and 2 MQS.
+  The positive impact of scaling out MQS was seen not only on consumption throughput but also on production throughput. \autoref{fig:result-productionRabbit} shows the result of message production throughput by increasing number of producers from one to eight in
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/04varyingMqs}
+  \caption[Scaling out Message Queuing System]{Scaling out Message Queuing System}
   \label{fig:result-varyingMqs}
 \end{figure}
 
@@ -75,6 +77,7 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 \end{figure}
 
 
+\subsection{Production Throughput of Isolates}
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/06productionIsolate}
@@ -82,12 +85,12 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 \end{figure}
 
 
+\subsection{Simultaneous Production and Consumption}
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/07simultaneous1}
   \label{fig:result-simultaneous1}
 \end{figure}
-
 
 \begin{figure}[H]
   \centering
@@ -96,6 +99,7 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 \end{figure}
 
 
+\subsection{Throughput of Request-Reply}
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/09request-reply}
