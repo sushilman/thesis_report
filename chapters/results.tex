@@ -132,12 +132,16 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
   \label{fig:result-request-reply}
 \end{figure}
 
-\subsection{Latency of Request-Reply}
-\label{subsec:request-reply-latency}
+\subsection{Round Trip Time in Request-Reply}
+\label{subsec:request-reply-rtt}
+  The results seen in \autoref{fig:result-request-reply-rtt} is the benchmark of average round trip time (RTT) of a message in request-reply case.
+
+  The result was obtained by attaching a timestamp in the message that was sent to the supplier; upon receiving the request message at the supplier, the timestamp was copied to the reply message and sent back to the sender(requester). The difference between the timestamp when the message was received at the requester and the timestamp contained in the message is the round trip time.
+
+  From the result of RTT in ~\autoref{fig:result-request-reply-rtt}, we can see that there were inconsistencies in RTT of messages with respect to number of suppliers as well as requesters. When there was only one supplier, the RTT of a message was usually higher compared to cases when there were more number of suppliers. Nevertheless, the least inconsistency was seen in case of 8 suppliers and the least latency was observed in case of single supplier with single consumer.
 
   \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\textwidth]{figures/10request-reply-latency}
-    \caption[Throughput of request-reply]{Throughput of request-reply}
-    \label{fig:result-request-reply-latency}
+    \centering    \includegraphics[width=0.85\textwidth]{figures/10request-reply-rtt}
+    \caption[Round trip times of messages in request reply]{Round trip times of messages in request reply (Lower is better)}
+    \label{fig:result-request-reply-rtt}
   \end{figure}
