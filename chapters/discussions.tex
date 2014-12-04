@@ -1,26 +1,28 @@
 \chapter{Discussions}\label{chapter:discussions}
 
 \section{Performance Findings}
+  In the observations made in \autoref{fig:result-prefetch}, the scaling up of throughput scaled up almost linearly up to 8 consumers for every prefetch-count except when the prefetch-count was 16. Adding more consumers after 8 resulted in the decrease of throughput, which is quite similar to the result of benchmark~[\autoref{fig:rabbitmqBenchmark}] of RabbitMQ described in ~\autoref{subsec:rabbitmqPrefetch}. The benchmark of RabbitMQ, the decline of throughput were seen when there are around 8 to 10 consumers.
+  The more consumers we have the more work RabbitMQ has to do to keep track of all of them. Hence, it could be the same reason why we saw the decline in performance with more number of consumers. The number of consumers after which the decline in performance seen also suggests the same.
 
-\section{Non-Functional Requirements of the Framework}
+
+
+
+\section{The Framework}
 
 \subsection{Scalability}
-Scalable at different component levels. Isolates, Isolate System, Message Queuing System and clustering of Message Broker (RabbitMQ). Better scalability is obtained when the Message Queuing System is scaled out.
+    Scalable at different component levels. Isolates, Isolate System, Message Queuing System and clustering of Message Broker (RabbitMQ). Better scalability is obtained when the Message Queuing System is scaled out.
 
 \subsection{Availability}
-Can be designed to make highly available. Apparently, no downtime to deploy new code to a running system.
+    Can be designed to make highly available. Apparently, no downtime to deploy new code to a running system.
 
-\subsection{Reliability}
+  \subsection{Reliability}
+
 
 \section{Problems/Issues}
 \subsection{Dart Induced Issues}
-  * The Unimplemented functionalities of Isolates
-    - KILL
-    - PAUSE
-    - PING
-    - Supervision of Isolates
-  * Isolate are not lightweight.
-  * Running Isolates in web (Dartium)
-  *
-
-\subsection{Performance}
+  \begin{itemize}
+  \item The Unimplemented functionalities of Isolates
+    - KILL, PAUSE, PING, Supervision of Isolates
+  \item Isolate are not lightweight.
+  \item Running Isolates in web (Dartium)
+\end{itemize}

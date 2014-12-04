@@ -4,7 +4,8 @@
 \section{Sample applications made using the framework}
 
 \section{Benchmarks}
-The benchmark results illustrated in this chapter were performed on Amazon EC2 server\footnote{EC2 servers of Frankfurt data center} with configurations shown in table~\autoref{tab:specs}
+\label{sec:benchmarks}
+  The benchmark results illustrated in this chapter were performed on Amazon EC2 server\footnote{EC2 servers of Frankfurt data center} with configurations shown in table~\autoref{tab:specs}
 
 \begin{table}[htsb]
   \caption[Specification of machines used for testing and benchmarking]{Specification of machines used for testing and benchmarking}\label{tab:specs}
@@ -27,6 +28,7 @@ The benchmark results illustrated in this chapter were performed on Amazon EC2 s
 \end{table}
 
 \subsection{Prefetch Count}
+\label{subsec:prefetchCount}
 \autoref{fig:result-prefetch} shows the variation in overall message consumption when the number of consumers (separate isolate systems in separate nodes) were increased. Each line in the figure represents different values of prefetch-count set in the consumer while subscribing to the message broker system. Depending upon prefetch-count, saturation point and decrease rate can also be seen when number of consumers were increased.
 
   The increase in consumers had significant positive result for message throughput, but we can see that after around 8 consumers, adding more consumers had negative effect in the overall throughput.

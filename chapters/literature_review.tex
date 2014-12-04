@@ -405,7 +405,7 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
   If inflow of messages in a queue is faster compared to the outflow of the messages to its subscribers, both enqueuing as well as dequeuing gets slower. Since, the messages are buffered into memory, as the quantity of messages increases, the consumption of the memory also increases. Besides, if there is a sudden increase in the inflow of messages, the incoming messages take more CPU time which results in the overall decrease of outflow of messages to consumers~\cite{sizingYourRabbits}.
 
   \subsection{RabbitMQ and prefetch-count}
-  \label{sec:rabbitmq}
+  \label{subsec:rabbitmqPrefetch}
   The prefetch-count Quality of Service (QoS) setting in RabbitMQ by default is set to unlimited. Which means, the RabbitMQ empties the queue as fast as possible to the consumer. Setting the prefetch-count to unlimited might result in ‘out of memory’ or ‘stack overflow’ errors in the consumers. Again, setting the prefetch-count too low can hamper the performance of the whole application while setting it too high can cause the ‘out of memory’ exceptions. Hence, based on the requirement and design of the consumer application, appropriate prefetch-count should be determined.
 
   The \autoref{fig:rabbitmqBenchmark} is the result of a benchmark\footnote{posted by Simon MacMullen on April 25th, 2012 at 2:47 pm} that shows how the throughput of a queue varies when prefetch count is changed for different number of consumers.
