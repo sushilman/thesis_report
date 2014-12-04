@@ -3,7 +3,8 @@
 \section{Message Passing Paradigm}
 \label{sec:messagePassing}
   Message passing is sending a message from one process, component or actor to another. The recipient of the message chooses further processing based on the pattern or content of the message.
-  Message passing is the loosest type of coupling. The components of a system are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement message passing paradigm are easily scalable and efficient. Such systems are easy to replicate and thus fault tolerance can be improved~\cite{Armstrong:2010:ERL:1810891.1810910}.
+  Message passing is the loosest type of coupling. The components of a system are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement message passing paradigm are easily scalable and efficient. Such systems are easy to replicate and easy to make fault-tolerant.
+~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
   The systems which communicate solely by message passing do not have a shared state. Such systems can be easily divided into isolated components. This makes the overall architecture of a system easy to understand and simplifies the separation of problems within the system~\cite{Armstrong:2010:ERL:1810891.1810910}.
 

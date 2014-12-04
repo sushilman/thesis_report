@@ -61,31 +61,37 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 
 \subsection{Number of Message Queuing Systems}
   The \autoref{fig:result-varyingMqs} is the result obtained by testing message consumption by consumers ranging from 1 to 32 distributed to one to four MQS instances connected to same instance of message broker. Multiple parallel instances of MQS clearly had better message throughput than having a single instance of MQS. Nevertheless, adding more than eight consumers per MQS instance had negative effect, as we can see from the fall of throughputs in the line chart of single MQS and 2 MQS.
-  The positive impact of scaling out MQS was seen not only on consumption throughput but also on production throughput. \autoref{fig:result-productionRabbit} shows the result of message production throughput by increasing number of producers from one to eight in
+  The positive impact of scaling out MQS was seen not only on consumption throughput but also on production throughput. \autoref{fig:result-productionRabbit} shows the result of message production throughput by increasing number of producers from one to eight distributed among multiple instances of instances of MQS. The production rate measured here was the rate at which RabbitMQ enqueued the messages, not the rate at which a worker isolate produced messages.
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/04varyingMqs}
-  \caption[Scaling out Message Queuing System]{Scaling out Message Queuing System}
+  \caption[Consumption Throughput on Scaled out Message Queuing System]{Consumption Throughput on Scaled out Message Queuing System}
   \label{fig:result-varyingMqs}
 \end{figure}
 
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=1\textwidth]{figures/05productionRabbit}
+  \centering  \includegraphics[width=0.9\textwidth]{figures/05productionRabbit}
+  \caption[Production Throughput on Scaling out Message Queuing System]{Production Throughput on Scaling out Message Queuing System}
   \label{fig:result-productionRabbit}
 \end{figure}
 
 
 \subsection{Production Throughput of Isolates}
+In contrast to results of production throughput of messages in other measurements as seen on \autoref{fig:result-productionMessageSize} and \autoref{fig:result-productionRabbit}, the result shown in
+ \autoref{fig:result-productionIsolate} measures the throughput of message production by the isolate system before it is sent to Message Queuing System and to Message Broker System for enqueuing. The production of a message in Worker isolate was throttled, so that there is no immediate ‘out of memory’ error by overwhelming production of messages. The message production was throttled by delaying the production of messages by random amount of time ranging from 20 micro seconds to 500 micro seconds. The observations made here are the average throughput of each worker isolate as well as average throughput of all the producer nodes connecting to single instance of MQS.
+  As observed in the \autoref{fig:result-productionIsolate}, the total production rate of the messages sharply increased with increase in number of producer nodes. In contrast, the average production of single node was seen lower with higher number of producers.
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/06productionIsolate}
+  \caption[Production Throughput of Isolate]{Production Throughput of Isolate}
   \label{fig:result-productionIsolate}
 \end{figure}
 
 
 \subsection{Simultaneous Production and Consumption}
+  In contrast to previous benchmarks, which were measured when there were either only producers or only consumers, the benchmarks \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2} shows the consumption rate and production rate of messages when they are run simultaneously. 
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/07simultaneous1}
