@@ -1,7 +1,32 @@
 \chapter{Results}\label{chapter:results}
 %Tables
 %charts
-\section{Sample applications made using the framework}
+\section{Building applications based on the DDE framework}
+\label{sec:result-framework}
+  Two sample applications that were the created based on the DDE framework are discussed in Case Study~[\autoref{chapter:case_study}]. The sample applications \autoref{sec:producer-consumer-program} and
+  \autoref{sec:request-reply-program} were used for testing and evaluation of the framework. The benchmarks discussed in \autoref{sec:benchmarks} are the results of this evaluation.
+
+  Some observations made during the development and the deployment of applications based on the DDE framework were:
+
+\begin{itemize}
+  \item The program source codes based on the DDE frameworks are short. It is evident from the source codes of the applications used in case study~\autoref{chapter:case_study}.
+
+  \item The worker isolate could not be run in browser.
+
+  \item Setting up the system for the first time was rather complicated because it consisted of several components that needed to be started up separately.
+
+  \item Once the system was setup, adding workers and isolate systems to the nodes was easy. Thus, deploying an application to a distributed system was easy.
+
+  \item Shutting down a single isolate or an isolate system did not effect other components and nodes.
+
+  \item The decoupling among isolate systems, the MQS and the registry allowed each component to start up and shutdown without severely affecting other systems.
+
+  \item The REST API exposed by the Registry simplified the deployment of isolate systems to different nodes of the distributed system.
+
+  \item The Web interface of the Registry provided the ability to visualize and monitor the cluster.
+
+  \item The messages were not lost during the restart of a system. The messages were persisted and safe in RabbitMQ.
+\end{itemize}
 
 \section{Benchmarks}
 \label{sec:benchmarks}

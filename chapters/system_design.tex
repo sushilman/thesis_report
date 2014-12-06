@@ -98,6 +98,7 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
   As a Controller is the ‘spawner’ of Routers and the ‘spawnee’ of the top level isolate, it forwards the messages as well as dequeue requests coming from Routers to the top level isolate of an isolate system.
 
   \subsubsection{Router}
+  \label{subsec:router}
   A router is spawned by a controller. The router creates and is responsible for a group of identical Workers isolates. Since an isolate is single threaded, creation of multiple instances of an isolate is desirable for concurrency. When a message arrives in a router from a controller, the router, based on its defined routing policy, delegates the message to one of the worker isolates. The routing policy can be chosen at the time of deployment of a worker isolate.
 
   A router uses a routing policy to distribute message among the group of isolates it is handling. The default routing policies that are available in the framework are listed in the \autoref{tab:routers}
@@ -510,13 +511,12 @@ A message is serialized to JSON string before sending via a SendPort of an isola
       If the Worker isolate is expecting to consume another message after sending a message, it should send a PULL Request for another message, which can be performed by invoking the ‘done’ function.
 
       \item \label{itm:askWorking}How ‘ask’ works?\\
-
     Ask function has certain subtle differences from the ‘send’ function. The ‘ask’ function should be used when the sender of the message expects something in reply. The abstract Worker class adds the full path of the isolate along with the unique-id of the isolate when an ‘ask’ message is constructed. This is to make sure that the response from the target isolate reaches this particular instance of the isolate. The Router, which can also be called a load balancer, when receives a message with full address of a Worker isolate, routes the message to the isolate with the unique-id contained in the message. The message is simply discarded by the Router, if the isolate with the given unique-id is not found in the list of isolates the Router is maintaining. This is possible when the isolates have been restarted or for some reason the isolate was killed.
 
     \item How ‘reply’ works?\\
     The ‘reply’ function is simply a convenience for the implementer. The ‘reply’ function simply invokes ‘send’ message with the sender’s address as the target isolate. If the message contains ‘replyTo’ then the message will be replied to the address contained in ‘replyTo’ instead of the original sender. The ‘reply’ function can be used to reply message in both \textendash{} ‘send’ and ‘ask’ cases.
 
-    \item How ‘KILL’ works?\\
+    \item \label{itm:killWorking} How ‘KILL’ works?\\
     This is a special control message sent to the isolates as well as isolate system to shutdown themselves. If a KILL message is sent to a Worker isolate, the message is enqueued to the end of the Worker isolate as any other message. No further messages after KILL a message are sent to that isolate by the router. The router then buffers the messages until the isolate is restarted and resumes sending messages again once the Worker isolate is spawned.
 
     When a Worker isolate finishes processing queued messages and encounters the KILL message, the isolate closes its ReceivePort\footnote{A Worker Isolate receives message from Router via a ReceivePort} and stays idle. After sometime it gets ‘Garbage Collected’ and is cleaned up. But, sometimes the garbage collector cannot clean up the isolate and the memory leak occurs. Thus, as a workaround for this, a custom Exception is thrown deliberately by the isolate to terminate itself. The exception is thrown only after it closes all the ports. This workaround forcefully terminates the isolate and releases the memory occupied by the isolate.

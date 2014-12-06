@@ -6,9 +6,9 @@
   Message passing is the loosest type of coupling. The components of a system are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement message passing paradigm are easily scalable and efficient. Such systems are easy to replicate and easy to make fault-tolerant.
 ~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
-  The systems which communicate solely by message passing do not have a shared state. Such systems can be easily divided into isolated components. This makes the overall architecture of a system easy to understand and simplifies the separation of problems within the system~\cite{Armstrong:2010:ERL:1810891.1810910}.
+  Systems which communicate solely by message passing do not have a shared state. Such systems can be easily divided into isolated components. This makes the overall architecture easy to understand and simplifies the isolation of problems within the system~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
-  Message passing can either be synchronous or asynchronous. Synchronous message passing is the communication between two components where both the sender and the receiver of a message are ready to communicate. As the sender of a message has to wait for a response from the receiver, the sender is usually blocked until it gets a reply. Whereas, in asynchronous message passing, the sender simply sends a message and continues to do other tasks. The receiver does not have to be ready to accept the message when the sender sends it~\cite{agha}. Thus, an asynchronous message passing is non-blocking in nature.
+  Message passing can either be synchronous or asynchronous. Synchronous message passing is the communication between two components where both the sender and receiver of a message are ready to communicate. As the sender of a message has to wait for a response from the receiver, the sender is usually blocked until it gets a reply. Whereas, in asynchronous message passing, the sender simply sends a message and continues to do other tasks. The receiver does not have to be ready to accept the message when the sender sends it~\cite{agha}. Thus, asynchronous message passing is non-blocking in nature.
 
 \section{Actor Programming Model}
 \label{sec:actorProgramming}
@@ -25,7 +25,7 @@
   Actors communicate with each other in a non-blocking way by asynchronous message passing, which removes the need of explicit locks. An actor can send message to actors in same system or another system. An actor can also send message to itself, which is how a recursion is achieved. An actor can send a message to target actor only if it has the address of target actor. Agha~(\cite{agha}, p35) lists three ways in which an actor, upon accepting a message, can know the address of the target actor:
   \begin{itemize}
     \item the target was known to the actor a before it accepted the message
-    \item the target became known when the message was accepted because it was contained in the message, or,
+    \item the target became known when the message was accepted because it was contained in the message,
     \item the target is the new actor created as a result of accepting the message
   \end{itemize}
 
@@ -42,7 +42,7 @@ After receiving a message, an actor may perform following actions.~\cite{hewitt}
 
   An actor exists in a system. An actor system is a group of actors working together in certain hierarchy.
 
-  In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that the message sent to an actor will arrive sequentially~\cite{hewittVideo}. Nevertheless, Akka framework~[\autoref{sec:akka}] guarantees the order of delivery of messages between two actors, provided that there are no intermediary actors in between[~\autoref{subsec:akkaMessagePassing}].
+  In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that message sent to an actor will arrive sequentially~\cite{hewittVideo}. Nevertheless, Akka framework~[\autoref{sec:akka}] guarantees the order of delivery of messages between two actors, provided that there are no intermediary actors in between[~\autoref{subsec:akkaMessagePassing}].
 
   Several programming languages like Act 1, 2 and 3, Acttalk etc. were created when actor system was newly introduced by Hewitt and Agha~\cite{agha, hewitt}.
 
@@ -54,38 +54,38 @@ Exception handling in actor model is based on idea of embracing the failures. Th
 \subsection{Differences from thread-based programming model}
 \subsubsection{Thread-based Concurrency}
   \label{subsec:thread}
-  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have a shared memory, concurrent modifications and accesses of the data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situations, such programming languages have locks. The locks let only a single thread at a time to run sequentially for the section of a program code~\cite{ambientTalk}.
+  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have shared memory, concurrent modifications and accesses of data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situation, such programming languages have locks. The locks let only a single thread at a time run sequentially for the section of a program code~\cite{ambientTalk}.
 
-  Generally, thread-based programming models are easy to understand and implement. But, the resulting program behavior is difficult to understand because of implicit context switches and release of locks, which may even lead to a deadlock situation~\cite{ambientTalk}.
+  Generally, thread-based programming models are easy to understand and implement. But, the resulting program behavior is difficult to understand because of implicit context switches and release of locks, which may lead to a deadlock situation~\cite{ambientTalk}.
 
 \subsubsection{Actors based Concurrency}
 \label{subsec:actorConcurrency}
   Concurrency in actor based programming languages are inherent because of asynchronous message-passing, pipelining, and the dynamic creation of actors. The concurrency in actors through pipelining is only constrained by the logical limits and the available hardware resources~\cite{agha}. The actors may carry out their activities in parallel as each actor resides in a completely separated space from the other actors, they are connected only via messages.
 
-  The actor based programming liberates the programmer from going into coding details about the parallelism and threads~\cite{agha}.
+  Actor based programming liberates the programmer from delving into coding details about the parallelism and threads~\cite{agha}.
 
-  As actors do not have shared state, thus the ‘race condition’ as discussed in \autoref{subsec:thread}, do not arise in actor based programming.
+The ‘race condition’, discussed in \autoref{subsec:thread}, do not arise in actor based programming as actors do not have a shared state and they don't need locks.
 
 \subsection{Scaling up actor based systems}
-  As actor based systems are highly concurrent~[\autoref{subsec:actorConcurrency}], it is easy to scale actor based systems from a single core system to several of them across multiple data centers around the globe. The ideal case would be to just let a new system join the actor system and let it run some more actors during runtime, without the need of taking down the running system. The actors themselves do not need to know the physical location of other actors as they simply exchange messages based on the logical addresses. This makes them easy to scale up and out.
+  As actor based systems are highly concurrent~[\autoref{subsec:actorConcurrency}], it is easy to scale actor based systems from a single core system to several of them across multiple data centers around the globe. The ideal case would be to just let a new system join the actor system and let it run some more actors during runtime, without the need of taking down the running system. The actors themselves do not need to know the physical location of other actors as they simply exchange messages based on the logical addresses. This makes them easy to scale up\footnote{Add more actors to the same machine} and scale out\footnote{Add more nodes with actors to a distributed system}.
 
 \section{Erlang}
 \label{sec:erlang}
-  Erlang is the first popular programming language that was based on the actor model\cite{vinoski}. It was developed by Joe Armstrong in 1986 at the Ericsson Computer Science Laboratory and was made open-source in 1998. It was chiefly used in telephony applications as it was built to solve the problems of availability as well as scalability that existed in such applications.~\parencite{armstrong}
+  Erlang is the first popular programming language based on the actor model~\cite{vinoski}. It was developed by Joe Armstrong in 1986 at the Ericsson Computer Science Laboratory and was made open-source in 1998. It was chiefly used in telephony applications as it was built to solve the problems of availability as well as scalability that existed in such applications~\cite{armstrong}.
 
   Erlang ‘processes,’ which are essentially user-space threads rather than Unix processes or kernel threads, communicate only via message passing.
 
   Erlang was designed for the writing applications that require high availability~\cite{armstrong}. It uses concurrent processes, which have no shared memory and communicate only via asynchronous message passing. This idea is similar to the actors model proposed by Agha and Hewitt~[\autoref{sec:actorProgramming}]. Thus, programs written in Erlang are concurrent, distributed, fault tolerant and thread safe. The concurrency is built into the language itself, not the the operating system~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
-  When an application developed in Erlang is deployed in a multicore computer, it automatically takes advantage of those multiple cores. The Erlang processes spread over the cores. So, the programmers do not have to worry about threads~\cite{Armstrong:2010:ERL:1810891.1810910}. In Erlang, new changes in an application can be added to the system without taking it offline. This improves the availability of whole system. Thus, it simplifies the construction of software for implementing non-stop systems~\cite{armstrong}.
+  When an application developed in Erlang is deployed in a multicore computer, it automatically takes advantage of those multiple cores. The Erlang processes distribute over the cores. So, programmers do not have to worry about threads~\cite{Armstrong:2010:ERL:1810891.1810910}. In Erlang, new changes in an application can be added to the system without taking it offline. This improves the availability of whole system. Thus, it simplifies the construction of software for implementing non-stop systems~\cite{armstrong}.
 
-  Error handling in Erlang is different from most of the other programming languages. The error handling is based on a “let it crash” philosophy~\autoref{subsec:letItCrash} which is a non-defensive style of programming~\cite{armstrong, Armstrong:2010:ERL:1810891.1810910}.
+  Error handling in Erlang is different from most of the other programming languages. The error handling is based on a “let it crash” philosophy~[\autoref{subsec:letItCrash}] which is a non-defensive style of programming~\cite{armstrong, Armstrong:2010:ERL:1810891.1810910}.
 
 \subsection{“Let it Crash” Philosophy}
 \label{subsec:letItCrash}
   The core idea in “Let it Crash” philosophy is to let the failing processes crash and make other processes, which observe this process, detect the crashes and fix them~\cite{Armstrong:2010:ERL:1810891.1810910}. This idea is in sharp contrast to other programming languages, where programmers implement exception handlers and prevent a process from getting terminated.
 
-  The concept of “let it crash” leads to clear and compact coding
+  The proponents of the “let it crash” philosophy argue that it leads to more clear and compact code.
 ~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
 \section{Scala Actors}
@@ -95,7 +95,7 @@ Scala is a statically typed programming language which integrates functional as 
 
   The scala actors library provide concurrent programming model based on actors~[\autoref{sec:actorProgramming}]. The actors in scala are fully inter-operable with the ordinary virtual machine threads~\cite{Haller}. Scala actors are lightweight and support around 240 times more actors to run simultaneously compared to virtual machine threads~\cite{Haller}.
 
-  Both synchronous and asynchronous message passing can be used to in scala actors. The synchronous message passing is implemented by exchanging several asynchronous messages. The actors in scala can also communicate using ‘futures’. When a future is used the requests are handled asynchronously and the sender immediately gets a representation of the future which allows sender to wait for the reply.~\cite{scalaActors}
+  Both synchronous and asynchronous message passing can be used in scala actors. Synchronous message passing is implemented by exchanging several asynchronous messages. Actors in scala can also communicate using ‘futures’. When a future is used the requests are handled asynchronously and the sender immediately gets a representation of the future which allows sender to wait for the reply.~\cite{scalaActors}
 
   The Scala Actors library is now deprecated and will be removed in future Scala releases\footnote{Scala actors are deprecated in version 2.10~\cite{scalaActorsAPI}}. The deprecation is in favor of the use of Akka actors~[\autoref{sec:akka}].
 
@@ -427,7 +427,9 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
 
   \subsection{STOMP Library for Dart}
   \label{subsec:stompForDart}
-  Given that dart is a fairly new language, there is no AMQP client for RabbitMQ yet. As mentioned above in section~\ref{sec:rabbitmq} RabbitMQ also supports STOMP. An open source STOMP client\footnote{https://github.com/rikulo/stomp} in dart is available created by ‘Potix corporation’. It can perform most of the basic operations with message broker system like connecting, creating queue, subscribing, enqueuing and dequeuing. Although it has those basic functionalities, it still has some limitations and incompleteness like lack of support of ‘Heartbeat’ and it only supports STOMP version 1.2 or above.
+  Dart's ‘pub’\footnote{http://pub.dartlang.org} is a public library sharing platform which allows user to share and reuse Dart codes.
+
+  Given that dart is a fairly new language, there is no AMQP client for RabbitMQ yet. As mentioned above in section~\ref{sec:rabbitmq} RabbitMQ also supports STOMP. An open source STOMP client\footnote{https://github.com/rikulo/stomp} in dart is available in Dart's ‘pub’ created by ‘Potix corporation’. It can perform most of the basic operations with message broker system like connecting, creating queue, subscribing, enqueuing and dequeuing. Although it has those basic functionalities, it still has some limitations and incompleteness like lack of support of ‘Heartbeat’ and it only supports STOMP version 1.2 or above.
 
 
 \section{WebSocket}

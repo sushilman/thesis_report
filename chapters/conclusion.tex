@@ -1,8 +1,15 @@
 \chapter{Conclusion}\label{chapter:conclusion}
 
-\section{TODO}
+  The framework, created as a result of this thesis, shows that the isolates of the Dart language do not have to be limited to a single virtual machine.
 
-% bottle necking in MQS
-% scaling out helped somewhat
-%
-% bottle necking not only in MQS but also in MBS
+  The DDE framework provides structure for developers to create applications based on actor programming model in the Dart language. This framework uses the already existing actor like nature of isolates and provides easy to use functions to make the message sending more like in actor programming model.
+
+  As a result of using this framework, the applications become easily scalable and can offer more availability (virtually no down time during code update). Scaling up can be performed in several ways: deploying more isolates in an isolate system, replicating isolate systems across multiple machines, increasing the number of message queuing systems, forming a cluster of message broker system (RabbitMQ) or the combination of these.
+
+  Moreover, the DDE framework offers developers to monitor code updates and restart the isolates automatically. Moreover, the web interface and REST API available in the ‘Registry’ allow developers to visualize, easily deploy, terminate individual or group of isolates and even shutdown isolate systems.
+
+  The message broker system (RabbitMQ) of the DDE framework allows applications to keep loosely coupled and improve the overall fault-tolerance of the system. Moreover, the clustering ability and message persistence provided by RabbitMQ allows the messages to be saved in several machines ensuring the message safety.
+
+  Nevertheless, the DDE framework is far from perfect. It does not have security implementation of its own.
+
+  The preliminary tests and benchmarks of the DDE framework are encouraging. (It is the working model of proof of concept?). The throughput of message production and consumption were good. It can be increased further by optimizing the framework.
