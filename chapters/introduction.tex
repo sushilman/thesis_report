@@ -1,19 +1,28 @@
 \chapter{Introduction}\label{chapter:introduction}
 
-\section{Background}
-TODO\\
-% Multi-core processors make concurrency an essential ingredient of efficient program execution. Moreover, the Distributed computing and web services are inherently concurrent. Message-based concurrency is attractive because it might provide a way to address the two challenges at the same time. It can be seen as a higher-level model for threads with the potential to generalize to distributed computation. Many message passing systems used in practice are instantiations of the actor model. A popular implementation of this form of concurrency is the Erlang programming language. Erlang supports massively concurrent systems such as telephone exchanges by using a very lightweight implementation of concurrent processes.~\cite{Haller}
-%
-%   The purpose of this thesis is to build a framework based on the actor programming model and the Dart language. The framework unifies applications across devices, client and server and also supports migration of actors in a distributed system. So, first of all we should briefly overview the actor programming model and how it can be realized efficiently in the Dart language. Although the actor model was introduced in mid 1980s and there had been programming languages like Erlang that implemented it, only now it has started gaining wide popularity in distributed systems. Especially after the introduction of Scala and Akka, the actor model has been gaining good popularity.
-%
-%   The Dart programming language provides a homogeneous system that encompasses both client as well as server as the Dart Virtual Machine runs in servers as well as in browsers. This particular nature of the Dart language makes it possible to create a fully distributed application in which isolates (the actor like entities of Dart language) may run everywhere in servers, in desktop browsers and even in mobile browsers.
-% This thesis is about creating a framework that would take the Dart's actor like entities knows as ‘Isolates’ to a distributed system with added capabilities.
+  To scale up and handle large number of requests, applications are deployed in distributed environments. The speed and demand of data have been increasing rapidly. Performance expectations from web applications are higher than ever. Scaling up is achieved through buying large servers and concurrent processing via multi-threading.
 
-\section{Goals}
-TODO\\
-%   Create a framework for writing programs in the Dart Language that enforces the actor based programming model such that the final system is inherently distributed in nature.
-% The framework should make improve the ‘availability’ of an application that is built on top of it.
-%   \begin{itemize}
-%     \item The framework shall make the application scalable at different levels.
-%     \item The framework shall support hot deployments and migration of Isolates, which improves the availability of the system.
-% \end{itemize}
+  Most enterprises would want their applications to be available 100\% of the time because few seconds of application downtime could cause huge loss to a business.
+
+  Ideally a scalable application should be able to scale up or down without compromising its availability. The possibility of dynamically adjusting scalability would allow an application to grow when demand increases and shrink to adequate resources when the demand is low.
+
+  Deploying applications to distributed environment is a good solution for scaling up but most applications fail to utilize all available physical resources because of their underlying design.
+
+  The actor programming model~\autoref{sec:actorProgramming} allows developers to build highly concurrent, distributed and fault tolerant event-driven applications. Actors are asynchronous by design as they are based on asynchronous message passing.
+
+   The idea of actors has been around for a while, but has not been able to become mainstream general purpose programming. The requirement of having highly concurrent applications
+
+  The work presented in this thesis focuses on creating a framework for the Dart language~[\autoref{sec:dart}] that would allow developers to create asynchronous, concurrent, scalable and distributed applications. The concept of scalability in the framework is based on the actor-like nature of isolates~[\autoref{subsec:isolates}], which communicate solely on message passing. The framework takes advantage of isolates and extends it functionality so that they can be deployed into distributed systems.
+
+  The framework also tries to take full advantage of the fact that dart virtual machine can be run in browser as well as in server.  This advantage opens up the possibility of creating a fully distributed application in which isolates may run everywhere: in servers, desktop browsers and even in mobile browsers. Unfortunately, the concept of creating fully distributed system with isolates running in browser was met with some of the limitations of the browser implementation of the Dart VM, which is discussed in \autoref{subsec:result-dartIssues}.
+
+  Erlang~[\autoref{sec:erlang}] and Scala~\autoref{sec:scala} are popular programming languages which have their own implementation of actor programming. Akka toolkit~[\autoref{sec:akka}] provides a foundation for actor programming in both Java as well as Scala. The DDE framework presented in this thesis draws some of the ideas for
+  isolate system~[\autoref{sub:isolate-system}] and routers~[\autoref{subsubsec:router}] from the actor system~[\autoref{subsec:actorSystem}] and the routers~[\autoref{subsec:akka-routers}] implementations of Akka.
+
+  As the applications of the DDE framework is supposed to be based on message passing, the framework takes advantages of the features offered by the message broker system - RabbitMQ~[\autoref{sec:rabbitmq}]. RabbitMQ provides message persistence as well as decoupled nature to the applications that would be built on the DDE framework.
+
+  To provide a fully distributed nature to applications the DDE framework allows developers to deploy a component of their application (Worker isolate~[\autoref{subsubsec:worker}]) to a remote node which is achieved by serializing messages through WebSockets~[\autoref{sec:websocket}]. The DDE framework itself is based on asynchronous message passing. It has several decoupled components which communicate with each other via WebSockets~[\autoref{sec:websocket}].
+
+  The goal of this thesis is to create a framework based on the Dart language that would enforce the actor base programming in Dart and make the applications scalable, highly available, with support of deploying and terminating isolates at runtime without interrupting the whole system.
+
+ Chapter \ref{chapter:literature_review} consists of the introduction and references of the concepts behind the DDE framework. It also discusses the technologies that were used in the framework. Chapter \ref{chapter:system_design} presents the implementation ideas and proof of concept of the framework, called Dart Dart Everywhere (DDE). Chapter \ref{chapter:results} shows the sample applications built using this framework and also lists the performance evaluation of the applications when run in a real distributed environment. The deductions made from the benchmarks and results are discussed in \autoref{chapter:discussions}.

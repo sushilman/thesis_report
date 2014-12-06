@@ -1,15 +1,32 @@
-\chapter{Results}\label{chapter:results}
-%Tables
-%charts
-\section{Building applications based on the DDE framework}
-\label{sec:result-framework}
-  Two sample applications that were the created based on the DDE framework are discussed in Case Study~[\autoref{chapter:case_study}]. The sample applications \autoref{sec:producer-consumer-program} and
-  \autoref{sec:request-reply-program} were used for testing and evaluation of the framework. The benchmarks discussed in \autoref{sec:benchmarks} are the results of this evaluation.
+\chapter{Results}
+\label{chapter:results}
 
-  Some observations made during the development and the deployment of applications based on the DDE framework were:
+\section{Applications based on the DDE framework}
+\label{sec:result-applications}
+  To test the throughput of messages, scalability of the framework and latency of the message delivery. Two sample applications were created based on the DDE framework. The sample applications \autoref{sec:producer-consumer-program} and
+  \autoref{sec:request-reply-program} were used for testing and evaluation of the framework.
+
+\subsection{Producer/Consumer Program}
+\label{sec:producer-consumer-program}
+
+
+\subsection{Requester/Supplier Program}
+\label{sec:request-reply-program}
+
+
+\subsection{System Setup for Test}
+% * Used Amazon EC2 instances
+% * A File Server that serves file over HTTP
+% * A RabbitMQ server with one Message Queuing System
+% * 3 other Message Queuing Systems
+% * 32 Nodes
+
+\subsection{Observations on creating applications based on the DDE framework}
+\label{subsec:result-framework}
+   Some observations made during the development and the deployment of applications based on the DDE framework were:
 
 \begin{itemize}
-  \item The program source codes based on the DDE frameworks are short. It is evident from the source codes of the applications used in case study~\autoref{chapter:case_study}.
+  \item The program source codes based on the DDE frameworks are short. It is evident from the source codes of the applications~\autoref{sec:result-applications} built as a result.
 
   \item The worker isolate could not be run in browser.
 
@@ -21,6 +38,9 @@
 
   \item The decoupling among isolate systems, the MQS and the registry allowed each component to start up and shutdown without severely affecting other systems.
 
+  \item The worker isolates developed for single application were loosely coupled. They were coupled only in terms of message.
+  % But, the sender needed to know address of a target worker isolate, which depend on deployment. Thus one more coupling ! This can be future improvement.
+
   \item The REST API exposed by the Registry simplified the deployment of isolate systems to different nodes of the distributed system.
 
   \item The Web interface of the Registry provided the ability to visualize and monitor the cluster.
@@ -30,7 +50,7 @@
 
 \section{Benchmarks}
 \label{sec:benchmarks}
-  The benchmark results illustrated in this chapter were performed on Amazon EC2 server\footnote{EC2 servers of Frankfurt data center} with configurations shown in table~\autoref{tab:specs}
+  The benchmarks discussed here are the results of the evaluation of applications discussed in~\autoref{sec:result-applications}. The benchmark results illustrated in this chapter were performed on Amazon EC2 server\footnote{EC2 servers of Frankfurt data center} with configurations shown in table~\autoref{tab:specs}
 
 \begin{table}[htsb]
   \caption[Specification of machines used for testing and benchmarking]{Specification of machines used for testing and benchmarking}\label{tab:specs}

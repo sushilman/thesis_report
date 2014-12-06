@@ -36,13 +36,14 @@ In \autoref{fig:result-simultaneous1}, we can see the negative impact of startin
   There could be many factors affecting the result. Even the slight change in network latency can induce a significant change in time required to transfer a message.
 
 \section{The DDE Framework}
-  According to the observations made after creating and testing the applications based on the framework (as discussed in \autoref{sec:result-framework}), we can infer the application responded well when the system was scaled up. We can see the rise in message throughput with higher number of isolate systems. The raise in message throughput was even more when number of Message Queuing Systems were increased.
+  According to the observations made after creating and testing the applications based on the framework (as discussed in \autoref{subsec:result-framework}), we can infer the application responded well when the system was scaled up. We can see the rise in message throughput with higher number of isolate systems. The raise in message throughput was even more when number of Message Queuing Systems were increased.
 
   During the testing, restarting of message broker system (RabbitMQ) and restarting of message queuing systems did not make the whole system fail. The system operated normally as soon as they were back online. Thus, we can say that the system was highly available and it is suitable for the systems that need to be “run forever”.
 
 \section{Problems/Issues}
 
 \subsection{Dart Induced Issues}
+\label{subsec:result-dartIssues}
   Even though Dart is a fairly mature language, it still has some bugs and incomplete features. Some of the issues could be solved by workarounds while others could not be easily resolved. All the issues listed here were faced here were in the Dart version 1.7.2.
 
   Dart's documentation for Isolate~\cite{dartApiIsolate} mentions that there is experimental support for following methods in isolate: \emph{addErrorListener},  \emph{addOnExitListener}, \emph{kill}, \emph{pause}, \emph{ping}, \emph{removeErrorListener}, \emph{removeOnExitListener}, \emph{resume}. But, while developing the framework, it was found that these methods were not implemented yet. The implementation of these functionalities would have particularly helped in the implementation of supervision strategy. Moreover, the implementation of features like ‘hot deployment’, ‘migration’ and isolate termination would have been cleaner and simpler compared to the current workaround present in the DDE framework.

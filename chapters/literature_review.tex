@@ -89,6 +89,7 @@ The ‘race condition’, discussed in \autoref{subsec:thread}, do not arise in 
 ~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
 \section{Scala Actors}
+\label{sec:scala}
 Scala is a statically typed programming language which integrates functional as well as object-oriented programming~\cite{Odersky}. Scala has its own library for actor programming.
 
   In Scala, templates for actors with user-defined behavior are normal class definitions which extend the predefined Actor class.
@@ -179,6 +180,7 @@ Here, ‘at-most-once delivery’ means that a message is either not delivered a
   When an actor is restarted by the supervising actor, the message that the actor was processing during the time of failure is lost and is not processed again. However, the messages that were in the mailbox of the actor remains safe and new actor resumes processing the other messages in the mailbox~\cite{akkaJavaDoc}.
 
   \subsection{Routers}
+  \label{subsec:akka-routers}
   Routers are specialized actors that act as a load balancer for the actors that it supervises. Akka provides several built-in routing techniques:~\cite{akkaJavaDoc}
   \begin{itemize}
     \item Round Robin Router
@@ -256,6 +258,7 @@ The \autoref{lst:akkaRemoting} is an example taken from website of Akka\footnote
 
 
 \section{The Dart Language}
+\label{sec:dart}
   \subsection{Overview}
   Dart is an open-source, class-based, single-inheritance, pure object-oriented programming language developed by Google~\cite{dartEcma}. Dart language is inspired by Smalltalk, Strongtalk, Erlang, C\# and JavaScript~\cite{sethladd}.
 
@@ -433,6 +436,7 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
 
 
 \section{WebSocket}
+\label{sec:websocket}
   WebSocket protocol enables two-way communication between client and server over a single TCP connection. It uses origin-based security model, which is found in web browsers. It can be used for variety of web applications: games, stock tickers, multiuser applications, user interfaces exposing server-side services in real time, etc.~\cite{rfc6455}
 
   Since, HTTP was not initially designed for bidirectional communication, the WebSocket Protocol is designed to displace other existing bidirectional communication technologies that are based on HTTP~\cite{rfc6455}.

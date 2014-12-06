@@ -1,4 +1,5 @@
-\chapter{System Design}\label{chapter:general_design_decisions}
+\chapter{System Design}
+\label{chapter:system_design}
 
 \section{Core Design Decisions}
 The Framework is designed to be distributed in nature with the concepts of Actors~[\autoref{sec:actorProgramming}]. It should follow the standard actor programming concept and provide inherently distributed nature to the applications built on top of it. The framework itself should be built using the concept of ‘message-passing’~[\autoref{sec:messagePassing}] to alleviate any possibility of concurrency issues, thus making the applications thread-safe.
@@ -24,6 +25,7 @@ The Framework is designed to be distributed in nature with the concepts of Actor
 The framework comprises of an Isolate System, a Registry, a Message Queuing System, a Message Broker System and an Activator. The \autoref{fig:architecture} depicts the general overview of different components and sub-components of the framework.
 
   \subsection{Isolate System}
+  \label{sub:isolate-system}
   An Isolate System is analogous to an actor system~\autoref{subsec:actorSystem}. Just as an actor system consists of a group of actors working together, an isolate system is composed of a group of ‘Worker’ isolates working closely. It consists of different hierarchies which forms a logical organizational-like structure. The top level isolate is the Isolate System itself and the bottom most are the ‘Worker’ isolates.
 
   A ‘Bootstrapper’ in a physical node can start up several Isolate Systems. Nevertheless, a logical Isolate System is not limited to a single physical node. The ‘Worker’ isolates spawned by an isolate system can be distributed across several remote systems.
@@ -98,7 +100,7 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
   As a Controller is the ‘spawner’ of Routers and the ‘spawnee’ of the top level isolate, it forwards the messages as well as dequeue requests coming from Routers to the top level isolate of an isolate system.
 
   \subsubsection{Router}
-  \label{subsec:router}
+  \label{subsubsec:router}
   A router is spawned by a controller. The router creates and is responsible for a group of identical Workers isolates. Since an isolate is single threaded, creation of multiple instances of an isolate is desirable for concurrency. When a message arrives in a router from a controller, the router, based on its defined routing policy, delegates the message to one of the worker isolates. The routing policy can be chosen at the time of deployment of a worker isolate.
 
   A router uses a routing policy to distribute message among the group of isolates it is handling. The default routing policies that are available in the framework are listed in the \autoref{tab:routers}
@@ -123,6 +125,7 @@ The framework comprises of an Isolate System, a Registry, a Message Queuing Syst
     If a router does not receive any message from a Worker for a certain amount of time, the router sends a PING message to check if the Worker isolate is alive and ready to accept more messages. If the Worker isolate responds with a PONG message, the router sends a request to fetch messages to controller. This mechanism is present in the framework to prevent the ‘starvation’ for a Worker isolate in case the dequeue message, that might have been sent earlier, could not reach the Message Queuing System because of a network issue or unavailability of MQS.
 
   \subsubsection{Worker}
+  \label{subsubsec:worker}
   The ‘Worker’ of the framework is an abstract class, which should be inherited by the isolate that the programmer creates. The ‘Worker’ first unwraps the messages that arrives from the router and retrieves headers from it. ‘Sender’ and ‘replyTo’ headers of the message is collected before forwarding message to the child class, that extends this abstract class. By unwrapping the messages that is encapsulated by various headers, the abstract Worker class makes sure that the message is delivered to the target implementation of the Worker isolate immutated and in intended form.
 
   To extend the ‘Worker’ isolate, one must implement ‘onReceive’ function which handles incoming messages and carry out the business logic tasks. However, if a task is too complex, the Worker isolate can divide the tasks into subtasks and spawn temporary isolates to carry out those subtasks concurrently. The temporary isolates can be terminated once the subtask has been carried out.
