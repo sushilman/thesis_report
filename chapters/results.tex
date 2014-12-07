@@ -8,7 +8,7 @@
 
 \subsection{Producer/Consumer Program}
 \label{subsec:producer-consumer-program}
-
+  The producer-consumer program is a simple application. It has two worker isolates, a producer and a consumer. The ‘producer’ shown in \autoref{lst:producer} produces messages continuously until it is terminated. The messages are targeted for the ‘consumer’~[\autoref{lst:consumer}] which prints the incoming messages to standard output.
 % Describe the program
 
 \begin{lstlisting}[language=java, firstnumber=1, caption=Basic version of Producer Worker of Producer-Consumer application, label=lst:producer]
@@ -81,10 +81,10 @@ class Producer extends Worker {
 
 \subsection{Requester/Supplier Program}
 \label{sec:request-reply-program}
-
+The request-reply program is a simple application. It has two worker isolates, a requester and a supplier. The ‘requester’ shown in \autoref{lst:requester} produces a request message as soon as it is spawned. The request message is targeted for the ‘supplier’~[\autoref{lst:consumer}] which does a pattern matching on the request and replies an appropriate message to the original requester.
 
 % Requester Worker
-\begin{lstlisting}[language=java, firstnumber=1, caption=Requester Worker of Requester-Supplier application, label=lst:consumer]
+\begin{lstlisting}[language=java, firstnumber=1, caption=Requester Worker of Requester-Supplier application, label=lst:requester]
 import 'dart:isolate';
 import 'dart:math';
 
@@ -136,7 +136,7 @@ class Requester extends Worker {
 \end{lstlisting}
 
 % Supplier Worker
-\begin{lstlisting}[language=java, firstnumber=1, caption=Basic version of Consumer Worker of Producer-Consumer application, label=lst:consumer]
+\begin{lstlisting}[language=java, firstnumber=1, caption=Requester Worker of Requester-Supplier application, label=lst:supplier]
 
 import 'dart:isolate';
 import 'dart:math';
@@ -264,7 +264,7 @@ class AvailableSupplies {
 
 \subsection{Prefetch Count}
 \label{subsec:prefetchCount}
-\autoref{fig:result-prefetch} shows the variation in overall message consumption when the number of consumers (separate isolate systems in separate nodes) were increased. Each line in the figure represents different values for the prefetch-count~\autoref{} value set by the consumer while subscribing to the message broker system. Depending upon prefetch-count, increase, peak and decline of message consumption throughput can be seen for different numbers of consumers.
+\autoref{fig:result-prefetch} shows the variation in overall message consumption when the number of consumers (separate isolate systems in separate nodes) were increased. Each line in the figure represents different values for the prefetch-count~\autoref{subsec:rabbitmqPrefetch} value set by the consumer while subscribing to the message broker system. Depending upon prefetch-count, increase, peak and decline of message consumption throughput can be seen for different numbers of consumers.
 
   The increase in consumers had significant positive results for message throughput, but we can see that after around 8 consumers, adding more consumers had negative effect in the overall throughput.
 

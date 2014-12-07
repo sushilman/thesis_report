@@ -50,7 +50,7 @@ In \autoref{fig:result-simultaneous1}, we can see the negative impact of startin
 
   Dart's documentation for isolate~\cite{dartApiIsolate} mentions that there is experimental support for following methods in isolate: \emph{addErrorListener},  \emph{addOnExitListener}, \emph{kill}, \emph{pause}, \emph{ping}, \emph{removeErrorListener}, \emph{removeOnExitListener}, \emph{resume}. But, while developing the framework, it was found that these methods were not implemented. The implementation of these functionalities would have particularly helped in the implementation of the supervision strategy. Moreover, the implementation of features like ‘hot deployment’, ‘migration’ and isolate termination would have been cleaner and simpler compared to the current workarounds present in the DDE framework.
 
-  We have already discussed the workaround implementations for \emph{kill} in \autoref{itm:killWorking} and \emph{ping} in \autoref{subsec:router}.
+  We have already discussed the workaround implementations for \emph{kill} in \autoref{itm:killWorking} and \emph{ping} in \autoref{subsubsec:router}.
 
   Another issue found in Dart VM for browsers which made it impossible for an isolate system designed in DDE framework to run was the lack of support for multi-level isolates. The ‘Dartium’ browser~\footnote{a variant of Chromium browser with built in dart VM}, only supports spawning of isolates up to one level deep. i.e. Spawning of an isolate by the spawned isolate was not allowed. The reason behind the lack of this implementation is not clear.
 
