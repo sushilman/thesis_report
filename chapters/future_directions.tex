@@ -1,19 +1,13 @@
 \chapter{Future Directions}\label{chapter:future_directions}
 
-%   The work done in the DDE framework in this thesis may be extended in number of directions. First, .. needs ... to further improve programmability. Introduction of tools for unit testing the code would help developers to write quality codes. ... Better implementation of supervision strategy. Automatic load balancing and migration of isolates to another system based on different factors?
+  The work done in the DDE framework in this thesis may be extended and improved in number of directions. First, the most important missing feature, security needs added. The DDE framework heavily relies on the underlying transport layer to provide security, an additional application level security would provide the DDE framework more reliability.
 
+  Another important component that requires to be addressed by the framework is the support the developers by adding the testability of the applications created by them. This improves programmability and helps developers to write quality codes.
 
-% .... opens the possibility of ...
-%
+  The implementation of supervision strategy is far from perfect in the presented DDE framework. The current implementation of the supervision strategy does not properly follow the “Let it Crash”~\autoref{subsec:letItCrash} philosophy. As discussed in \autoref{subsec:result-dartIssues}, the implementation of this feature would have been simpler and cleaner had Dart supported  all of the unimplemented features of isolates. Nevertheless, the Dart language is evolving quickly and those feature may eventually be implemented. However, even if those features do not make into the major version of dart any time soon, it is possible to make implementations using workarounds until those features are complete.
 
-% Dart runs in browsers thus isolates can be made to run in browsers provided that ... dart implement those possibility.
+  Another interesting idea would be the introduction of adaptive load balancing and automatic migration of isolates based on different heuristics like load on a system.
 
+  One good improvement to be made to improve the fault-tolerance of the system would be to change the implementation FileMonitor~\autoref{subsubsec:fileMonitor}. The current implementation of the FileMonitor simply monitors the file from remote location and periodically fetches it to calculate the checksum of the source file. In case of modification in the file, the FileMonitor informs controller which instructs router to respawn the router regardless of the contents of the source. This means there is the vulnerability to deploy incorrect code which could result in failing to start up the isolate. The ability to roll back to previous working version of the source incase of failure of spawning would improve the rigidity of the framework.
 
-%
-% Some notes for future directions:
-%  * If a code upgrade fails, the isolate should be reverted to its previous state.
-%  * Lightweight isolates -> future dart impl?
-
-%  * Detect all sort of exceptions in child isolate -> which would make it possible to implement supervisors and let it crash philosophy. -> future dart impl?, should be available in near future in dart.
-%  *
-\section{TODO}
+  The ideas discussed in these chapters are only a few of many other improvements that can be made in the framework.

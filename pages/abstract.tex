@@ -1,2 +1,11 @@
 \chapter{\abstractname}
-TODO
+
+% What did you do?
+% Why did you do it? What question were you trying to answer?
+% How did you do it? State methods.
+% What did you learn? State major results.
+% Why does it matter? Point out at least one significant implication.
+
+  The purpose of this thesis is to construct a framework that would allow developers to create concurrent, scalable and fault-tolerant applications with high availability in the Dart language.
+
+  The isolate of the Dart language is an interesting entity inspired by the actor model. Their nature of having no shared access to memory and relying on messages for communication makes them asynchronous and decoupled in nature. Nevertheless, their limitation of being able to be spawned only in local dart virtual machine restricts them from being distributed. The DDE framework built as a result of this thesis uses the advantages of the dart language and append additional features to the isolates. The framework provides its own implementation of actor and allows developers to build applications that are inherently distributed in nature.

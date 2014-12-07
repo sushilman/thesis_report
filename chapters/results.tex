@@ -7,14 +7,201 @@
   \autoref{sec:request-reply-program} were used for testing and evaluation of the framework.
 
 \subsection{Producer/Consumer Program}
-\label{sec:producer-consumer-program}
+\label{sec:producer-worker}
+\begin{lstlisting}[language=java, firstnumber=1, caption=Basic version of Producer Worker of Producer-Consumer application, label=lst:producer]
 
+// producer.dart
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:async';
+import 'dart:math' as Math;
+
+import 'package:isolatesystem/worker/Worker.dart';
+
+main(List<String> args, SendPort sendPort) {
+  Producer producer = new Producer(args, sendPort);
+}
+
+class Producer extends Worker {
+  static const String consumerAddress = "mysystem/consumer";
+  static const String Message64Bytes = "012345670123456701234567";
+
+  StringBuffer data = new StringBuffer();
+  String description = "";
+
+  Producer(List<String> args, SendPort sendPort) : super(args, sendPort) {
+    description += "${args}";
+    sendMsgWithDelay();
+  }
+
+  @override
+  onReceive(message) {}
+
+  sendMsgWithDelay() {
+    while(true) {
+      int timestamp = new DateTime.now().millisecondsSinceEpoch;
+      Map message = {'createdAt': timestamp, 'message': Message64Bytes};
+      int delay = 20 + new Math.Random().nextInt(480);
+      sleep(new Duration(microseconds:delay));
+      send(message, consumerAddress);
+    }
+  }
+}
+\end{lstlisting}
+
+
+% Consumer Worker
+\begin{lstlisting}[language=java, firstnumber=1, caption=Basic version of Consumer Worker of Producer-Consumer application, label=lst:consumer]
+  //consumer.dart
+  import 'dart:isolate';
+  import 'package:isolatesystem/worker/Worker.dart';
+
+  main(List<String> args, SendPort sendPort) {
+    Consumer printerIsolate = new Consumer(args, sendPort);
+  }
+
+  class Consumer extends Worker {
+    Consumer(List<String> args, SendPort sendPort) : super(args, sendPort);
+
+    @override
+    onReceive(message) {
+      outText(message);
+    }
+
+    outText(var message) {
+      print(message);
+      done();
+    }
+  }
+
+\end{lstlisting}
 
 \subsection{Requester/Supplier Program}
 \label{sec:request-reply-program}
 
 
-\subsection{System Setup for Test}
+% Requester Worker
+\begin{lstlisting}[language=java, firstnumber=1, caption=Requester Worker of Requester-Supplier application, label=lst:consumer]
+import 'dart:isolate';
+import 'dart:math';
+
+import 'package:isolatesystem/worker/Worker.dart';
+
+import 'AvailableSupplies.dart';
+
+main(List<String> args, SendPort sendPort) {
+  new Requester(args, sendPort);
+}
+
+class Requester extends Worker {
+  static const String SupplierAddress = "demosystem/supplier";
+  DateTime startTime;
+
+  Requester(List<String> args, SendPort sendPort):super(args, sendPort) {
+    startTime = new DateTime.now();
+    _sendRequest();
+  }
+
+  @override
+  onReceive(message) {
+    int receivedAt = new DateTime.now().millisecondsSinceEpoch;
+    int requestedAt = message['requestedAt'];
+    int repliedAt = message['repliedAt'];
+
+    int rtt = receivedAt - requestedAt;
+    print("Round trip time: $rtt");
+    _sendRequest();
+  }
+
+  _sendRequest() {
+    String requestMessage = "";
+
+    int randomNumber = new Random().nextInt(3);
+    if(randomNumber == 1) {
+      requestMessage = AvailableSupplies.RANDOM_FRUIT;
+    } else if (randomNumber == 2) {
+      requestMessage = AvailableSupplies.RANDOM_NUMBER;
+    } else {
+      requestMessage = AvailableSupplies.RANDOM_NAME;
+    }
+
+    Map message = {'requestedAt':new DateTime.now().millisecondsSinceEpoch, 'requestMessage':requestMessage};
+    ask(message, SupplierAddress);
+  }
+}
+
+\end{lstlisting}
+
+% Supplier Worker
+\begin{lstlisting}[language=java, firstnumber=1, caption=Basic version of Consumer Worker of Producer-Consumer application, label=lst:consumer]
+
+import 'dart:isolate';
+import 'dart:math';
+
+import 'package:isolatesystem/worker/Worker.dart';
+import 'AvailableSupplies.dart';
+
+main(List<String> args, SendPort sendPort) {
+  new Supplier(args, sendPort);
+}
+
+class Supplier extends Worker {
+  Supplier(List<String> args, SendPort sendPort):super(args, sendPort);
+
+  @override
+  onReceive(message) {
+    String responseMessage = "";
+    switch(message['requestMessage']) {
+      case AvailableSupplies.RANDOM_FRUIT:
+        responseMessage = _randomFruit();
+        break;
+      case AvailableSupplies.RANDOM_NUMBER:
+        responseMessage = _randomNumber();
+        break;
+      case AvailableSupplies.RANDOM_NAME:
+        responseMessage = _randomName();
+        break;
+    }
+    Map response = {
+        'requestedAt': message['requestedAt'],
+        'repliedAt': new DateTime.now().millisecondsSinceEpoch,
+        'requestMessage': message['requestMessage'],
+        'responseMessage': responseMessage};
+
+    reply(response);
+    done();
+  }
+
+  String _randomFruit() {
+    int number = new Random().nextInt(5);
+    return ["APPLE", "ORANGE", "KIWI", "PEAR", "GRAPES"][number];
+  }
+
+  String _randomNumber() {
+    return new Random().nextInt(99999).toString();
+  }
+
+  String _randomName() {
+    int number = new Random().nextInt(5);
+    return ["Lorna", "Ambrose", "Domingo", "Kirsten", "Zachery"][number];
+  }
+}
+
+\end{lstlisting}
+
+% Supporting Class
+\begin{lstlisting}[language=java, firstnumber=1, caption=Supporting class that contains list of constants for pattern matching, label=lst:supportingClass]
+
+class AvailableSupplies {
+  static const String RANDOM_FRUIT = "supply.fruit";
+  static const String RANDOM_NUMBER = "supply.number";
+  static const String RANDOM_NAME = "supply.name";
+}
+\end{lstlisting}
+
+
+\subsection{System Setup for Testing}
+    The framework and benchmarks the sample applications were perfromed in Amazon EC2~\footnote{\url{http://aws.amazon.com/ec2}} instances. A distributed environment with configurations shown in \autoref{tab:specs} was setup on multiples EC2 instances.
 % * Used Amazon EC2 instances
 % * A File Server that serves file over HTTP
 % * A RabbitMQ server with one Message Queuing System
@@ -50,7 +237,7 @@
 
 \section{Benchmarks}
 \label{sec:benchmarks}
-  The benchmarks discussed here are the results of the evaluation of applications discussed in~\autoref{sec:result-applications}. The benchmark results illustrated in this chapter were performed on Amazon EC2 server\footnote{EC2 servers of Frankfurt data center} with configurations shown in table~\autoref{tab:specs}
+  The benchmarks discussed here are the results of the evaluation of applications discussed in~\autoref{sec:result-applications}. The benchmark results illustrated in this chapter were performed on Amazon EC2 server\footnote{EC2 servers of data center in Ireland} with configurations shown in table~\autoref{tab:specs}
 
 \begin{table}[htsb]
   \caption[Specification of machines used for testing and benchmarking]{Specification of machines used for testing and benchmarking}\label{tab:specs}
@@ -183,7 +370,7 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 
   The result was obtained by attaching a timestamp in the message that was sent to the supplier; upon receiving the request message at the supplier, the timestamp was copied to the reply message and sent back to the sender(requester). The difference between the timestamp when the message was received at the requester and the timestamp contained in the message is the round trip time.
 
-  From the result of RTT in ~\autoref{fig:result-request-reply-rtt}, we can see that there were inconsistencies in RTT of messages with respect to number of suppliers as well as requesters. When there was only one supplier, the RTT of a message was usually higher compared to cases when there were more number of suppliers. Nevertheless, the least inconsistency was seen in case of 8 suppliers and the least latency was observed in case of single supplier with single consumer.
+  From the result of RTT shown in \autoref{fig:result-request-reply-rtt}, we can see that there were inconsistencies in RTT of messages with respect to number of suppliers as well as requesters. When there was only one supplier, the RTT of a message was usually higher compared to cases when there were more number of suppliers. Nevertheless, the least inconsistency was seen in case of 8 suppliers and the least latency was observed in case of single supplier with single consumer.
 
   \begin{figure}[H]
     \centering    \includegraphics[width=0.85\textwidth]{figures/10request-reply-rtt}

@@ -31,7 +31,7 @@
 
   To buffer incoming messages, each actor has a mailbox. A mailbox is a queue of messages that have been sent by other actors or processes and not yet consumed, where mailbox is also an actor. According to Hewitt, the order in which the messages are delivered is non-deterministic~\cite{hewittVideo}.
 
-After receiving a message, an actor may perform following actions.~\cite{hewitt}
+After receiving a message, an actor may perform following actions~\cite{hewitt}:
 \begin{itemize}
   \item Create other actors
   \item Send messages to itself, other known actors or reply to the actor who sent the message
@@ -96,19 +96,19 @@ Scala is a statically typed programming language which integrates functional as 
 
   The scala actors library provide concurrent programming model based on actors~[\autoref{sec:actorProgramming}]. The actors in scala are fully inter-operable with the ordinary virtual machine threads~\cite{Haller}. Scala actors are lightweight and support around 240 times more actors to run simultaneously compared to virtual machine threads~\cite{Haller}.
 
-  Both synchronous and asynchronous message passing can be used in scala actors. Synchronous message passing is implemented by exchanging several asynchronous messages. Actors in scala can also communicate using ‘futures’. When a future is used the requests are handled asynchronously and the sender immediately gets a representation of the future which allows sender to wait for the reply.~\cite{scalaActors}
+  Both synchronous and asynchronous message passing can be used in scala actors. Synchronous message passing is implemented by exchanging several asynchronous messages. Actors in scala can also communicate using ‘futures’. When a future is used the requests are handled asynchronously and the sender immediately gets a representation of the future which allows sender to wait for the reply~\cite{scalaActors}.
 
   The Scala Actors library is now deprecated and will be removed in future Scala releases\footnote{Scala actors are deprecated in version 2.10~\cite{scalaActorsAPI}}. The deprecation is in favor of the use of Akka actors~[\autoref{sec:akka}].
 
 \section{Akka Toolkit}
 \label{sec:akka}
-Akka is a toolkit and runtime for building highly concurrent, distributed and resilient message-drive applications on the JVM.~\cite{akkaHome} Akka uses lightweight actors for concurrency. The actors in Akka are based on Hewitt and Agha's model~\cite{agha, hewitt} of actor programming. Akka provides a well defined API for developers to create large concurrent systems, which allows for easy scaling out.
+Akka is a toolkit and runtime for building highly concurrent, distributed and resilient message-drive applications on the JVM~\cite{akkaHome}. Akka uses lightweight actors for concurrency. The actors in Akka are based on Hewitt and Agha's model~\cite{agha, hewitt} of actor programming. Akka provides a well defined API for developers to create large concurrent systems, which allows for easy scaling out.
   Akka is available for Scala as well as Java.
 
   \subsection{Actor Model in Akka}
   In Akka, actors are objects which encapsulate state and behavior. Similar to Hewitt and Agha's actor model~[\autoref{sec:actorProgramming}], the akka actors communicate only by messages which are placed into the recipient’s mailbox. Akka actors are the stringent form of object-oriented programming~\cite{akkaActorSystem}.
 
-  The ‘ActorRef’ in akka, represents an actor. It holds a reference to an actor. Its purpose is to facilitate the message sending to the actor it refers. An actor can also refer to itself using \emph{self}. ~\cite{akkaJavaDoc}
+  The ‘ActorRef’ in akka, represents an actor. It holds a reference to an actor. Its purpose is to facilitate the message sending to the actor it refers. An actor can also refer to itself using \emph{self} \cite{akkaJavaDoc}.
 
   The \autoref{lst:akkaHelloWorld}~\footnote{Source: \fullcite{akkaHome}}, is a simple example of how actor programming in Akka is realized. In this example, the ‘GreetingActor’ which extends ‘UntypedActor’ must implement the \emph{onReceive()} method. The \emph{onReceive()} method is invoked for each message received by this actor. After receiving a message, the actor performs pattern matching to decide which code to execute. As in this example, if the message is a type of ‘Greeting’ object, it is concatenated with the string “Hello” otherwise, it is simply ignored.
 
@@ -137,9 +137,9 @@ greeter.tell(new Greeting("Charlie Parker"), ActorRef.noSender());
   \label{subsec:actorSystem}
       An actor system in Akka is like an organization of actors where actors are arranged in a hierarchical structure. An actor, which performs certain task usually split up the task into smaller pieces. For this, it starts up other actors as its child actors, which it supervises~\autoref{subsec:supervisionMonitoring}. As the actor which creates a new actor is the supervisor of the new actor, it is implicit that there can be only one supervisor of an actor.
 
-  By splitting up the tasks, the tasks become clear and structured. Furthermore, the resulting actors also becomes simplified and specialized in terms of which messages it should process and how it should react normally. It also becomes easy to handle the failures. If an actor cannot cope with a failure, it is escalated up in the hierarchy to its supervisor which is recursive unless it reaches up to the actor which can handle the failure.~\cite{akkaJavaDoc}
+  By splitting up the tasks, the tasks become clear and structured. Furthermore, the resulting actors also becomes simplified and specialized in terms of which messages it should process and how it should react normally. It also becomes easy to handle the failures. If an actor cannot cope with a failure, it is escalated up in the hierarchy to its supervisor which is recursive unless it reaches up to the actor which can handle the failure~\cite{akkaJavaDoc}.
 
-  An actor instance in akka takes up roughly 300 bytes of memory, because of which it is possible to spawn millions of them in one actor system. As an actor system can grow very large and distributed, the order of message processing is not guaranteed.~\cite{akkaJavaDoc}
+  An actor instance in akka takes up roughly 300 bytes of memory, because of which it is possible to spawn millions of them in one actor system. As an actor system can grow very large and distributed, the order of message processing is not guaranteed~\cite{akkaJavaDoc}.
 
   An example of the arrangement of actors in hierarchical structure is shown in~\autoref{fig:actorSystem}. The ‘{$\backslash$}’ is known as the “root guardian” and \emph{$\backslash$user} is known as the “user guradian”. Any actor created by a user falls under the user guardian. For instance, in the~\autoref{fig:actorSystem}, \emph{actorA} and \emph{actorB} are actors created by user, hence their supervisor is \emph{$\backslash$user}. Again, the actors \emph{actor1} and \emph{actor2} are the child actors of \emph{actorB}. The address of an actor in akka is arranged like the filesystem hierarchy. Hence, the supervision hierarchy as well as the path leading to the actor is comprehensible from its address.
 
@@ -152,9 +152,9 @@ greeter.tell(new Greeting("Charlie Parker"), ActorRef.noSender());
 
   \subsection{Message Passing in Akka}
   \label{subsec:akkaMessagePassing}
-  In Akka, every actor has an event driven message inbox known as the ‘mailbox’. The mailbox buffers all the incoming messages until they are processed. When a message is sent from one actor to the other, the reference to the sender (an ActorRef), is automatically added to the message by default. Thus, during the message processing the recipient actor has a reference to the sender actor through the \emph{sender} method.~\cite{akkaJavaDoc}
+  In Akka, every actor has an event driven message inbox known as the ‘mailbox’. The mailbox buffers all the incoming messages until they are processed. When a message is sent from one actor to the other, the reference to the sender (an ActorRef), is automatically added to the message by default. Thus, during the message processing the recipient actor has a reference to the sender actor through the \emph{sender} method~\cite{akkaJavaDoc}.
 
-  Akka guarantees the order of direct message delivery between two actors. It is only applicable when the mailbox implementation in receiver is FIFO mailbox and the communication takes place only between the two actors without the involvement of intermediary actors. For instance, if an actor A1 sends messages M1, M2 and M3 to actor A2. The message M1 will be delivered before M2 and the message M2 before M3. Meanwhile, if another actor A3 sends messages M4, M5 and M6 to A2 at the same time, the order of message delivery of M4, M5 and M6 will also be sequential. Nevertheless, there is no guarantee that the messages sent by A1 is delivered before the messages from A3; even if all of the messages from A1 were sent before A3 started sending messages to A2. Provided that the message sending from A1 and A3 are independent of each other. ~\cite{akkaJavaDoc}
+  Akka guarantees the order of direct message delivery between two actors. It is only applicable when the mailbox implementation in receiver is FIFO mailbox and the communication takes place only between the two actors without the involvement of intermediary actors. For instance, if an actor A1 sends messages M1, M2 and M3 to actor A2. The message M1 will be delivered before M2 and the message M2 before M3. Meanwhile, if another actor A3 sends messages M4, M5 and M6 to A2 at the same time, the order of message delivery of M4, M5 and M6 will also be sequential. Nevertheless, there is no guarantee that the messages sent by A1 is delivered before the messages from A3; even if all of the messages from A1 were sent before A3 started sending messages to A2. Provided that the message sending from A1 and A3 are independent of each other~\cite{akkaJavaDoc}.
 
   The Akka's documentation for Java, the rules mentioned for message sending are: \cite{akkaJavaDoc}
   \begin{itemize}
@@ -195,7 +195,7 @@ Here, ‘at-most-once delivery’ means that a message is either not delivered a
 It is also possible to use custom implementation of a router by extending \emph{RoutingLogic} class from Akka's routing library.
 
   \subsection{Remote Actors in Akka}
-  Actors in akka are location transparent; they reside in a logical hierarchy of an actor system through which the physical location of an actor in the network can be determined. The location transparency allows the akka applications to be developed locally but deployed into distributed systems simply by changing configurations.~\cite{akkaJavaDoc}
+  Actors in akka are location transparent; they reside in a logical hierarchy of an actor system through which the physical location of an actor in the network can be determined. The location transparency allows the akka applications to be developed locally but deployed into distributed systems simply by changing configurations~\cite{akkaJavaDoc}.
 
   Actor systems in akka communicate in a peer-to-peer fashion and it is the foundation for Akka Clustering. Akka's Documentation for Java~\cite{akkaJavaDoc} lists the two design decisions for remoting:
 \begin{enumerate}
@@ -384,7 +384,7 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
   RabbitMQ supports STOMP via a plugin \textendash{} ‘rabbitmq\textunderscore{}stomp’.
 
   \item MQTT\\
-  Message Queue Telemetry Transport was developed by IBM. It provides lightweight publish-and-subscribe messaging, targeted for resource devices with low resources and limited network bandwidth. Hence, the design principles and aims of MQTT are simpler and more focused than those of AMQP.~\cite{andyPiperVmware}
+  Message Queue Telemetry Transport was developed by IBM. It provides lightweight publish-and-subscribe messaging, targeted for resource devices with low resources and limited network bandwidth. Hence, the design principles and aims of MQTT are simpler and more focused than those of AMQP~\cite{andyPiperVmware}.
 
   RabbitMQ supports MQTT 3.1 via a plugin.
   \item HTTP\\
@@ -422,7 +422,7 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
 
 \section{STOMP}
 \label{sec:stomp}
-  STOMP stands for Simple (or Streaming) Text Orientated Messaging Protocol. It is an alternative to other open messaging protocols such as AMQP. It provides an interoperable format for STOMP clients to communicate with a message broker system that supports STOMP. It provides interoperability among different languages, platforms and brokers.~\cite{stomp}
+  STOMP stands for Simple (or Streaming) Text Orientated Messaging Protocol. It is an alternative to other open messaging protocols such as AMQP. It provides an interoperable format for STOMP clients to communicate with a message broker system that supports STOMP. It provides interoperability among different languages, platforms and brokers~\cite{stomp}.
   STOMP is designed to be a lightweight protocol that is easy to implement in both client and server.
   \subsection{Protocol Overview}
   STOMP is a frame based protocol. A frame consists of a command, a set of optional headers and an optional body. STOMP is text based but it allows the transmission of binary messages~\cite{stomp}.
@@ -437,7 +437,7 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
 
 \section{WebSocket}
 \label{sec:websocket}
-  WebSocket protocol enables two-way communication between client and server over a single TCP connection. It uses origin-based security model, which is found in web browsers. It can be used for variety of web applications: games, stock tickers, multiuser applications, user interfaces exposing server-side services in real time, etc.~\cite{rfc6455}
+  WebSocket protocol enables two-way communication between client and server over a single TCP connection. It uses origin-based security model, which is found in web browsers. It can be used for variety of web applications: games, stock tickers, multiuser applications, user interfaces exposing server-side services in real time, etc~\cite{rfc6455}.
 
   Since, HTTP was not initially designed for bidirectional communication, the WebSocket Protocol is designed to displace other existing bidirectional communication technologies that are based on HTTP~\cite{rfc6455}.
 
@@ -446,7 +446,7 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
 \subsection{Security}
   The WebSocket Protocol uses the origin model used by web browsers to restrict which web pages can contact a WebSocket server when the WebSocket Protocol is used from a web page~\cite{rfc6455}.
 
-   A WebSocket server reads the handshake sent by client to establish a connection. Thus, an attempt to connection to WebSocket from other protocols cannot succeed if it is not sent by a WebSocket client.~\cite{rfc6455}
+   A WebSocket server reads the handshake sent by client to establish a connection. Thus, an attempt to connection to WebSocket from other protocols cannot succeed if it is not sent by a WebSocket client~\cite{rfc6455}.
 
 \subsection{Establishing a Connection}
   When establishing a WebSocket connection, the HTTP server receives a regular GET request with an offer to upgrade to WebSocket. The server responds to the request to complete the handshake and establish the connection. Then the communication takes place in full-duplex mode~\cite{rfc6455}.
