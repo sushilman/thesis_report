@@ -3,11 +3,14 @@
 
 \section{Applications based on the DDE framework}
 \label{sec:result-applications}
-  To test the throughput of messages, scalability of the framework and latency of the message delivery. Two sample applications were created based on the DDE framework. The sample applications \autoref{sec:producer-consumer-program} and
+  To test the throughput of messages, scalability of the framework and latency of message delivery two sample applications were created based on the DDE framework. The sample applications~\autoref{subsec:producer-consumer-program} and
   \autoref{sec:request-reply-program} were used for testing and evaluation of the framework.
 
 \subsection{Producer/Consumer Program}
-\label{sec:producer-worker}
+\label{subsec:producer-consumer-program}
+
+% Describe the program
+
 \begin{lstlisting}[language=java, firstnumber=1, caption=Basic version of Producer Worker of Producer-Consumer application, label=lst:producer]
 
 // producer.dart
@@ -201,50 +204,50 @@ class AvailableSupplies {
 
 
 \subsection{System Setup for Testing}
-    The framework and benchmarks the sample applications were perfromed in Amazon EC2~\footnote{\url{http://aws.amazon.com/ec2}} instances. A distributed environment with configurations shown in \autoref{tab:specs} was setup on multiples EC2 instances.
+    The benchmarks of the sample applications were performed in Amazon EC2~\footnote{\url{http://aws.amazon.com/ec2}} instances. A distributed environment with configurations shown in \autoref{tab:specs} was setup on multiple EC2 instances.
 % * Used Amazon EC2 instances
 % * A File Server that serves file over HTTP
 % * A RabbitMQ server with one Message Queuing System
 % * 3 other Message Queuing Systems
 % * 32 Nodes
 
-\subsection{Observations on creating applications based on the DDE framework}
+\subsection{Observations from DDE based applications}
 \label{subsec:result-framework}
    Some observations made during the development and the deployment of applications based on the DDE framework were:
 
 \begin{itemize}
-  \item The program source codes based on the DDE frameworks are short. It is evident from the source codes of the applications~\autoref{sec:result-applications} built as a result.
+  \item The program source code based on the DDE framework is short, as evident from the source code of the applications listed in \autoref{sec:result-applications}.
 
-  \item The worker isolate could not be run in browser.
+  \item The worker isolate could not be run in browser because of current limitations of the Dart VM.
 
-  \item Setting up the system for the first time was rather complicated because it consisted of several components that needed to be started up separately.
+  \item Setting up the system for the first time was complicated because it consisted of several components that needed to be started up separately.
 
   \item Once the system was setup, adding workers and isolate systems to the nodes was easy. Thus, deploying an application to a distributed system was easy.
 
   \item Shutting down a single isolate or an isolate system did not effect other components and nodes.
 
-  \item The decoupling among isolate systems, the MQS and the registry allowed each component to start up and shutdown without severely affecting other systems.
+  \item The decoupling of isolate systems, the MQS and the registry allowed each component to start up and shutdown without severely affecting other systems.
 
-  \item The worker isolates developed for single application were loosely coupled. They were coupled only in terms of message.
+  \item The worker isolates developed for an application were loosely coupled. They were coupled only in terms of message.
   % But, the sender needed to know address of a target worker isolate, which depend on deployment. Thus one more coupling ! This can be future improvement.
 
-  \item The REST API exposed by the Registry simplified the deployment of isolate systems to different nodes of the distributed system.
+  \item The REST API exposed by the registry simplified the deployment of isolate systems to different nodes.
 
   \item The Web interface of the Registry provided the ability to visualize and monitor the cluster.
 
-  \item The messages were not lost during the restart of a system. The messages were persisted and safe in RabbitMQ.
+  \item Messages sent to RabbitMQ were not lost during the restart of the system because they were persisted in RabbitMQ. The system continued to process messages after the restart.
 \end{itemize}
 
 \section{Benchmarks}
 \label{sec:benchmarks}
-  The benchmarks discussed here are the results of the evaluation of applications discussed in~\autoref{sec:result-applications}. The benchmark results illustrated in this chapter were performed on Amazon EC2 server\footnote{EC2 servers of data center in Ireland} with configurations shown in table~\autoref{tab:specs}
+  The benchmarks discussed here are the results of the evaluation of applications discussed in~\autoref{sec:result-applications}. The results presented in this chapter were performed on Amazon EC2 servers\footnote{EC2 servers of data center in Ireland} with configurations shown in table~\autoref{tab:specs}
 
 \begin{table}[htsb]
   \caption[Specification of machines used for testing and benchmarking]{Specification of machines used for testing and benchmarking}\label{tab:specs}
   \centering
   \begin{tabular}{l l l}
     \toprule
-      Deployed Systems & Name &  Specifications\\
+      \bf{Deployed Systems} & \bf{Name} &  \bf{Specifications}\\
     \midrule
 
       \pbox{30cm}{\relax RabbitMQ and\\a Message Queuing System} & c3.2xLarge & \pbox{60cm}{8 core CPU, 28 ECU,\\15 GiB Memory, SSD disk}\\
@@ -261,11 +264,11 @@ class AvailableSupplies {
 
 \subsection{Prefetch Count}
 \label{subsec:prefetchCount}
-\autoref{fig:result-prefetch} shows the variation in overall message consumption when the number of consumers (separate isolate systems in separate nodes) were increased. Each line in the figure represents different values of prefetch-count set in the consumer while subscribing to the message broker system. Depending upon prefetch-count, saturation point and decrease rate can also be seen when number of consumers were increased.
+\autoref{fig:result-prefetch} shows the variation in overall message consumption when the number of consumers (separate isolate systems in separate nodes) were increased. Each line in the figure represents different values for the prefetch-count~\autoref{} value set by the consumer while subscribing to the message broker system. Depending upon prefetch-count, increase, peak and decline of message consumption throughput can be seen for different numbers of consumers.
 
-  The increase in consumers had significant positive result for message throughput, but we can see that after around 8 consumers, adding more consumers had negative effect in the overall throughput.
+  The increase in consumers had significant positive results for message throughput, but we can see that after around 8 consumers, adding more consumers had negative effect in the overall throughput.
 
-    Increasing prefetch count had more positive impact in message throughput compared to increasing consumers. For instance, increase in consumers from 1 to 16 resulted in the rise of approximately 2000 message per second, while the increase in prefetch count from 1 to 16 in single consumer resulted in increase of message throughput by approximately 5500 messages per second.
+    Increasing prefetch count had more positive impact in message throughput compared to increasing consumers. For instance, the increase in consumers from 1 to 16 resulted in the rise of approximately 2000 messages per second, while the increase in prefetch count from 1 to 16 in the single consumer case resulted in an increase of message throughput by approximately 5500 messages per second.
 
 \begin{figure}[H]
   \centering
@@ -276,9 +279,9 @@ class AvailableSupplies {
 
 \subsection{Message Size}
 \label{subsec:messageSize}
-The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by allowing eight consumers with the prefetch count of 8 to dequeue existing messages from a queue.
+The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by having eight consumers with a prefetch count of 8 to dequeue existing messages from a queue.
 
-  The negative effect, on message consumption throughput, of larger message is evident from the  \autoref{fig:result-consumptionMessageSize}. The decrease in message throughput was more prominent between message size of 256 bytes and 512 bytes than that of between 64 bytes and 256 bytes.
+  The negative effect on message consumption throughput of larger message is evident from the  \autoref{fig:result-consumptionMessageSize}. The decrease with message throughput was more prominent between message sizes of 256 bytes and 512 bytes than that of between 64 bytes and 256 bytes.
 
   Similar observation can be made from~\autoref{fig:result-productionMessageSize} which is a result of allowing a single worker isolate to create messages, except there was a slight rise in the throughput when the message size was increase from 512 bytes to 1024 bytes.
 
@@ -295,9 +298,9 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 \end{figure}
 
 \subsection{Number of Message Queuing Systems}
-  The \autoref{fig:result-varyingMqs} is the result obtained by testing message consumption by consumers ranging from 1 to 32 distributed to one to four MQS instances connected to same instance of message broker. Multiple parallel instances of MQS clearly had better message throughput than having a single instance of MQS. Nevertheless, adding more than eight consumers per MQS instance had negative effect, as we can see from the fall of throughputs in the line chart of single MQS and that of two MQS. In the tests with one and two MQS the optimum performance was seen when there were 8 consumers in total, but with four MQS, the throughput kept rising and supported upto 32 consumers without fall in the performance. Nevertheless, the rate of performance increase was not as much as the rate seen when scaling up from two MQS to four MQS.
+  \autoref{fig:result-varyingMqs} is the result obtained by testing message consumptions for 1 to 32 consumers distributed to one to four MQS instances connected to the same message broker. Adding MQS instances clearly increased message throughput. Nevertheless, adding more than eight consumers per MQS instance had a negative effect, as we can see from the decline of throughput in the line charts for the one-instance case and the two-instance case. In the tests with one and two MQS instances, the optimum performance was seen when there were 8 consumers in total. But with four MQS instances, the throughput kept rising and supported up to 32 consumers without decline in the performance. Nevertheless, the rate of performance increase was not as much as the rate seen when scaling up from two MQS instances to four MQS instances.
 
-  The positive impact of scaling out MQS was seen not only on consumption throughput but also on production throughput. \autoref{fig:result-productionRabbit} shows the result of message production throughput by increasing number of producers from one to eight distributed among multiple instances of instances of MQS. The production rate measured here was the rate at which RabbitMQ enqueued the messages, not the rate at which a worker isolate produced messages.
+  The positive impact of scaling out MQS was seen not only on consumption throughput but also on production throughput. \autoref{fig:result-productionRabbit} shows results of message production throughput by increasing the number of producers from one to eight, distributed across multiple MQS instances. The production rate measured here was the rate at which RabbitMQ enqueued the messages, not the rate at which a worker isolate produced messages.
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{figures/04varyingMqs}
@@ -314,49 +317,48 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 
 
 \subsection{Production Throughput of Isolates}
-  In contrast to results of production throughput of messages in other measurements as seen on \autoref{fig:result-productionMessageSize} and \autoref{fig:result-productionRabbit}, the result shown in
- \autoref{fig:result-productionIsolate} measures the throughput of message production by the isolate system before it is sent to Message Queuing System and to Message Broker System for enqueuing. The production of a message in Worker isolate was throttled, so that there is no immediate ‘out of memory’ error by overwhelming production of messages. The message production was throttled by delaying the production of messages by random amount of time ranging from 20 micro seconds to 500 micro seconds. The observations made here are the average throughput of each worker isolate as well as average throughput of all the producer nodes connecting to single instance of MQS.
+  In contrast to results of production throughput of messages as seen in \autoref{fig:result-productionMessageSize} and \autoref{fig:result-productionRabbit}, the result shown in
+ \autoref{fig:result-productionIsolate} measures the throughput of message production by the isolate system before it is sent to the MQS and broker for enqueuing. The production of a message in a Worker isolate was throttled, so that there is no immediate ‘out of memory’ error from an overwhelming production of messages. Throughput was throttled by delaying the production of messages by a random amount of time ranging from 20 - 500 microseconds. The observations made here are the average throughput of each worker isolate as well as average throughput of all the producer nodes connecting to a single MQS instance.
 
-  As observed in the \autoref{fig:result-productionIsolate}, the total production rate of the messages sharply increased with increase in number of producer nodes. In contrast, the average production of single node was seen lower with higher number of producers.
+  As observed in the \autoref{fig:result-productionIsolate}, the total production rate of messages sharply increased when increasing the number of producers. In contrast, the average production of a single node was lower with a higher number of producers.
 
-  In Dart version 1.7.2, time required to send a message of ‘Map’ datatype from one isolate to another consumed around 300-500 microseconds. But, when the same message was serialized to JSON String the time required to send a message dropped to 10 - 40 microseconds. It is an improvement in speed by the factor of 10.
+  In Dart version 1.7.2, time required to send a message of ‘Map’ datatype from one isolate to another consumed around 300 - 500 microseconds. But, when the same message was serialized to JSON String the time required to send a message dropped to 10 - 40 microseconds. It is an improvement in speed by one order of magnitude.
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=1\textwidth]{figures/06productionIsolate}
+  \centering  \includegraphics[width=1\textwidth]{figures/06productionIsolate}
   \caption[Production Throughput of Isolate]{Production Throughput of Isolate}
   \label{fig:result-productionIsolate}
 \end{figure}
 
 \subsection{Simultaneous Production and Consumption}
 \label{subsec:simultaneous}
-  In contrast to previous benchmarks, which were measured with either only producers or only consumers, the benchmarks \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2} shows the consumption rate and production rate of messages when they are run simultaneously but in different nodes. Compared to what were seen on \autoref{fig:result-prefetch} and
-  \autoref{fig:result-varyingMqs}, the consumption rate is lower in this case. Nevertheless, the production rate of messages remained almost equal to that was observed in \autoref{fig:result-varyingMqs} with single MQS.
+  In contrast to previous benchmarks, which were measured with either only producers or only consumers, the benchmarks in \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2} show the consumption rate and production rate of messages when they are run simultaneously but in different nodes. Compared to what was seen in \autoref{fig:result-prefetch} and
+  \autoref{fig:result-varyingMqs}, the consumption rate is lower in this case. Nevertheless, the production rate of messages remained almost equal to that which was observed in \autoref{fig:result-varyingMqs} with a single MQS.
 
-  If we compare the \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2}, the scaling out of MQS with producers in one MQS and consumers in another had significant positive impact in overall message throughput. Especially, in this case the consumption rate increased by almost ten times than that of using single MQS. A slight increase in production throughput was also observed with the additional MQS.
+  If we compare \autoref{fig:result-simultaneous1} and \autoref{fig:result-simultaneous2}, scaling out with producers and consumers connecting to different MQS instances had a significant positive impact in overall message throughput. Especially, in this case the consumption rate increased by almost an order of magnitude than that of using a single MQS. A slight increase in production throughput was also observed with the additional MQS.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/07simultaneous1}
-  \caption[Throughput during simultaneous execution in single MQS]{Throughput during simultaneous execution in single MQS}
+  \caption[Throughput during simultaneous execution in single MQS]{Throughput during simultaneous execution in a single MQS instance}
   \label{fig:result-simultaneous1}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{figures/08simultaneous2}
-  \caption[Throughput during simultaneous execution in two MQS]{Throughput during simultaneous execution in two MQS}
+  \caption[Throughput during simultaneous execution in two MQS]{Throughput during simultaneous execution in two MQS instances}
   \label{fig:result-simultaneous2}
 \end{figure}
 
 
 \subsection{Throughput of Request-Reply}
 \label{subsec:request-reply}
-  The request-reply application used for testing is different from producer-consumer application in terms of how the messages are produced and consumed. In request-reply, a message is produced by the producer only when it receives a request from the requester (and the requester sends request for another message only after it receives the reply) whereas, in producer-consumer application the producer creates messages regardless of existence of consumer. Also, in producer-consumer application any instance of target worker isolate of any node may consume the message as it is designated only by the name of the worker isolate. But, in request-reply the produced message is replied exactly to the same instance of the worker isolate system which sent the request message.
+  The request-reply application used for testing is different from the producer-consumer application in terms of how the messages are produced and consumed. In request-reply, a message is produced by the producer only when it receives a request from the requester (and the requester sends a request for another message only after it receives the reply) whereas, in producer-consumer application the producer creates messages regardless of the existence of consumers. Also, in the producer-consumer application any instance of a target worker isolate of any node may consume the message as it is designated only by the name of the worker isolate. But, in request-reply the reply message is sent to the worker isolate that originated the request.
 
-  For single execution of a message in producer-consumer, the steps required are enqueuing the message from producer and then dequeuing the message by the consumer. Whereas, in case of request-reply, first a request message has to be enqueued and dequeued, as a reply of which, another message will be enqueued and dequeued. Thus, the steps required in request-reply is twice as much as steps required in the producer-consumer case.
+  For single execution of a message in producer-consumer, the steps required are enqueuing the message from producer and then dequeuing the message by the consumer. Whereas, in case of request-reply, first a request message must be enqueued and dequeued, then the reply message must be enqueued and dequeued. Thus, the steps required in request-reply are twice as much as in the producer-consumer case.
 
-  In \autoref{fig:result-request-reply}, when the number of consumers were increased we can see the linear increment in the production and consumption rate of message. However, adding more suppliers had very little effect in overall throughput. The maximum rise in the throughput by adding suppliers was seen when there were more number of consumers.
+  In \autoref{fig:result-request-reply}, when the number of consumers were increased we can see a linear increase in the production and consumption rate of message. However, adding more suppliers had very little effect in overall throughput. The maximum increase in throughput by adding suppliers was seen when there were more consumers.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.85\textwidth]{figures/09request-reply}
@@ -366,7 +368,7 @@ The result shown in \autoref{fig:result-consumptionMessageSize} was obtained by 
 
 \subsection{Round Trip Time in Request-Reply}
 \label{subsec:request-reply-rtt}
-  The results seen in \autoref{fig:result-request-reply-rtt} is the benchmark of average round trip time (RTT) of a message in request-reply case.
+  The results seen in \autoref{fig:result-request-reply-rtt} is the benchmark of average round trip time (RTT) of messages in the request-reply case.
 
   The result was obtained by attaching a timestamp in the message that was sent to the supplier; upon receiving the request message at the supplier, the timestamp was copied to the reply message and sent back to the sender(requester). The difference between the timestamp when the message was received at the requester and the timestamp contained in the message is the round trip time.
 

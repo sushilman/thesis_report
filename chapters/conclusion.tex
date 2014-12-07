@@ -1,15 +1,18 @@
 \chapter{Conclusion}\label{chapter:conclusion}
+% What you learned
+% What went well, bad, surprises, insights
+% How you'd do it differently?
 
-  The framework, created as a result of this thesis, shows that the isolates of the Dart language do not have to be limited to a single virtual machine.
+  The DDE framework, created as a result of this thesis, shows that isolates of the Dart language do not have to be limited to a single virtual machine.
 
-  The DDE framework provides structure for developers to create applications based on actor programming model in the Dart language. This framework uses the already existing actor like nature of isolates and provides easy to use functions to make the message sending more like in actor programming model.
+  The DDE framework provides structure for developers to create applications based on the actor programming model in the Dart language. This framework uses the existing actor-like nature of isolates and provides easy to use functions to make message sending similar to the actor programming model.
 
-  As a result of using this framework, the applications become easily scalable and can offer more availability (virtually no down time during code update). Scaling up can be performed in several ways: deploying more isolates in an isolate system, replicating isolate systems across multiple machines, increasing the number of message queuing systems, forming a cluster of message broker system (RabbitMQ) or the combination of these.
+  As a result of using this framework, applications become easily scalable and offer higher availability with virtually no down time during code updates. Scaling up can be performed in several ways: deploying more isolates in an isolate system, replicating isolate systems across multiple machines, increasing the number of message queuing systems, forming a cluster of message broker systems (RabbitMQ) or the combination of these.
 
-  Moreover, the DDE framework offers developers to monitor code updates and restart the isolates automatically. Moreover, the web interface and REST API available in the ‘Registry’ allow developers to visualize, easily deploy, terminate individual or group of isolates and even shutdown isolate systems.
+  Moreover, the DDE framework offers developers the capabilities to monitor code updates and restart worker isolates automatically. Moreover, the web interface and REST API available in the ‘Registry’ allow developers to visualize, easily deploy, terminate individual or groups of isolates, and even shutdown isolate systems.
 
-  The message broker system (RabbitMQ) of the DDE framework allows applications to keep loosely coupled and improve the overall fault-tolerance of the system. Moreover, the clustering ability and message persistence provided by RabbitMQ allows the messages to be saved in several machines ensuring the message safety.
+  The message broker system (RabbitMQ) of the DDE framework allows applications to be loosely coupled and improves the overall fault-tolerance of the system. Moreover, the clustering ability and message persistence provided by RabbitMQ allows the messages to be saved in several machines ensuring message durability.
 
-  Nevertheless, the DDE framework is far from perfect. It does not have security implementation of its own.
+  Nevertheless, the DDE framework has not yet implemented some features required by certain users. For example, it does not have a security implementation of its own.
 
-  The preliminary tests and benchmarks of the DDE framework are encouraging. (It is the working model of proof of concept?). The throughput of message production and consumption were good. It can be increased further by optimizing the framework.
+  The preliminary tests and benchmarks of the DDE framework are encouraging. For the proof of concept implementation, the throughput of message production and consumption were good. With further profiling and optimization throughput and latency improvements can be achieved.

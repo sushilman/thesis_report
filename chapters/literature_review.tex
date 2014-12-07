@@ -2,13 +2,14 @@
 
 \section{Message Passing Paradigm}
 \label{sec:messagePassing}
-  Message passing is sending a message from one process, component or actor to another. The recipient of the message chooses further processing based on the pattern or content of the message.
+  Message passing is sending a message from one process, component or actor to another. When a message is received by a recipient, it chooses further processing based on the pattern or content of the message.
+
   Message passing is the loosest type of coupling. The components of a system are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement message passing paradigm are easily scalable and efficient. Such systems are easy to replicate and easy to make fault-tolerant.
 ~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
   Systems which communicate solely by message passing do not have a shared state. Such systems can be easily divided into isolated components. This makes the overall architecture easy to understand and simplifies the isolation of problems within the system~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
-  Message passing can either be synchronous or asynchronous. Synchronous message passing is the communication between two components where both the sender and receiver of a message are ready to communicate. As the sender of a message has to wait for a response from the receiver, the sender is usually blocked until it gets a reply. Whereas, in asynchronous message passing, the sender simply sends a message and continues to do other tasks. The receiver does not have to be ready to accept the message when the sender sends it~\cite{agha}. Thus, asynchronous message passing is non-blocking in nature.
+  Message passing can either be synchronous or asynchronous. Synchronous message passing is the communication between two components where both the sender and intended receiver of a message are ready to communicate. But, as the sender of a message has to wait for a response from the receiver, the sender is usually blocked until it gets a reply. Whereas, in asynchronous message passing, the sender simply sends a message and continues to do other tasks. The receiver does not have to be ready to accept the message when the sender sends it~\cite{agha}. Thus, asynchronous message passing is non-blocking in nature.
 
 \section{Actor Programming Model}
 \label{sec:actorProgramming}
@@ -25,7 +26,7 @@
   Actors communicate with each other in a non-blocking way by asynchronous message passing, which removes the need of explicit locks. An actor can send message to actors in same system or another system. An actor can also send message to itself, which is how a recursion is achieved. An actor can send a message to target actor only if it has the address of target actor. Agha~(\cite{agha}, p35) lists three ways in which an actor, upon accepting a message, can know the address of the target actor:
   \begin{itemize}
     \item the target was known to the actor a before it accepted the message
-    \item the target became known when the message was accepted because it was contained in the message,
+    \item the target became known when the message was accepted because it was contained in the message
     \item the target is the new actor created as a result of accepting the message
   \end{itemize}
 
@@ -42,19 +43,19 @@ After receiving a message, an actor may perform following actions~\cite{hewitt}:
 
   An actor exists in a system. An actor system is a group of actors working together in certain hierarchy.
 
-  In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that message sent to an actor will arrive sequentially~\cite{hewittVideo}. Nevertheless, Akka framework~[\autoref{sec:akka}] guarantees the order of delivery of messages between two actors, provided that there are no intermediary actors in between[~\autoref{subsec:akkaMessagePassing}].
+  In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that message sent to an actor will arrive sequentially~\cite{hewittVideo}. Nevertheless, Akka framework~[\autoref{sec:akka}] guarantees the order of delivery of messages between two actors, provided that there are no intermediary actors in between~[\autoref{subsec:akkaMessagePassing}].
 
   Several programming languages like Act 1, 2 and 3, Acttalk etc. were created when actor system was newly introduced by Hewitt and Agha~\cite{agha, hewitt}.
 
 \subsection{Error Handling in Actor Model}
-Exception handling in actor model is based on idea of embracing the failures. The idea of embracing failures is also known as “let it crash” paradigm~[\autoref{subsec:letItCrash}]. As the actors do not have shared state, this allows individual actor to fail without causing disruptions in the system. Since, an actor in an actor system is typically organized in a hierarchical structure, the actor which created a child actor can be used for supervising it. The idea of supervision in a hierarchical actor system helps to make the actor system fault tolerant~\cite{Erb2012}. When an actor throws an exception the supervisor can respond to the exception in different ways. In Akka~[\autoref{sec:akka}], the supervising actor usually reacts by either simply ignoring the exception and letting the actor continue, by restarting the actor or by escalating the error to its supervisor.
+Exception handling in actor model is based on idea of embracing failures. The idea of embracing failures is also known as “let it crash” paradigm~[\autoref{subsec:letItCrash}]. As the actors do not have shared state, this allows individual actor to fail without causing disruptions in the system. Since, an actor in an actor system is typically organized in a hierarchical structure, the actor which created a child actor can be used for supervising it. The idea of supervision in a hierarchical actor system helps to make the actor system fault tolerant~\cite{Erb2012}. When an actor throws an exception the supervisor can respond to the exception in different ways. In Akka~[\autoref{sec:akka}], the supervising actor usually reacts by either simply ignoring the exception and letting the actor continue, by restarting the actor or by escalating the error to its supervisor.
 
   The “let it crash” style of programming is a non-defensive programming, which is implemented successfully in Erlang~[\autoref{sec:erlang}].
 
 \subsection{Differences from thread-based programming model}
 \subsubsection{Thread-based Concurrency}
   \label{subsec:thread}
-  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have shared memory, concurrent modifications and accesses of data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situation, such programming languages have locks. The locks let only a single thread at a time run sequentially for the section of a program code~\cite{ambientTalk}.
+  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have shared memory, concurrent modifications and accesses of data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situation, such programming languages use locks. The locks let only a single thread at a time run sequentially for the section of a program code~\cite{ambientTalk}.
 
   Generally, thread-based programming models are easy to understand and implement. But, the resulting program behavior is difficult to understand because of implicit context switches and release of locks, which may lead to a deadlock situation~\cite{ambientTalk}.
 
@@ -67,7 +68,7 @@ Exception handling in actor model is based on idea of embracing the failures. Th
 The ‘race condition’, discussed in \autoref{subsec:thread}, do not arise in actor based programming as actors do not have a shared state and they don't need locks.
 
 \subsection{Scaling up actor based systems}
-  As actor based systems are highly concurrent~[\autoref{subsec:actorConcurrency}], it is easy to scale actor based systems from a single core system to several of them across multiple data centers around the globe. The ideal case would be to just let a new system join the actor system and let it run some more actors during runtime, without the need of taking down the running system. The actors themselves do not need to know the physical location of other actors as they simply exchange messages based on the logical addresses. This makes them easy to scale up\footnote{Add more actors to the same machine} and scale out\footnote{Add more nodes with actors to a distributed system}.
+  As actor based systems are highly concurrent~[\autoref{subsec:actorConcurrency}], it is easy to scale actor based systems from a single core system to several of them across multiple data centers around the globe. An ideal case would be to just let a new node join the actor system and let it run some more actors during runtime, without taking the running system offline. The actors themselves do not need to know the physical location of other actors as they simply exchange messages based on the logical addresses. This makes them easy to scale up by adding more actors to the same machine and scale out by adding more nodes, running actors, to a distributed system.
 
 \section{Erlang}
 \label{sec:erlang}
@@ -106,7 +107,7 @@ Akka is a toolkit and runtime for building highly concurrent, distributed and re
   Akka is available for Scala as well as Java.
 
   \subsection{Actor Model in Akka}
-  In Akka, actors are objects which encapsulate state and behavior. Similar to Hewitt and Agha's actor model~[\autoref{sec:actorProgramming}], the akka actors communicate only by messages which are placed into the recipient’s mailbox. Akka actors are the stringent form of object-oriented programming~\cite{akkaActorSystem}.
+  In Akka, actors are objects which encapsulate state and behavior. Similar to Hewitt and Agha's actor model~[\autoref{sec:actorProgramming}], the akka actors communicate only by messages which are placed into the recipient’s mailbox. Actors, in akka, are objects. Therefore, Akka actors enforce a stringent form of object-oriented programming~\cite{akkaActorSystem}.
 
   The ‘ActorRef’ in akka, represents an actor. It holds a reference to an actor. Its purpose is to facilitate the message sending to the actor it refers. An actor can also refer to itself using \emph{self} \cite{akkaJavaDoc}.
 
@@ -135,11 +136,11 @@ greeter.tell(new Greeting("Charlie Parker"), ActorRef.noSender());
 
   \subsection{Actor System}
   \label{subsec:actorSystem}
-      An actor system in Akka is like an organization of actors where actors are arranged in a hierarchical structure. An actor, which performs certain task usually split up the task into smaller pieces. For this, it starts up other actors as its child actors, which it supervises~\autoref{subsec:supervisionMonitoring}. As the actor which creates a new actor is the supervisor of the new actor, it is implicit that there can be only one supervisor of an actor.
+    An actor system arranges actors in a hierarchical structure. The hierarchical structure of actors are formed when an actor starts up child actors to handle certain tasks. The actor not only creates and assigns tasks to the child actors but also supervises them~[\autoref{subsec:supervisionMonitoring}]. Thus it is implicit that there can be only one supervisor of an actor.
 
-  By splitting up the tasks, the tasks become clear and structured. Furthermore, the resulting actors also becomes simplified and specialized in terms of which messages it should process and how it should react normally. It also becomes easy to handle the failures. If an actor cannot cope with a failure, it is escalated up in the hierarchy to its supervisor which is recursive unless it reaches up to the actor which can handle the failure~\cite{akkaJavaDoc}.
+  By splitting up the tasks, the tasks become clear and structured. Furthermore, the resulting actors also becomes simplified and specialized in terms of which messages it should process and how it should react normally. It also becomes easy to handle the failures. If an actor cannot cope with a failure, it is escalated up in the hierarchy to its supervisor. The escalation is repeated by actors in every higher level hierarchy unless it reaches up to the actor which can handle the failure~\cite{akkaJavaDoc}.
 
-  An actor instance in akka takes up roughly 300 bytes of memory, because of which it is possible to spawn millions of them in one actor system. As an actor system can grow very large and distributed, the order of message processing is not guaranteed~\cite{akkaJavaDoc}.
+  An actor instance in akka takes up roughly 300 bytes of memory, because of which it is possible to spawn millions of them in one actor system. Akka can manage very large and distributed systems; it can take care of the order in which messages are processed even in large systems~\cite{akkaJavaDoc}.
 
   An example of the arrangement of actors in hierarchical structure is shown in~\autoref{fig:actorSystem}. The ‘{$\backslash$}’ is known as the “root guardian” and \emph{$\backslash$user} is known as the “user guradian”. Any actor created by a user falls under the user guardian. For instance, in the~\autoref{fig:actorSystem}, \emph{actorA} and \emph{actorB} are actors created by user, hence their supervisor is \emph{$\backslash$user}. Again, the actors \emph{actor1} and \emph{actor2} are the child actors of \emph{actorB}. The address of an actor in akka is arranged like the filesystem hierarchy. Hence, the supervision hierarchy as well as the path leading to the actor is comprehensible from its address.
 
@@ -152,7 +153,7 @@ greeter.tell(new Greeting("Charlie Parker"), ActorRef.noSender());
 
   \subsection{Message Passing in Akka}
   \label{subsec:akkaMessagePassing}
-  In Akka, every actor has an event driven message inbox known as the ‘mailbox’. The mailbox buffers all the incoming messages until they are processed. When a message is sent from one actor to the other, the reference to the sender (an ActorRef), is automatically added to the message by default. Thus, during the message processing the recipient actor has a reference to the sender actor through the \emph{sender} method~\cite{akkaJavaDoc}.
+  In Akka, every actor has an event driven message inbox known as the ‘mailbox’. The mailbox buffers all incoming messages until they are processed. When a message is sent from one actor to another, the reference to the sender (an ActorRef), is automatically added to the message by default. Thus, during the message processing the recipient actor has a reference to the sender actor through the \emph{sender} method~\cite{akkaJavaDoc}.
 
   Akka guarantees the order of direct message delivery between two actors. It is only applicable when the mailbox implementation in receiver is FIFO mailbox and the communication takes place only between the two actors without the involvement of intermediary actors. For instance, if an actor A1 sends messages M1, M2 and M3 to actor A2. The message M1 will be delivered before M2 and the message M2 before M3. Meanwhile, if another actor A3 sends messages M4, M5 and M6 to A2 at the same time, the order of message delivery of M4, M5 and M6 will also be sequential. Nevertheless, there is no guarantee that the messages sent by A1 is delivered before the messages from A3; even if all of the messages from A1 were sent before A3 started sending messages to A2. Provided that the message sending from A1 and A3 are independent of each other~\cite{akkaJavaDoc}.
 
@@ -197,7 +198,7 @@ It is also possible to use custom implementation of a router by extending \emph{
   \subsection{Remote Actors in Akka}
   Actors in akka are location transparent; they reside in a logical hierarchy of an actor system through which the physical location of an actor in the network can be determined. The location transparency allows the akka applications to be developed locally but deployed into distributed systems simply by changing configurations~\cite{akkaJavaDoc}.
 
-  Actor systems in akka communicate in a peer-to-peer fashion and it is the foundation for Akka Clustering. Akka's Documentation for Java~\cite{akkaJavaDoc} lists the two design decisions for remoting:
+  The peer-to-peer communication between actor systems is the foundation for Akka Clustering. Akka's Documentation for Java~\cite{akkaJavaDoc} lists the two design decisions for remoting:
 \begin{enumerate}
 
   \item Communication between involved systems is symmetric: if system A can connect to system B then system B must also be able to connect to system A independently.
@@ -262,15 +263,15 @@ The \autoref{lst:akkaRemoting} is an example taken from website of Akka\footnote
   \subsection{Overview}
   Dart is an open-source, class-based, single-inheritance, pure object-oriented programming language developed by Google~\cite{dartEcma}. Dart language is inspired by Smalltalk, Strongtalk, Erlang, C\# and JavaScript~\cite{sethladd}.
 
-  Dart codes are not compiled before running; the Dart Virtual Machine(VM) reads and executes the source code. Dart provides a homogeneous system that encompass both client as well as server as the Dart VM can be embedded in browsers. A version of Chromium – ‘Dartium’ already has Dart VM built into it~\cite{sethladd}.
+  Dart code is not compiled before running; it is read and executed directly from the source code by the Dart Virtual Machine(VM). Dart provides a homogeneous system that encompass both client as well as server as the Dart VM can be embedded in browsers. A version of Chromium – ‘Dartium’ already has Dart VM built into it~\cite{sethladd}.
 
   Programs in Dart are optionally typed. They can be executed in two modes checked mode and production mode. In checked mode incorrect static type annotations produce compile time errors. Whereas, in production mode, type annotations are completely ignored~\cite{dartEcma}.
 
   Furthermore, Dart allows developers to code in a uniform way for both server as well as client since Dart Virtual Machine (VM) can be embedded in browsers. A variant of Chromium browser — Dartium browser has an embedded Dart VM.
 
   Dart has automatic garbage collecting system, which means the memory occupied by objects which are not in use and which do not have any reference are reclaimed periodically.
-
-  Developers of dart believe that JavaScript has been pushed to its limit and the web apps developed in JavaScript are far too slow even though JavaScript engines are fast. They claim Dart offers a better solution to build larger and more complex web apps\cite{laddWalrath}.
+  %
+  % Developers of dart believe that JavaScript has been pushed to its limit and the web apps developed in JavaScript are far too slow even though JavaScript engines are fast. They claim Dart offers a better solution to build larger and more complex web applications\cite{laddWalrath}.
 
 Some of its important features are:
   \begin{itemize}
@@ -286,12 +287,12 @@ Some of its important features are:
   \subsection{Advantages of Dart}
   \begin{itemize}
     \item Translates to JavaScript so that the code can be run in the web-browsers that do not have Dart VM yet
-    \item Currently in 20th position in most popular programming languages
+    \item Has been gaining popularity and adoption in recent years
     \item Optionally typed language
 \end{itemize}
 
   \subsection{Dart and JavaScript}
-  Codes written in Dart can be translated to JavaScript using a tool – ‘dart2js’. The ‘dart2js’ is bundled with the Dart SDK (Software Development Kit).  As the popular web browsers like Mozilla Firefox, Google Chrome, Safari do not have Dart Virtual Machine embedded, the ability to translate source code from Dart to JavaScript lets the dart programs run in any modern browser without needing to manually port the source code to JavaScript.
+  Codes written in Dart can be translated to JavaScript using a tool – ‘dart2js’. ‘Dart2js’ is bundled with the Dart SDK (Software Development Kit). As popular web browsers like Mozilla Firefox, Google Chrome, Safari do not have Dart Virtual Machine embedded, the ability to translate source code from Dart to JavaScript lets dart programs run in any modern browser without needing to manually port the source code to JavaScript.
 
   \subsection{Asynchronous Programming in Dart}
   Most programming languages use callback functions for asynchronous programming. Dart provides some additional alternatives along with callback functions \textendash~Future and Stream objects. A ‘Future’ is a promise for a result which will be returned after an arbitrary amount of time. A ‘Stream’ is a way to get a sequence of values, such as events, data from ports etc.
@@ -302,7 +303,9 @@ Some of its important features are:
 
   An isolate has its own heap memory different from the main isolate (the top level isolate). It is possible for the child isolate to throw exceptions and errors such as by exhausting its memory. If the exceptions are not handled properly, it forces the isolate to be shutdown.
 
-  In Dart, when an isolate is spawned, usually the initial message contains a sending port, so that spawner and “spawnee” can communicate with each other. The “spawnee” can later use the same port to reply to the spawner. An isolate can spawn another isolate which can further spawn other isolates and have control over them. Thus, the spawner can supervise the “spawnee”. The spawner can pause the “spawnee” or terminate it~\cite{dartApiIsolate}~\footnote{Pausing and terminating an isolate is not available in Dart 1.7.2 or older versions}.
+  In Dart, when an isolate is spawned, usually a ‘sending port’ is sent as the initial message (by the spawner), so that spawner and “spawnee” can communicate with each other. The “spawnee” can use the sending port sent by spawner to reply to the spawner.
+
+  An isolate can spawn another isolate which can further spawn other isolates and have control over them. Thus, the spawner can supervise the “spawnee”. The spawner can pause the “spawnee” or terminate it~\cite{dartApiIsolate}~\footnote{Pausing and terminating an isolate is not available in Dart 1.7.2 or older versions}.
 
   Modern web browsers, even on mobile platforms, run on multi-core CPUs. To take advantage of all those cores, developers traditionally use shared-memory threads running concurrently. However, shared-state concurrency is error prone and can lead to complicated code. Thus, instead of threads, all Dart code runs inside of isolates. Each isolate has its own memory heap, ensuring that no isolate’s state is accessible from any other isolate~\parencite{laddWalrath}.
 
@@ -311,7 +314,7 @@ Some of its important features are:
     The newly spawned isolate shares the same code as the spawner isolate~\cite{dartApiIsolate}.
 
   \subsubsection{Communication Between Two Isolates}
-  After an isolate is spawned, it is recommended to send its SendPort to the spawner isolate so that the “spawner” and “spawnee” can communicate via message passing. SendPort and ReceivePort are used by the isolates to communicate with each other. The sender isolate uses the SendPort of the ReceivePort of the target isolate to send a message.
+  After an isolate is spawned, it is recommended to send its SendPort to the spawner isolate so that the “spawner” and “spawnee” can communicate via message passing. SendPort and ReceivePort are used by the isolates to communicate with each other.
 
   The example in \autoref{lst:isolateSample} shows how an isolate is spawned using \emph{spawnUri()} and how to perform basic communications between two isolates in Dart. As shown in this example, the message sending is performed after the SendPorts are exchanged between the isolates.
 
@@ -357,16 +360,16 @@ Some of its important features are:
 \end{lstlisting}
 
   \subsubsection{Difference from Actor}
-  Although, Dart isolates do not have shared state and use message-passing as the only means of communication between two isolates, the isolates differ from actors~[\autoref{sec:actorProgramming}] in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but spawning isolates in Dart takes significant amount of time and resource. The implementation of actor found in other languages like Erlang~[\autoref{sec:erlang}] and Akka toolkit~[\autoref{sec:akka}] can be considered much closer to Hewitt's actor model.
+  Although, Dart isolates do not have shared state and use message-passing as the only means of communication between two isolates, the isolates differ from actors~[\autoref{sec:actorProgramming}] in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but Dart isolates are resource heavy and slow to spawn. The implementation of actor found in other languages like Erlang~[\autoref{sec:erlang}] and Akka toolkit~[\autoref{sec:akka}] can be considered much closer to Hewitt's actor model.
 
   The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions~\cite{akkaHome} whereas, an isolate in dart takes up around 5 to 7 MegaBytes\footnote{Based on the memory consumption of the two isolates from \autoref{lst:isolateSample}} of memory, the number of isolates per GigaByte of heap can only reaches up to few hundreds. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an isolate in Dart is \textemdash{} similar to a threads with properties like an actor.
 
   \subsubsection{Limitations of Isolates}
-  Even though communication between two isolates takes place exclusively by asynchronous message passing the perfectly suits for distributed systems, there is no implementation of communication with isolate spawned in another Dart virtual machine. A message exchange between two isolates via SendPort/ReceivePort is possible only if the isolates are spawned locally in the same Dart virtual machine. Thus, a hindrance in making them distributed.
+  Although Dart isolates follow the asynchronous message passing model which is suitable for distributed systems, it is not possible for an isolate in one Dart VM to send message to an isolate in another Dart VM. A message exchange between two isolates via SendPort/ReceivePort is possible only if the isolates are spawned locally in the same Dart virtual machine. Thus, a hindrance in making them distributed.
 
 \section{RabbitMQ - A Message Broker System}
 \label{sec:rabbitmq}
-  RabbitMQ is an open-source simple message broker software that implements Advanced Message Queuing Protocol(AMQP). It serves as an intermediary for messaging for applications or components of an application so that they can connect with each other, while keeping them loosely coupled. It give applications a common platform to send and receive messages, and keeps the messages until received~\cite{rabbitmqFeatures}.
+  RabbitMQ is an open-source simple message broker software that implements Advanced Message Queuing Protocol(AMQP). It serves as an intermediary for message passing between applications or components. It give applications a common platform to send and receive messages, and keeps the messages safe until intended subscribers receive them~\cite{rabbitmqFeatures}.
 
   Messaging enables software applications to connect and scale. Applications can connect to each other, as components of a larger application, or to user devices and data. Messaging is asynchronous, decoupling applications by separating sending and receiving data. In RabbitMQ, messages are routed through exchanges before arriving at queues. RabbitMQ features several built-in exchange types for typical routing logic~\cite{rabbitmqFeatures}.
 
@@ -403,13 +406,13 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
   \subsection{Message Queues in RabbitMQ}
   In RabbitMQ, a queue is a mailbox name, where the messages are stored. It can buffer large quantity of messages bounded only by the available resources of the machine.
 
-  RabbitMQ receives messages from a client via one of protocols described in [\autoref{rabbitmq}]. The client specifies the name of the queue, while sending the message, where the message should be enqueued. Meanwhile, the subscribing client of the queue receives a message either as soon as the message is available in the queue, or when the client sends request for dequeue, or only after acknowledging previously dequeued message. This depends upon the parameters used during subscription to the queue.
+  RabbitMQ receives messages from a client via one of protocols described in [\autoref{sec:rabbitmq}]. While sending a message, the client specifies the name of the queue where the message should be enqueued. Meanwhile, the subscribing client of the queue receives a message either as soon as the message is available in the queue, or when the client sends request for dequeue, or only after acknowledging previously dequeued message. This depends upon the parameters used during subscription to the queue.
 
-  If inflow of messages in a queue is faster compared to the outflow of the messages to its subscribers, both enqueuing as well as dequeuing gets slower. Since, the messages are buffered into memory, as the quantity of messages increases, the consumption of the memory also increases. Besides, if there is a sudden increase in the inflow of messages, the incoming messages take more CPU time which results in the overall decrease of outflow of messages to consumers~\cite{sizingYourRabbits}.
+  If inflow of messages in a queue is faster than the outflow of the messages to its subscribers, both enqueuing as well as dequeuing gets slower. Since, messages are buffered into memory, as the quantity of messages increases, the consumption of the memory also increases. Besides, if there is a sudden increase in the inflow of messages, the incoming messages take more CPU time which results in the overall decrease of outflow of messages to consumers~\cite{sizingYourRabbits}.
 
   \subsection{RabbitMQ and prefetch-count}
   \label{subsec:rabbitmqPrefetch}
-  The prefetch-count Quality of Service (QoS) setting in RabbitMQ by default is set to unlimited. Which means, the RabbitMQ empties the queue as fast as possible to the consumer. Setting the prefetch-count to unlimited might result in ‘out of memory’ or ‘stack overflow’ errors in the consumers. Again, setting the prefetch-count too low can hamper the performance of the whole application while setting it too high can cause the ‘out of memory’ exceptions. Hence, based on the requirement and design of the consumer application, appropriate prefetch-count should be determined.
+  The prefetch-count Quality of Service (QoS) setting in RabbitMQ by default is set to unlimited. Which means, RabbitMQ empties the queue as fast as possible to the consumer. Setting the prefetch-count to unlimited might result in ‘out of memory’ or ‘stack overflow’ errors in the consumers. Again, setting the prefetch-count too low can hamper the performance of the whole application while setting it too high can cause the ‘out of memory’ exceptions. Hence, based on the requirement and design of the consumer application, appropriate prefetch-count should be determined.
 
   The \autoref{fig:rabbitmqBenchmark} is the result of a benchmark\footnote{posted by Simon MacMullen on April 25th, 2012 at 2:47 pm} that shows how the throughput of a queue varies when prefetch count is changed for different number of consumers.
 \begin{figure}[H]
@@ -425,8 +428,8 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
   STOMP stands for Simple (or Streaming) Text Orientated Messaging Protocol. It is an alternative to other open messaging protocols such as AMQP. It provides an interoperable format for STOMP clients to communicate with a message broker system that supports STOMP. It provides interoperability among different languages, platforms and brokers~\cite{stomp}.
   STOMP is designed to be a lightweight protocol that is easy to implement in both client and server.
   \subsection{Protocol Overview}
-  STOMP is a frame based protocol. A frame consists of a command, a set of optional headers and an optional body. STOMP is text based but it allows the transmission of binary messages~\cite{stomp}.
-  A STOMP client can either be producer or consumer. As a producer  a message can be sent to a destination to server using SEND frame. Meanwhile, as a consumer, SUBSCRIBE frame should be sent for subscription of a message for a given destination. Then, the messages are received as MESSAGE frames.
+  STOMP is a frame based protocol. A frame consists of a command, a set of optional headers and an optional body. STOMP is text based but it allows the transmission of binary messages as well~\cite{stomp}. A STOMP client can either be producer or consumer.
+  % As a producer a message can be sent to a destination server using SEND frame. Meanwhile, as a consumer, SUBSCRIBE frame should be sent for subscription of a message for a given destination. Then, the messages are received as MESSAGE frames.
 
   \subsection{STOMP Library for Dart}
   \label{subsec:stompForDart}
