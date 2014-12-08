@@ -534,15 +534,26 @@ A message is serialized to JSON string before sending via a SendPort of an isola
   \end{description}
 
 \subsection{Clustering}
-  Clustering can be achieved in the framework in several levels.
+  Clustering can be achieved in the DDE framework at several levels.
   \begin{itemize}
   \item By deploying worker isolates in several remote nodes. i.e. taking advantage of the concept of ‘Remote Isolates’~[\autoref{subsec:remoteIsolate}].
   \item By deploying replicas of an isolate system in different nodes. An isolate system with same name can exist in another node even though they connect to the same MQS.
   \item The Message Queuing System itself, can also be replicated where replicas of isolate system may connect to different instance MQS.
   \item Since, several instances of RabbitMQ~[\autoref{sec:rabbitmq}] can form a logical group, sharing common configuration, properties, users, queues etc., a cluster of message broker system can be formed. Which allows, Message Queuing Systems to connect to the different member of a cluster.
   \end{itemize}
-<TODO: a simple diagram>
+
+\autoref{fig:cluster} is an example of cluster formed by deploying a worker isolate ‘A’ across multiple isolate systems. The isolate systems are connected to separate instances of MQS. Each MQS is connected to a separate node of a RabbitMQ cluster.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{figures/cluster}
+  \caption[Forming a cluster in DDE Framework]{Forming a cluster in DDE Framework}
+  \label{fig:cluster}
+\end{figure}
+
 \section{Dart Libraries Used in Construction}
+\autoref{tab:libraries} is the list of third-party libraries were used for the development of the DDE framework. All of these libraries are open source and are available in Dart's pub.
+
 \begin{table}[htsb]
   \caption[Dependent libraries of the framework]{List of libraries directly used by the framework}\label{tab:libraries}
   \centering

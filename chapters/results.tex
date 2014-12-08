@@ -209,7 +209,27 @@ class AvailableSupplies {
 % * A File Server that serves file over HTTP
 % * A RabbitMQ server with one Message Queuing System
 % * 3 other Message Queuing Systems
-% * 32 Nodes
+% * 16 Nodes
+
+\begin{table}[H]
+  \caption[Specification of machines used for testing and benchmarking]{Specification of machines used for testing and benchmarking}\label{tab:specs}
+  \centering
+  \begin{tabular}{l l l}
+    \toprule
+      \bf{Deployed Systems} & \bf{Name} &  \bf{Specifications}\\
+    \midrule
+
+      \pbox{30cm}{\relax RabbitMQ and\\a Message Queuing System} & c3.2xLarge & \pbox{60cm}{8 core CPU, 28 ECU,\\15 GiB Memory, SSD disk}\\
+\midrule
+      \pbox{30cm}{\relax Message Queuing System} & m3.2xLarge & \pbox{60cm}{8 core CPU, 26 ECU,\\30 GiB Memory, SSD disk}\\
+\midrule
+      \pbox{20cm}{\relax Registry and\\File Server} & m3.xLarge & \pbox{60cm}{2 core CPU, 13 ECU,\\15 GiB Memory, SSD disk}\\
+\midrule
+      \pbox{20cm}{\relax Isolate Systems (Nodes)} & m3.xLarge & \pbox{60cm}{2 core CPU, 13 ECU,\\15 GiB Memory, SSD disk}\\
+
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \subsection{Observations from DDE based applications}
 \label{subsec:result-framework}
@@ -241,26 +261,6 @@ class AvailableSupplies {
 \section{Benchmarks}
 \label{sec:benchmarks}
   The benchmarks discussed here are the results of the evaluation of applications discussed in~\autoref{sec:result-applications}. The results presented in this chapter were performed on Amazon EC2 servers\footnote{EC2 servers of data center in Ireland} with configurations shown in table~\autoref{tab:specs}
-
-\begin{table}[htsb]
-  \caption[Specification of machines used for testing and benchmarking]{Specification of machines used for testing and benchmarking}\label{tab:specs}
-  \centering
-  \begin{tabular}{l l l}
-    \toprule
-      \bf{Deployed Systems} & \bf{Name} &  \bf{Specifications}\\
-    \midrule
-
-      \pbox{30cm}{\relax RabbitMQ and\\a Message Queuing System} & c3.2xLarge & \pbox{60cm}{8 core CPU, 28 ECU,\\15 GiB Memory, SSD disk}\\
-\midrule
-      \pbox{30cm}{\relax Message Queuing System} & m3.2xLarge & \pbox{60cm}{8 core CPU, 26 ECU,\\30 GiB Memory, SSD disk}\\
-\midrule
-      \pbox{20cm}{\relax Registry and\\File Server} & m3.xLarge & \pbox{60cm}{2 core CPU, 13 ECU,\\15 GiB Memory, SSD disk}\\
-\midrule
-      \pbox{20cm}{\relax Isolate Systems (Nodes)} & m3.xLarge & \pbox{60cm}{2 core CPU, 13 ECU,\\15 GiB Memory, SSD disk}\\
-
-    \bottomrule
-  \end{tabular}
-\end{table}
 
 \subsection{Prefetch Count}
 \label{subsec:prefetchCount}
