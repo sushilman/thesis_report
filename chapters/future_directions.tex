@@ -1,5 +1,9 @@
 \chapter{Future Directions}\label{chapter:future_directions}
 % Think like a product manager, customer, QA...
+  % security, usability
+  % easy to setup and deploy
+  % easy to get started
+  % blue green deployment?
 % What would customers need
 % NFRs
 % Features
@@ -8,15 +12,25 @@
 % or removing the broker itself
 
 % target specific industry: trading application, telephony softwares, etc.
+  % The added safety could attract more customers?
+
+% incorporate the broker into the framework itself, removing dependency on rabbitmq and would improve throughput?.
 
   The work done in the DDE framework in this thesis may be extended and improved in number of directions. First, the most important missing feature, security, requires a concept and implementation. The DDE framework heavily relies on the underlying transport layer to provide security, additional application level security would provide the DDE framework more safety.
 
   Another important feature is to support developers in testability of DDE applications. This would improve programmability and help developers to write quality codes.
 
-  The implementation of supervision strategy is far from perfect in the presented DDE framework. The current implementation of the supervision strategy does not properly follow the “Let it Crash”~[\autoref{subsec:letItCrash}] philosophy. As discussed in \autoref{subsec:result-dartIssues}, the implementation of this feature would have been simpler and cleaner had Dart supported  all of the unimplemented features of isolates. Nevertheless, the Dart language is evolving quickly and those features may eventually be implemented. However, even if those features do not make into the major version of dart any time soon, it is possible to make implementations using workarounds.
+  The implementation of supervision strategy is far from perfect in the presented DDE framework. The current implementation of the supervision strategy does not properly follow the “Let it Crash”~[\autoref{subsec:letItCrash}] philosophy. As discussed in \autoref{subsec:result-dartIssues}, the implementation of this feature would have been simpler and cleaner had Dart supported all of the unimplemented features of isolates. Nevertheless, the Dart language is evolving quickly and those features may eventually be implemented. However, even if those features do not make into the major version of dart any time soon, it is possible to make implementations using workarounds.
 
   Another interesting idea would be the introduction of adaptive load balancing and automatic migration of isolates based on different heuristics like load on a system, data locality or a user's geographic location.
 
-  One feature to improve the fault-tolerance of the system would be to change the implementation for FileMonitor~[\autoref{subsubsec:fileMonitor}]. The current implementation of the FileMonitor simply monitors the file from a remote location and periodically fetches it to calculate the checksum. In case of modification in the file, the FileMonitor informs the controller which instructs a router to respawn the worker regardless of the contents of the source. This means there is the vulnerability to deploy incorrect code which could result in failing to start up the isolate. The ability to rollback to a previous working version of the source in case of failure of spawning would improve the resilience of the framework.
+  One feature to improve the fault-tolerance of the system would be to change the implementation for FileMonitor~[\autoref{subsubsec:fileMonitor}]. The current implementation of the FileMonitor simply monitors the file from a remote location and periodically fetches it to calculate the checksum. In case of modification in the file, the FileMonitor informs the controller which instructs a router to re-spawn the worker regardless of the contents of the source. This means there is a vulnerability to deploy incorrect code which could result in failing to start up the isolate. The ability to rollback to a previous working version of the source in case of failure of spawning would improve the resilience of the framework.
 
-  The ideas discussed in these chapters are only a few of many other improvements that can be made in the framework.
+  Improvements in user experience of web interface of registry~\autoref{subsubsection:registryWebInterface} would add more value to usability of the framework.
+
+  Compared to Akka actors, Dart isolates require more memory and longer time to spawn. Creating an alternative lightweight entity to isolate, but having similar properties of an isolate would make the applications lightweight and less resource hungry.
+
+  An improvement to add flexibility to the framework would be implementing internal message broker in the framework itself, which may not provide message persistence as a broker does. The option to choose internal broker or an external broker would provide more flexibility for applications and developers. This could be an added attraction to developers who need high throughput in their applications.
+  For instance, if an application demands high throughput but doesn't require message persistence, then the internal queue instead of external message broker can be chosen.
+
+  The ideas discussed in this chapter are only a few of many other improvements that can be made in the framework.

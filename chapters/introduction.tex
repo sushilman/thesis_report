@@ -1,6 +1,6 @@
 \chapter{Introduction}\label{chapter:introduction}
   To scale up and handle a high number of requests, applications are deployed in distributed environments. The transfer speed and demand for data have been increasing rapidly. Performance expectations from web applications are higher than ever.
-  %Why?
+  %Why? Because of fast growing information technology?
   Performance and scalability concerns are met by using high end multi-core servers and concurrent processing via multi-threading.
 
   Enterprises want their applications to be available 100\% of the time because a few seconds of application downtime could cause a huge loss to revenue and customer satisfaction.
@@ -16,8 +16,8 @@
   The framework is intended to take advantage of the fact that the Dart virtual machine can be run in browser as well as in server. This advantage opens up the possibility of creating a fully distributed application in which isolates may run everywhere: in servers, desktop browsers and even in mobile browsers.
   % Unfortunately, the concept of creating fully distributed system with isolates running in browser was met with some of the limitations of the browser implementation of the Dart VM, which is discussed in \autoref{subsec:result-dartIssues}.
 
-  Erlang~[\autoref{sec:erlang}] and Scala~[\autoref{sec:scala}] are popular programming languages which have their own implementation of actor programming. The akka toolkit~[\autoref{sec:akka}] provides a foundation for actor programming in both Java and Scala. The DDE framework presented in this thesis draws on ideas from the actor system~[\autoref{subsec:actorSystem}] and router~[\autoref{subsec:akka-routers}]
-   implementations of akka to provide a comparable isolate system~[\autoref{sub:isolate-system}] and routers~[\autoref{subsubsec:router}] for Dart.
+  Erlang~[\autoref{sec:erlang}] and Scala~[\autoref{sec:scala}] are popular programming languages which have their own implementation of actor programming. The Akka toolkit~[\autoref{sec:akka}] provides a foundation for actor programming in both Java and Scala. The DDE framework presented in this thesis draws on ideas from the actor system~[\autoref{subsec:actorSystem}] and router~[\autoref{subsec:akka-routers}]
+   implementations of Akka to provide a comparable isolate system~[\autoref{sub:isolate-system}] and routers~[\autoref{subsubsec:router}] for Dart.
 
   As applications of the DDE framework are based on message passing, the framework takes advantages of features offered by the message broker system – RabbitMQ~[\autoref{sec:rabbitmq}]. RabbitMQ provides message persistence and a decoupled nature to applications built on the DDE framework.
 

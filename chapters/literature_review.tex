@@ -107,13 +107,13 @@ Akka is a toolkit and runtime for building highly concurrent, distributed and re
   Akka is available for Scala as well as Java.
 
   \subsection{Actor Model in Akka}
-  In Akka, actors are objects which encapsulate state and behavior. Similar to Hewitt and Agha's actor model~[\autoref{sec:actorProgramming}], the akka actors communicate only by messages which are placed into the recipient’s mailbox. Actors, in akka, are objects. Therefore, Akka actors enforce a stringent form of object-oriented programming~\cite{akkaActorSystem}.
+  In Akka, actors are objects which encapsulate state and behavior. Similar to Hewitt and Agha's actor model~[\autoref{sec:actorProgramming}], the Akka actors communicate only by messages which are placed into the recipient’s mailbox. Actors, in Akka, are objects. Therefore, Akka actors enforce a stringent form of object-oriented programming~\cite{akkaActorSystem}.
 
-  The ‘ActorRef’ in akka, represents an actor. It holds a reference to an actor. Its purpose is to facilitate the message sending to the actor it refers. An actor can also refer to itself using \emph{self} \cite{akkaJavaDoc}.
+  The ‘ActorRef’ in Akka, represents an actor. It holds a reference to an actor. Its purpose is to facilitate the message sending to the actor it refers. An actor can also refer to itself using \emph{self} \cite{akkaJavaDoc}.
 
   The \autoref{lst:akkaHelloWorld}~\footnote{Source: \fullcite{akkaHome}}, is a simple example of how actor programming in Akka is realized. In this example, the ‘GreetingActor’ which extends ‘UntypedActor’ must implement the \emph{onReceive()} method. The \emph{onReceive()} method is invoked for each message received by this actor. After receiving a message, the actor performs pattern matching to decide which code to execute. As in this example, if the message is a type of ‘Greeting’ object, it is concatenated with the string “Hello” otherwise, it is simply ignored.
 
-\begin{lstlisting}[caption=A simple example of actor programming in akka~\cite{akkaHome}, label=lst:akkaHelloWorld]
+\begin{lstlisting}[caption=A simple example of actor programming in Akka~\cite{akkaHome}, label=lst:akkaHelloWorld]
 public class Greeting implements Serializable {
   public final String who;
   public Greeting(String who) { this.who = who; }
@@ -140,9 +140,9 @@ greeter.tell(new Greeting("Charlie Parker"), ActorRef.noSender());
 
   By splitting up the tasks, the tasks become clear and structured. Furthermore, the resulting actors also becomes simplified and specialized in terms of which messages it should process and how it should react normally. It also becomes easy to handle the failures. If an actor cannot cope with a failure, it is escalated up in the hierarchy to its supervisor. The escalation is repeated by actors in every higher level hierarchy unless it reaches up to the actor which can handle the failure~\cite{akkaJavaDoc}.
 
-  An actor instance in akka takes up roughly 300 bytes of memory, because of which it is possible to spawn millions of them in one actor system. Akka can manage very large and distributed systems; it can take care of the order in which messages are processed even in large systems~\cite{akkaJavaDoc}.
+  An actor instance in Akka takes up roughly 300 bytes of memory, because of which it is possible to spawn millions of them in one actor system. Akka can manage very large and distributed systems; it can take care of the order in which messages are processed even in large systems~\cite{akkaJavaDoc}.
 
-  An example of the arrangement of actors in hierarchical structure is shown in~\autoref{fig:actorSystem}. The ‘{$\backslash$}’ is known as the “root guardian” and \emph{$\backslash$user} is known as the “user guradian”. Any actor created by a user falls under the user guardian. For instance, in the~\autoref{fig:actorSystem}, \emph{actorA} and \emph{actorB} are actors created by user, hence their supervisor is \emph{$\backslash$user}. Again, the actors \emph{actor1} and \emph{actor2} are the child actors of \emph{actorB}. The address of an actor in akka is arranged like the filesystem hierarchy. Hence, the supervision hierarchy as well as the path leading to the actor is comprehensible from its address.
+  An example of the arrangement of actors in hierarchical structure is shown in~\autoref{fig:actorSystem}. The ‘{$\backslash$}’ is known as the “root guardian” and \emph{$\backslash$user} is known as the “user guradian”. Any actor created by a user falls under the user guardian. For instance, in the~\autoref{fig:actorSystem}, \emph{actorA} and \emph{actorB} are actors created by user, hence their supervisor is \emph{$\backslash$user}. Again, the actors \emph{actor1} and \emph{actor2} are the child actors of \emph{actorB}. The address of an actor in Akka is arranged like the filesystem hierarchy. Hence, the supervision hierarchy as well as the path leading to the actor is comprehensible from its address.
 
 \begin{figure}[H]
   \centering
@@ -166,11 +166,11 @@ greeter.tell(new Greeting("Charlie Parker"), ActorRef.noSender());
 Here, ‘at-most-once delivery’ means that a message is either not delivered at all (i.e. lost) or delivered only once. Thus, there is no duplicate delivery of a message.
 
   \subsection{Shared mutable state}
-  Since Akka runs on top of the Java Virtual Machine(JVM), there are some pitfalls that the programmer should be aware enough to avoid, which akka cannot enforce. The messages used to communicate between the actors should be immutable. If it is made mutable and the reference of it is sent by the sender to an actor which resides on same JVM, bugs such as race conditions and even some incomprehensible bugs might appear. Also, the sender method must not be closed over if the block of code could be run in another thread; for instance, sending (replying) a message to the sender actor inside a ‘Future’ block. In such cases, the sender reference must be captured into a local variable first. As the reference and behavior of sender may change over time~\cite{akkaJavaDoc}.
+  Since Akka runs on top of the Java Virtual Machine(JVM), there are some pitfalls that the programmer should be aware enough to avoid, which Akka cannot enforce. The messages used to communicate between the actors should be immutable. If it is made mutable and the reference of it is sent by the sender to an actor which resides on same JVM, bugs such as race conditions and even some incomprehensible bugs might appear. Also, the sender method must not be closed over if the block of code could be run in another thread; for instance, sending (replying) a message to the sender actor inside a ‘Future’ block. In such cases, the sender reference must be captured into a local variable first. As the reference and behavior of sender may change over time~\cite{akkaJavaDoc}.
 
   \subsection{Actor Supervision and Monitoring}
   \label{subsec:supervisionMonitoring}
-  The supervising actor in akka delegates tasks to its subordinates. It is also responsible for monitoring them for failures. When a child actor detects a failure, it suspends itself as well as its child actors and sends a message to its supervisor about the failure. According to Akka Java documentation\cite{akkaJavaDoc}, upon receiving the failure, the supervisor may opt to perform one of the four choices:
+  The supervising actor in Akka delegates tasks to its subordinates. It is also responsible for monitoring them for failures. When a child actor detects a failure, it suspends itself as well as its child actors and sends a message to its supervisor about the failure. According to Akka Java documentation\cite{akkaJavaDoc}, upon receiving the failure, the supervisor may opt to perform one of the four choices:
   \begin{enumerate}
     \item Resume the subordinate, keeping its accumulated internal state
     \item Restart the subordinate, clearing out its accumulated internal state
@@ -196,7 +196,7 @@ Here, ‘at-most-once delivery’ means that a message is either not delivered a
 It is also possible to use custom implementation of a router by extending \emph{RoutingLogic} class from Akka's routing library.
 
   \subsection{Remote Actors in Akka}
-  Actors in akka are location transparent; they reside in a logical hierarchy of an actor system through which the physical location of an actor in the network can be determined. The location transparency allows the akka applications to be developed locally but deployed into distributed systems simply by changing configurations~\cite{akkaJavaDoc}.
+  Actors in Akka are location transparent; they reside in a logical hierarchy of an actor system through which the physical location of an actor in the network can be determined. The location transparency allows the Akka applications to be developed locally but deployed into distributed systems simply by changing configurations~\cite{akkaJavaDoc}.
 
   The peer-to-peer communication between actor systems is the foundation for Akka Clustering. Akka's Documentation for Java~\cite{akkaJavaDoc} lists the two design decisions for remoting:
 \begin{enumerate}
@@ -206,7 +206,7 @@ It is also possible to use custom implementation of a router by extending \emph{
   \item The role of the communicating systems are symmetric in regards to connection patterns: there is no system that only accepts connections, and there is no system that only initiates connections.
 \end{enumerate}
 
-The \autoref{lst:akkaRemoting} is an example taken from website of Akka\footnote{\fullcite{akkaHome}} which is an example fo configuration and code for deploying actors in remote nodes.
+The \autoref{lst:akkaRemoting} is an example taken from website of Akka\footnote{\fullcite{akkaHome}} which is an example of configuration and code for deploying actors in remote nodes.
 
 \begin{lstlisting}[caption=A sample Akka Configuration and Code for Remote Actors~\cite{akkaHome}, label=lst:akkaRemoting]
   // ------------------------------
@@ -271,7 +271,7 @@ The \autoref{lst:akkaRemoting} is an example taken from website of Akka\footnote
 
   Dart has automatic garbage collecting system, which means the memory occupied by objects which are not in use and which do not have any reference are reclaimed periodically.
   %
-  % Developers of dart believe that JavaScript has been pushed to its limit and the web apps developed in JavaScript are far too slow even though JavaScript engines are fast. They claim Dart offers a better solution to build larger and more complex web applications\cite{laddWalrath}.
+  % Developers of Dart believe that JavaScript has been pushed to its limit and the web apps developed in JavaScript are far too slow even though JavaScript engines are fast. They claim Dart offers a better solution to build larger and more complex web applications\cite{laddWalrath}.
 
 Some of its important features are:
   \begin{itemize}
@@ -292,7 +292,7 @@ Some of its important features are:
 \end{itemize}
 
   \subsection{Dart and JavaScript}
-  Codes written in Dart can be translated to JavaScript using a tool – ‘dart2js’. ‘Dart2js’ is bundled with the Dart SDK (Software Development Kit). As popular web browsers like Mozilla Firefox, Google Chrome, Safari do not have Dart Virtual Machine embedded, the ability to translate source code from Dart to JavaScript lets dart programs run in any modern browser without needing to manually port the source code to JavaScript.
+  Codes written in Dart can be translated to JavaScript using a tool – ‘dart2js’. ‘Dart2js’ is bundled with the Dart SDK (Software Development Kit). As popular web browsers like Mozilla Firefox, Google Chrome, Safari do not have Dart Virtual Machine embedded, the ability to translate source code from Dart to JavaScript lets Dart programs run in any modern browser without needing to manually port the source code to JavaScript.
 
   \subsection{Asynchronous Programming in Dart}
   Most programming languages use callback functions for asynchronous programming. Dart provides some additional alternatives along with callback functions \textendash~Future and Stream objects. A ‘Future’ is a promise for a result which will be returned after an arbitrary amount of time. A ‘Stream’ is a way to get a sequence of values, such as events, data from ports etc.
@@ -362,7 +362,7 @@ Some of its important features are:
   \subsubsection{Difference from Actor}
   Although, Dart isolates do not have shared state and use message-passing as the only means of communication between two isolates, the isolates differ from actors~[\autoref{sec:actorProgramming}] in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but Dart isolates are resource heavy and slow to spawn. The implementation of actor found in other languages like Erlang~[\autoref{sec:erlang}] and Akka toolkit~[\autoref{sec:akka}] can be considered much closer to Hewitt's actor model.
 
-  The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions~\cite{akkaHome} whereas, an isolate in dart takes up around 5 to 7 MegaBytes\footnote{Based on the memory consumption of the two isolates from \autoref{lst:isolateSample}} of memory, the number of isolates per GigaByte of heap can only reaches up to few hundreds. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an isolate in Dart is \textemdash{} similar to a threads with properties like an actor.
+  The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions~\cite{akkaHome} whereas, an isolate in Dart takes up around 5 to 7 MegaBytes\footnote{Based on the memory consumption of the two isolates from \autoref{lst:isolateSample}} of memory, the number of isolates per GigaByte of heap can only reaches up to few hundreds. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an isolate in Dart is \textemdash{} similar to a threads with properties like an actor.
 
   \subsubsection{Limitations of Isolates}
   Although Dart isolates follow the asynchronous message passing model which is suitable for distributed systems, it is not possible for an isolate in one Dart VM to send message to an isolate in another Dart VM. A message exchange between two isolates via SendPort/ReceivePort is possible only if the isolates are spawned locally in the same Dart virtual machine. Thus, a hindrance in making them distributed.
@@ -435,7 +435,7 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
   \label{subsec:stompForDart}
   Dart's ‘pub’\footnote{http://pub.dartlang.org} is a public library sharing platform which allows user to share and reuse Dart codes.
 
-  Given that dart is a fairly new language, there is no AMQP client for RabbitMQ yet. As mentioned above in section~\ref{sec:rabbitmq} RabbitMQ also supports STOMP. An open source STOMP client\footnote{https://github.com/rikulo/stomp} in dart is available in Dart's ‘pub’ created by ‘Potix corporation’. It can perform most of the basic operations with message broker system like connecting, creating queue, subscribing, enqueuing and dequeuing. Although it has those basic functionalities, it still has some limitations and incompleteness like lack of support of ‘Heartbeat’ and it only supports STOMP version 1.2 or above.
+  Given that Dart is a fairly new language, there is no AMQP client for RabbitMQ yet. As mentioned above in section~\ref{sec:rabbitmq} RabbitMQ also supports STOMP. An open source STOMP client\footnote{https://github.com/rikulo/stomp} in Dart is available in Dart's ‘pub’ created by ‘Potix corporation’. It can perform most of the basic operations with message broker system like connecting, creating queue, subscribing, enqueuing and dequeuing. Although it has those basic functionalities, it still has some limitations and incompleteness like lack of support of ‘Heartbeat’ and it only supports STOMP version 1.2 or above.
 
 
 \section{WebSocket}

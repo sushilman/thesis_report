@@ -8,17 +8,16 @@
 
 \subsection{Producer/Consumer Program}
 \label{subsec:producer-consumer-program}
-  The producer-consumer program is a simple application. It has two worker isolates, a producer and a consumer. The ‘producer’ shown in \autoref{lst:producer} produces messages continuously until it is terminated. The messages are targeted for the ‘consumer’~[\autoref{lst:consumer}] which prints the incoming messages to standard output.
-% Describe the program
+  The producer-consumer program is a simple application. It has two worker isolates, a producer and a consumer. The ‘producer’, shown in \autoref{lst:producer}, starts producing 64-byte messages as soon as it is spawned. The ‘producer’ worker keeps on producing messages continuously until it is terminated. The produced messages are targeted for ‘consumer’~[\autoref{lst:consumer}] worker which is done by setting the target address of consumer to “mysystem/consumer” as the second argument of \emph{send()} (line 31). Here, the first part of the address “mysystem” is the name of the isolate system where the ‘consumer’ worker is supposed to be deployed.
 
+  The ‘consumer’ worker shown in [\autoref{lst:consumer}] dequeues a message from its queue as soon as it is spawned.  After receiving each message, the consumer prints the incoming messages to standard output and invokes \emph{done()} which sends out a dequeue request to fetch another message.
+
+\newpage
 \begin{lstlisting}[language=java, firstnumber=1, caption=Basic version of Producer Worker of Producer-Consumer application, label=lst:producer]
-
-// producer.dart
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:async';
 import 'dart:math' as Math;
-
 import 'package:isolatesystem/worker/Worker.dart';
 
 main(List<String> args, SendPort sendPort) {
@@ -30,7 +29,6 @@ class Producer extends Worker {
   static const String Message64Bytes = "012345670123456701234567";
 
   StringBuffer data = new StringBuffer();
-  String description = "";
 
   Producer(List<String> args, SendPort sendPort) : super(args, sendPort) {
     description += "${args}";
@@ -54,8 +52,8 @@ class Producer extends Worker {
 
 
 % Consumer Worker
+\newpage
 \begin{lstlisting}[language=java, firstnumber=1, caption=Basic version of Consumer Worker of Producer-Consumer application, label=lst:consumer]
-  //consumer.dart
   import 'dart:isolate';
   import 'package:isolatesystem/worker/Worker.dart';
 
@@ -81,15 +79,16 @@ class Producer extends Worker {
 
 \subsection{Requester/Supplier Program}
 \label{sec:request-reply-program}
-The request-reply program is a simple application. It has two worker isolates, a requester and a supplier. The ‘requester’ shown in \autoref{lst:requester} produces a request message as soon as it is spawned. The request message is targeted for the ‘supplier’~[\autoref{lst:consumer}] which does a pattern matching on the request and replies an appropriate message to the original requester.
+The request-reply program is a simple application. It has two worker isolates, a requester and a supplier. The ‘requester’ shown in \autoref{lst:requester} sends a request message as soon as it is spawned. It randomly generates a request for a fruit, a number or a name. This request message is targeted for the ‘supplier’~[\autoref{lst:consumer}] worker by setting its address as the second argument of \emph{ask()}.
 
+  The ‘supplier’ worker shown in \autoref{lst:consumer} does a pattern matching on each request and based on the request message, it either replies with a random fruit, a random number or a random name to the original requester.
+
+\newpage
 % Requester Worker
 \begin{lstlisting}[language=java, firstnumber=1, caption=Requester Worker of Requester-Supplier application, label=lst:requester]
 import 'dart:isolate';
 import 'dart:math';
-
 import 'package:isolatesystem/worker/Worker.dart';
-
 import 'AvailableSupplies.dart';
 
 main(List<String> args, SendPort sendPort) {
@@ -110,7 +109,6 @@ class Requester extends Worker {
     int receivedAt = new DateTime.now().millisecondsSinceEpoch;
     int requestedAt = message['requestedAt'];
     int repliedAt = message['repliedAt'];
-
     int rtt = receivedAt - requestedAt;
     print("Round trip time: $rtt");
     _sendRequest();
@@ -118,7 +116,6 @@ class Requester extends Worker {
 
   _sendRequest() {
     String requestMessage = "";
-
     int randomNumber = new Random().nextInt(3);
     if(randomNumber == 1) {
       requestMessage = AvailableSupplies.RANDOM_FRUIT;
@@ -140,7 +137,6 @@ class Requester extends Worker {
 
 import 'dart:isolate';
 import 'dart:math';
-
 import 'package:isolatesystem/worker/Worker.dart';
 import 'AvailableSupplies.dart';
 
@@ -170,7 +166,6 @@ class Supplier extends Worker {
         'repliedAt': new DateTime.now().millisecondsSinceEpoch,
         'requestMessage': message['requestMessage'],
         'responseMessage': responseMessage};
-
     reply(response);
     done();
   }
