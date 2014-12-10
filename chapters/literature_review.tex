@@ -2,9 +2,9 @@
 
 \section{Message Passing Paradigm}
 \label{sec:messagePassing}
-  Message passing is sending a message from one process, component or actor to another. When a message is received by a recipient, it chooses further processing based on the pattern or content of the message.
+  Message passing is sending a message from one process, component or actor to another. When a message is received by a recipient, the recipient chooses further processing based on the pattern or content of the message.
 
-  Message passing is the loosest type of coupling. The components of a system are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement message passing paradigm are easily scalable and efficient. Such systems are easy to replicate and easy to make fault-tolerant.
+  Message passing is the loosest type of coupling. The components of a system are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement message passing paradigm are easily scalable and efficient. Such systems are easy to replicate and make fault-tolerant.
 ~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
   Systems which communicate solely by message passing do not have a shared state. Such systems can be easily divided into isolated components. This makes the overall architecture easy to understand and simplifies the isolation of problems within the system~\cite{Armstrong:2010:ERL:1810891.1810910}.
@@ -43,9 +43,9 @@ After receiving a message, an actor may perform following actions~\cite{hewitt}:
 
   An actor exists in a system. An actor system is a group of actors working together in certain hierarchy.
 
-  In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that message sent to an actor will arrive sequentially~\cite{hewittVideo}. Nevertheless, Akka framework~[\autoref{sec:akka}] guarantees the order of delivery of messages between two actors, provided that there are no intermediary actors in between~[\autoref{subsec:akkaMessagePassing}].
+  In the actor model, concurrency is inherent because of the way it is designed. Also, there is no guarantee that messages sent to an actor arrive sequentially~\cite{hewittVideo}. Nevertheless, Akka framework~[\autoref{sec:akka}] guarantees the order of delivery of messages between two actors, provided that there are no intermediary actors in between~[\autoref{subsec:akkaMessagePassing}].
 
-  Several programming languages like Act 1, 2 and 3, Acttalk etc. were created when actor system was newly introduced by Hewitt and Agha~\cite{agha, hewitt}.
+  Several programming languages like Act 1, 2 and 3, Acttalk were created when actor system was newly introduced by Hewitt and Agha~\cite{agha, hewitt}.
 
 \subsection{Error Handling in Actor Model}
 Exception handling in actor model is based on idea of embracing failures. The idea of embracing failures is also known as “let it crash” paradigm~[\autoref{subsec:letItCrash}]. As the actors do not have shared state, this allows individual actor to fail without causing disruptions in the system. Since, an actor in an actor system is typically organized in a hierarchical structure, the actor which created a child actor can be used for supervising it. The idea of supervision in a hierarchical actor system helps to make the actor system fault tolerant~\cite{Erb2012}. When an actor throws an exception the supervisor can respond to the exception in different ways. In Akka~[\autoref{sec:akka}], the supervising actor usually reacts by either simply ignoring the exception and letting the actor continue, by restarting the actor or by escalating the error to its supervisor.
@@ -55,20 +55,20 @@ Exception handling in actor model is based on idea of embracing failures. The id
 \subsection{Differences from thread-based programming model}
 \subsubsection{Thread-based Concurrency}
   \label{subsec:thread}
-  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have shared memory, concurrent modifications and accesses of data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situation, such programming languages use locks. The locks let only a single thread at a time run sequentially for the section of a program code~\cite{ambientTalk}.
+  In thread-based programming languages, the control flow of a program is divided into several threads for concurrency. The threads operate simultaneously and the control can switch from one thread to another non-deterministically. When two or more threads have shared memory, concurrent modifications and accesses of data might result in undesired behavior of the system, known as ‘race condition’. To prevent this type of situation, thread-based programming languages use locks. The locks allow only a single thread to run sequentially at a time for the section of a program code~\cite{ambientTalk}.
 
-  Generally, thread-based programming models are easy to understand and implement. But, the resulting program behavior is difficult to understand because of implicit context switches and release of locks, which may lead to a deadlock situation~\cite{ambientTalk}.
+  Generally, thread-based programming models are easy to understand and implement. But, the resulting program behavior is difficult to comprehend because of implicit context switches and release of locks, which may lead to a deadlock situation~\cite{ambientTalk}.
 
 \subsubsection{Actors based Concurrency}
 \label{subsec:actorConcurrency}
   Concurrency in actor based programming languages are inherent because of asynchronous message-passing, pipelining, and the dynamic creation of actors. The concurrency in actors through pipelining is only constrained by the logical limits and the available hardware resources~\cite{agha}. The actors may carry out their activities in parallel as each actor resides in a completely separated space from the other actors, they are connected only via messages.
 
-  Actor based programming liberates the programmer from delving into coding details about the parallelism and threads~\cite{agha}.
+  Actor based programming liberates programmers from delving into coding details about parallelism and threads~\cite{agha}.
 
 The ‘race condition’, discussed in \autoref{subsec:thread}, do not arise in actor based programming as actors do not have a shared state and they don't need locks.
 
 \subsection{Scaling up actor based systems}
-  As actor based systems are highly concurrent~[\autoref{subsec:actorConcurrency}], it is easy to scale actor based systems from a single core system to several of them across multiple data centers around the globe. An ideal case would be to just let a new node join the actor system and let it run some more actors during runtime, without taking the running system offline. The actors themselves do not need to know the physical location of other actors as they simply exchange messages based on the logical addresses. This makes them easy to scale up by adding more actors to the same machine and scale out by adding more nodes, running actors, to a distributed system.
+  As actor based systems are highly concurrent~[\autoref{subsec:actorConcurrency}]. Also, it is easy to scale actor based systems from a single core system to several of them across multiple data centers around the globe. An ideal case would be to just let a new node join the actor system and let it run some more actors during runtime, without taking the running system offline. The actors themselves do not need to know the physical location of other actors as they simply exchange messages based on the logical addresses. This makes them easy to scale up by adding more actors to the same machine and scale out by adding more nodes to a distributed system.
 
 \section{Erlang}
 \label{sec:erlang}
@@ -78,13 +78,15 @@ The ‘race condition’, discussed in \autoref{subsec:thread}, do not arise in 
 
   Erlang was designed for the writing applications that require high availability~\cite{armstrong}. It uses concurrent processes, which have no shared memory and communicate only via asynchronous message passing. This idea is similar to the actors model proposed by Agha and Hewitt~[\autoref{sec:actorProgramming}]. Thus, programs written in Erlang are concurrent, distributed, fault tolerant and thread safe. The concurrency is built into the language itself, not the the operating system~\cite{Armstrong:2010:ERL:1810891.1810910}.
 
-  When an application developed in Erlang is deployed in a multicore computer, it automatically takes advantage of those multiple cores. The Erlang processes distribute over the cores. So, programmers do not have to worry about threads~\cite{Armstrong:2010:ERL:1810891.1810910}. In Erlang, new changes in an application can be added to the system without taking it offline. This improves the availability of whole system. Thus, it simplifies the construction of software for implementing non-stop systems~\cite{armstrong}.
+  When an application developed in Erlang is deployed in a multicore computer, it automatically takes advantage of those multiple cores. The Erlang processes distribute over the cores. So, programmers do not have to worry about threads~\cite{Armstrong:2010:ERL:1810891.1810910}. In Erlang, new changes in an application can be added to a system without taking it offline. This improves the availability of whole system. Thus, it simplifies the construction of software for implementing non-stop systems~\cite{armstrong}.
 
   Error handling in Erlang is different from most of the other programming languages. The error handling is based on a “let it crash” philosophy~[\autoref{subsec:letItCrash}] which is a non-defensive style of programming~\cite{armstrong, Armstrong:2010:ERL:1810891.1810910}.
 
 \subsection{“Let it Crash” Philosophy}
 \label{subsec:letItCrash}
-  The core idea in “Let it Crash” philosophy is to let the failing processes crash and make other processes, which observe this process, detect the crashes and fix them~\cite{Armstrong:2010:ERL:1810891.1810910}. This idea is in sharp contrast to other programming languages, where programmers implement exception handlers and prevent a process from getting terminated.
+  The core idea in “Let it Crash” philosophy is to let the failing processes crash and make other processes detect the crashes and fix them~\cite{Armstrong:2010:ERL:1810891.1810910}. Error handling in Erlang and Supervision strategy in Akka~\autoref{sec:akka} are based on this principle.
+
+   This idea is in sharp contrast to other programming languages, where programmers implement exception handlers and prevent a process from getting terminated.
 
   The proponents of the “let it crash” philosophy argue that it leads to more clear and compact code.
 ~\cite{Armstrong:2010:ERL:1810891.1810910}.
@@ -136,13 +138,13 @@ greeter.tell(new Greeting("Charlie Parker"), ActorRef.noSender());
 
   \subsection{Actor System}
   \label{subsec:actorSystem}
-    An actor system arranges actors in a hierarchical structure. The hierarchical structure of actors are formed when an actor starts up child actors to handle certain tasks. The actor not only creates and assigns tasks to the child actors but also supervises them~[\autoref{subsec:supervisionMonitoring}]. Thus it is implicit that there can be only one supervisor of an actor.
+    An actor system in Akka arranges actors in a hierarchical structure. The hierarchical structure of actors are formed when an actor starts up child actors to handle certain tasks. The actor not only creates and assigns tasks to the child actors but also supervises them~[\autoref{subsec:supervisionMonitoring}]. Thus it is implicit that there can be only one supervisor of an actor.
 
-  By splitting up the tasks, the tasks become clear and structured. Furthermore, the resulting actors also becomes simplified and specialized in terms of which messages it should process and how it should react normally. It also becomes easy to handle the failures. If an actor cannot cope with a failure, it is escalated up in the hierarchy to its supervisor. The escalation is repeated by actors in every higher level hierarchy unless it reaches up to the actor which can handle the failure~\cite{akkaJavaDoc}.
+  By splitting up the tasks, the tasks become clear and structured. Furthermore, the resulting actors also becomes simplified and specialized in terms of which messages it should process and how it should react normally. It also becomes easy to handle the failures. If an actor cannot cope with a failure, it is escalated up in the hierarchy to its supervisor. The escalation is repeated by actors in every higher level hierarchy until it reaches up to the actor which can handle the failure~\cite{akkaJavaDoc}.
 
-  An actor instance in Akka takes up roughly 300 bytes of memory, because of which it is possible to spawn millions of them in one actor system. Akka can manage very large and distributed systems; it can take care of the order in which messages are processed even in large systems~\cite{akkaJavaDoc}.
+  An actor instance in Akka takes up roughly 300 bytes of memory, because of which it is possible to spawn millions of them in one actor system. Akka is able to manage the order of message processing even in large systems~\cite{akkaJavaDoc} with millions of actors.
 
-  An example of the arrangement of actors in hierarchical structure is shown in~\autoref{fig:actorSystem}. The ‘{$\backslash$}’ is known as the “root guardian” and \emph{$\backslash$user} is known as the “user guradian”. Any actor created by a user falls under the user guardian. For instance, in the~\autoref{fig:actorSystem}, \emph{actorA} and \emph{actorB} are actors created by user, hence their supervisor is \emph{$\backslash$user}. Again, the actors \emph{actor1} and \emph{actor2} are the child actors of \emph{actorB}. The address of an actor in Akka is arranged like the filesystem hierarchy. Hence, the supervision hierarchy as well as the path leading to the actor is comprehensible from its address.
+  An example of the arrangement of actors in hierarchical structure is shown in \autoref{fig:actorSystem}. The ‘{$\backslash$}’ is known as “root guardian” and \emph{$\backslash$user} is known as “user guradian”. Any actor created by a user falls under the user guardian. For instance, in the~\autoref{fig:actorSystem}, \emph{actorA} and \emph{actorB} are actors created by user, hence their supervisor is \emph{$\backslash$user}. Again, the actors \emph{actor1} and \emph{actor2} are the child actors of \emph{actorB}. The address of an actor in Akka is arranged like the filesystem hierarchy. Hence, the supervision hierarchy as well as the path leading to the actor is implicit from its address.
 
 \begin{figure}[H]
   \centering
@@ -196,9 +198,9 @@ Here, ‘at-most-once delivery’ means that a message is either not delivered a
 It is also possible to use custom implementation of a router by extending \emph{RoutingLogic} class from Akka's routing library.
 
   \subsection{Remote Actors in Akka}
-  Actors in Akka are location transparent; they reside in a logical hierarchy of an actor system through which the physical location of an actor in the network can be determined. The location transparency allows the Akka applications to be developed locally but deployed into distributed systems simply by changing configurations~\cite{akkaJavaDoc}.
+  Actors in Akka are location transparent; they reside in a logical hierarchy of an actor system through which the physical location of an actor in the network can be determined. Location transparency allows Akka applications to be developed locally but deployed into distributed systems simply by changing configurations~\cite{akkaJavaDoc}.
 
-  The peer-to-peer communication between actor systems is the foundation for Akka Clustering. Akka's Documentation for Java~\cite{akkaJavaDoc} lists the two design decisions for remoting:
+  Peer-to-peer communication between actor systems is a foundation for Akka Clustering. Akka's Documentation for Java~\cite{akkaJavaDoc} lists the two design decisions for remoting:
 \begin{enumerate}
 
   \item Communication between involved systems is symmetric: if system A can connect to system B then system B must also be able to connect to system A independently.
@@ -255,7 +257,7 @@ The \autoref{lst:akkaRemoting} is an example taken from website of Akka\footnote
 \end{lstlisting}
 
   \subsection{Clustering in Akka}
-  Akka does not have a central server. Instead, it uses peer-to-peer based gossip protocol to form a cluster. Thus, there is no single point of failure or single point of bottleneck in the system. But, adding a new member in a distributed system requires significant amount of time because of the nature of the gossip protocol. In a benchmark~\cite{akkaBenchmark} performed by Patrik Nordwall\footnote{Patrick Nordwall is a developer of Akka at Typesafe Inc.}, adding nodes to a cluster of at least 1500 nodes took around 15 to 20 seconds in average.
+  Akka does not have a central server. Instead, it uses peer-to-peer based gossip protocol to form a cluster. Thus, there is no single point of failure or single point of bottleneck in the system. But, adding a new member in a distributed system requires significant amount of time because of the nature of the gossip protocol. In a benchmark~\cite{akkaBenchmark} performed by Patrik Nordwall\footnote{Patrick Nordwall is a developer of Akka at Typesafe Inc.}, adding nodes to a cluster of at least 1500 nodes took around 15 to 20 seconds on average.
 
 
 \section{The Dart Language}
@@ -263,7 +265,7 @@ The \autoref{lst:akkaRemoting} is an example taken from website of Akka\footnote
   \subsection{Overview}
   Dart is an open-source, class-based, single-inheritance, pure object-oriented programming language developed by Google~\cite{dartEcma}. Dart language is inspired by Smalltalk, Strongtalk, Erlang, C\# and JavaScript~\cite{sethladd}.
 
-  Dart code is not compiled before running; it is read and executed directly from the source code by the Dart Virtual Machine(VM). Dart provides a homogeneous system that encompass both client as well as server as the Dart VM can be embedded in browsers. A version of Chromium – ‘Dartium’ already has Dart VM built into it~\cite{sethladd}.
+  Dart code is not compiled before running; it is read and executed directly from the source code by the Dart Virtual Machine (VM). Dart provides a homogeneous system that encompass both client as well as server as the Dart VM can be embedded in browsers. A version of Chromium – ‘Dartium’ already has Dart VM built into it~\cite{sethladd}.
 
   Programs in Dart are optionally typed. They can be executed in two modes checked mode and production mode. In checked mode incorrect static type annotations produce compile time errors. Whereas, in production mode, type annotations are completely ignored~\cite{dartEcma}.
 
@@ -287,12 +289,13 @@ Some of its important features are:
   \subsection{Advantages of Dart}
   \begin{itemize}
     \item Translates to JavaScript so that the code can be run in the web-browsers that do not have Dart VM yet
+    \item Unified development across client and server
     \item Has been gaining popularity and adoption in recent years
     \item Optionally typed language
 \end{itemize}
 
   \subsection{Dart and JavaScript}
-  Codes written in Dart can be translated to JavaScript using a tool – ‘dart2js’. ‘Dart2js’ is bundled with the Dart SDK (Software Development Kit). As popular web browsers like Mozilla Firefox, Google Chrome, Safari do not have Dart Virtual Machine embedded, the ability to translate source code from Dart to JavaScript lets Dart programs run in any modern browser without needing to manually port the source code to JavaScript.
+  Code written in Dart can be translated to JavaScript using a tool – ‘dart2js’. ‘Dart2js’ is bundled with the Dart SDK (Software Development Kit). As popular web browsers like Mozilla Firefox, Google Chrome, Safari do not have Dart Virtual Machine embedded, the ability to translate source code from Dart to JavaScript lets Dart programs run in any modern browser without needing to manually port the source code to JavaScript.
 
   \subsection{Asynchronous Programming in Dart}
   Most programming languages use callback functions for asynchronous programming. Dart provides some additional alternatives along with callback functions \textendash~Future and Stream objects. A ‘Future’ is a promise for a result which will be returned after an arbitrary amount of time. A ‘Stream’ is a way to get a sequence of values, such as events, data from ports etc.
@@ -301,9 +304,9 @@ Some of its important features are:
   \label{sec:isolates}
   Although Dart programs are single threaded, concurrency is supported via actor-like entities called isolates. An isolate has its own memory and own thread of control. Message passing is the sole way to communicate between isolates. No state is ever shared between isolates. Isolates are created by spawning~\cite{dartEcma}.
 
-  An isolate has its own heap memory different from the main isolate (the top level isolate). It is possible for the child isolate to throw exceptions and errors such as by exhausting its memory. If the exceptions are not handled properly, it forces the isolate to be shutdown.
+  An isolate has its own heap memory different from the main isolate (the top level isolate). It is possible for a child isolate to throw exceptions and errors such as by exhausting its memory. If the exceptions are not handled properly, it forces the isolate to be shutdown.
 
-  In Dart, when an isolate is spawned, usually a ‘sending port’ is sent as the initial message (by the spawner), so that spawner and “spawnee” can communicate with each other. The “spawnee” can use the sending port sent by spawner to reply to the spawner.
+  In Dart, when an isolate is spawned, usually a ‘sending port’ is sent as the initial message (by the spawner), so that spawner and “spawnee” can communicate with each other. The “spawnee” uses the sending port sent by spawner to reply to the spawner.
 
   An isolate can spawn another isolate which can further spawn other isolates and have control over them. Thus, the spawner can supervise the “spawnee”. The spawner can pause the “spawnee” or terminate it~\cite{dartApiIsolate}~\footnote{Pausing and terminating an isolate is not available in Dart 1.7.2 or older versions}.
 
@@ -360,9 +363,9 @@ Some of its important features are:
 \end{lstlisting}
 
   \subsubsection{Difference from Actor}
-  Although, Dart isolates do not have shared state and use message-passing as the only means of communication between two isolates, the isolates differ from actors~[\autoref{sec:actorProgramming}] in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but Dart isolates are resource heavy and slow to spawn. The implementation of actor found in other languages like Erlang~[\autoref{sec:erlang}] and Akka toolkit~[\autoref{sec:akka}] can be considered much closer to Hewitt's actor model.
+  Although, Dart isolates do not have shared state and use message-passing as the only means of communication between two isolates, isolates differ from actors~[\autoref{sec:actorProgramming}] in many ways. The most significant difference is the principle behind spawning of actor and spawning of isolate. An actor is supposed to be a very lightweight and cheap to spawn but Dart isolates are resource heavy and slow to spawn. The implementation of actor found in other languages like Erlang~[\autoref{sec:erlang}] and Akka toolkit~[\autoref{sec:akka}] can be considered much closer to Hewitt's actor model.
 
-  The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions~\cite{akkaHome} whereas, an isolate in Dart takes up around 5 to 7 MegaBytes\footnote{Based on the memory consumption of the two isolates from \autoref{lst:isolateSample}} of memory, the number of isolates per GigaByte of heap can only reaches up to few hundreds. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an isolate in Dart is \textemdash{} similar to a threads with properties like an actor.
+  The number of actors that can be spawned per GigaByte of heap memory in Akka reaches up to 2.7 millions~\cite{akkaHome} whereas, an isolate in Dart consumes about 5 to 7 MegaBytes\footnote{Based on the memory consumption of the two isolates from \autoref{lst:isolateSample}} of memory, the number of isolates per GigaByte of heap only reaches up to few hundred. Based on these observations, it would be appropriate to say that the current\footnote{Dart version 1.7.2} implementation of an isolate in Dart is \textemdash{} similar to a thread with properties like an actor.
 
   \subsubsection{Limitations of Isolates}
   Although Dart isolates follow the asynchronous message passing model which is suitable for distributed systems, it is not possible for an isolate in one Dart VM to send message to an isolate in another Dart VM. A message exchange between two isolates via SendPort/ReceivePort is possible only if the isolates are spawned locally in the same Dart virtual machine. Thus, a hindrance in making them distributed.

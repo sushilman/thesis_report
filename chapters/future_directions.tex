@@ -28,7 +28,7 @@
 
   Improvements in user experience of web interface of registry~\autoref{subsubsection:registryWebInterface} would add more value to usability of the framework.
 
-  Compared to Akka actors, Dart isolates require more memory and longer time to spawn. Creating an alternative lightweight entity to isolate, but having similar properties of an isolate would make the applications lightweight and less resource hungry.
+  Compared to Akka actors, Dart isolates require more memory and longer time to spawn. Creating an alternative lightweight entity to isolate, but having similar properties of an isolate would make the applications lightweight, less resource hungry and reduce the cost of dynamic actor creation.
 
   An improvement to add flexibility to the framework would be implementing internal message broker in the framework itself, which may not provide message persistence as a broker does. The option to choose internal broker or an external broker would provide more flexibility for applications and developers. This could be an added attraction to developers who need high throughput in their applications.
   For instance, if an application demands high throughput but doesn't require message persistence, then the internal queue instead of external message broker can be chosen.
