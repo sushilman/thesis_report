@@ -5,9 +5,10 @@
 % To solve problem statements mentioned in the introduction? a framework was created.
   The DDE Framework is designed to be distributed in nature with the concept of Actor Programming~[\autoref{sec:actorProgramming}]. It follows the standard actor programming concept and provides inherently distributed nature to the applications built on top of it. The framework itself is built using the concept of ‘message-passing’~[\autoref{sec:messagePassing}] to alleviate any possibility of concurrency issues, thus making DDE applications thread-safe.
 
+  The framework is based on following principles:
 \begin{itemize}
-  \item The framework does not guarantee the delivery of a message.
   \item All the messages sent by the framework are based on ‘fire and forget’ concept.
+  \item The framework does not guarantee the delivery of a message.
   \item A message is delivered at most once.
   \item For simplicity, consistency and persistence, a message is always routed through Message Queuing System~[\autoref{subsec:mqs}], even though the target isolate may belong to same isolate system in the same logical or physical node.
   \item Dequeuing a message (from MQS) by a worker isolate is based on pull mechanism, not push mechanism.
