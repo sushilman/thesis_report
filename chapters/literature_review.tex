@@ -1,5 +1,5 @@
 \chapter{Literature Review}\label{chapter:literature_review}
-%check if everything is titlecase in ToC
+
 \section{Message Passing Paradigm}
 \label{sec:messagePassing}
   Message passing is sending a message from one process, component or actor to another. Message passing is the loosest form of coupling. The components of a system are not dependent on each other; instead they use a public interface to exchange parameterless messages\cite{joecelko}. Hence, systems that implement the message passing paradigm are easily scalable and efficient. Such systems are easy to replicate and make fault-tolerant.
@@ -427,31 +427,31 @@ RabbitMQ supports several protocols for enqueuing and dequeuing messages:
 
 \section{STOMP}
 \label{sec:stomp}
-  STOMP stands for Simple (or Streaming) Text Orientated Messaging Protocol. It is an alternative to other open messaging protocols such as AMQP. It provides an interoperable format for STOMP clients to communicate with a message broker system that supports STOMP. It provides interoperability among different languages, platforms and brokers~\cite{stomp}.
+  STOMP stands for Simple (or Streaming) Text Orientated Messaging Protocol. It is an alternative to other open messaging protocols such as AMQP. STOMP provides an interoperable format for clients to communicate with a message broker system that supports STOMP. It provides interoperability for different languages, platforms and brokers~\cite{stomp}.
   STOMP is designed to be a lightweight protocol that is easy to implement in both client and server.
   \subsection{Protocol Overview}
-  STOMP is a frame based protocol. A frame consists of a command, a set of optional headers and an optional body. STOMP is text based but it allows the transmission of binary messages as well~\cite{stomp}. A STOMP client can either be producer or consumer.
+  STOMP is a frame-based protocol. A frame consists of a command, a set of optional headers and an optional body. STOMP is text based but it allows the transmission of binary messages as well~\cite{stomp}. A STOMP client can either be a producer or consumer.
   % As a producer a message can be sent to a destination server using SEND frame. Meanwhile, as a consumer, SUBSCRIBE frame should be sent for subscription of a message for a given destination. Then, the messages are received as MESSAGE frames.
 
   \subsection{STOMP Library for Dart}
   \label{subsec:stompForDart}
-  Dart's ‘pub’\footnote{http://pub.dartlang.org} is a public library sharing platform which allows user to share and reuse Dart codes.
+  Dart's ‘pub’\footnote{http://pub.dartlang.org} is a public library sharing platform which allows users to share and reuse Dart code.
 
-  Given that Dart is a fairly new language, there is no AMQP client for RabbitMQ yet. As mentioned above in section~\ref{sec:rabbitmq} RabbitMQ also supports STOMP. An open source STOMP client\footnote{https://github.com/rikulo/stomp} in Dart is available in Dart's ‘pub’ created by ‘Potix corporation’. It can perform most of the basic operations with message broker system like connecting, creating queue, subscribing, enqueuing and dequeuing. Although it has those basic functionalities, it still has some limitations and incompleteness like lack of support of ‘Heartbeat’ and it only supports STOMP version 1.2 or above.
+  Given that Dart is a fairly new language, there is no AMQP client for RabbitMQ yet. As mentioned above in section~\ref{sec:rabbitmq} RabbitMQ also supports STOMP. An open source STOMP client\footnote{https://github.com/rikulo/stomp} in Dart is available in Dart's ‘pub’ created by the ‘Potix corporation’. It can perform most of the basic operations with message broker system like connecting, creating queues, subscribing, enqueuing and dequeuing.
 
 
-\section{WebSocket}
+\section{WebSockets}
 \label{sec:websocket}
-  WebSocket protocol enables two-way communication between client and server over a single TCP connection. It uses origin-based security model, which is found in web browsers. It can be used for variety of web applications: games, stock tickers, multiuser applications, user interfaces exposing server-side services in real time, etc~\cite{rfc6455}.
+  The WebSocket protocol enables two-way communication between client and server over a single TCP connection. It uses an origin-based security model, which is found in web browsers. It can be used for a variety of web applications: games, stock tickers, multiuser applications, user interfaces exposing server-side services in real time, etc~\cite{rfc6455}.
 
-  Since, HTTP was not initially designed for bidirectional communication, the WebSocket Protocol is designed to displace other existing bidirectional communication technologies that are based on HTTP~\cite{rfc6455}.
+  Since HTTP was not initially designed for bidirectional communication, the WebSocket Protocol is designed to displace other existing bidirectional communication technologies that are based on HTTP~\cite{rfc6455}.
 
-  WebSocket uses two URI schemes: “ws://” for normal WebSocket connection and “wss://” for secured WebSocket connection~\cite{rfc6455}.
+  WebSockets use two URI schemes: “ws://” for normal WebSocket connection and “wss://” for secured WebSocket connection~\cite{rfc6455}.
 
 \subsection{Security}
-  The WebSocket Protocol uses the origin model used by web browsers to restrict which web pages can contact a WebSocket server when the WebSocket Protocol is used from a web page~\cite{rfc6455}.
+  The WebSocket protocol uses the origin model to restrict which web pages can contact a WebSocket server when the WebSocket protocol is used from a web page~\cite{rfc6455}.
 
-   A WebSocket server reads the handshake sent by client to establish a connection. Thus, an attempt to connection to WebSocket from other protocols cannot succeed if it is not sent by a WebSocket client~\cite{rfc6455}.
+   A WebSocket server reads a handshake sent by a client to establish a connection. Thus, an attempt to connect to a WebSocket from other protocols cannot succeed if it is not made by a WebSocket client~\cite{rfc6455}.
 
 \subsection{Establishing a Connection}
-  When establishing a WebSocket connection, the HTTP server receives a regular GET request with an offer to upgrade to WebSocket. The server responds to the request to complete the handshake and establish the connection. Then the communication takes place in full-duplex mode~\cite{rfc6455}.
+  When establishing a WebSocket connection, an HTTP server receives a regular GET request with an offer to upgrade to a WebSocket. The server responds to the request to complete the handshake and establish the connection. Then the communication takes place in full-duplex mode~\cite{rfc6455}.
