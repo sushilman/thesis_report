@@ -1,20 +1,4 @@
 \chapter{Future Directions}\label{chapter:future_directions}
-% Think like a product manager, customer, QA...
-  % security, usability
-  % easy to setup and deploy
-  % easy to get started
-  % blue green deployment?
-% What would customers need
-% NFRs
-% Features
-% Improving management
-% support different brokers
-% or removing the broker itself
-
-% target specific industry: trading application, telephony softwares, etc.
-  % The added safety could attract more customers?
-
-% incorporate the broker into the framework itself, removing dependency on rabbitmq and would improve throughput?.
 
   The work done in the DDE framework in this thesis may be extended and improved in number of directions. First, the most important missing feature, security, requires a concept and implementation. The DDE framework heavily relies on the underlying transport layer to provide security, additional application level security would provide the DDE framework more safety.
 
@@ -28,9 +12,8 @@
 
   Improvements in user experience of web interface of registry~\autoref{subsubsection:registryWebInterface} would add more value to usability of the framework.
 
-  Compared to Akka actors, Dart isolates require more memory and longer time to spawn. Creating an alternative lightweight entity to isolate, but having similar properties of an isolate would make the applications lightweight, less resource hungry and reduce the cost of dynamic actor creation.
+  Compared to Akka actors, Dart isolates require more memory and longer time to spawn. Creating an alternative lightweight entity to isolate, but having similar properties of an isolate would make the applications lightweight, less resource hungry and reduce the cost of dynamic isolate creation.
 
-  An improvement to add flexibility to the framework would be implementing internal message broker in the framework itself, which may not provide message persistence as a broker does. The option to choose internal broker or an external broker would provide more flexibility for applications and developers. This could be an added attraction to developers who need high throughput in their applications.
-  For instance, if an application demands high throughput but doesn't require message persistence, then the internal queue instead of external message broker can be chosen.
+  An improvement to add flexibility to the framework would be implementing internal message broker in the framework itself, which may not provide message persistence as a broker does. The option to choose internal broker or an external broker would provide more flexibility for applications and developers. This could be an added attraction to developers who need high throughput in their applications. For instance, if an application demands high throughput but doesn't require message persistence, then the internal queue instead of external message broker can be chosen.
 
   The ideas discussed in this chapter are only a few of many other improvements that can be made in the framework.

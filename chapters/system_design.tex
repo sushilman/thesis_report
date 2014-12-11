@@ -3,7 +3,7 @@
 
 \section{Core Design Decisions}
 % To solve problem statements mentioned in the introduction? a framework was created.
-  The DDE Framework is designed to be distributed in nature with the concept of Actor Programming~[\autoref{sec:actorProgramming}]. It follows the standard actor programming concept and provides inherently distributed nature to the applications built on top of it. The framework itself is built using the concept of ‘message-passing’~[\autoref{sec:messagePassing}] to alleviate any possibility of concurrency issues, thus making DDE applications thread-safe.
+  The DDE Framework is designed to be distributed in nature with the concept of Actor Programming~[\autoref{sec:actorProgramming}]. It provides inherently distributed nature to applications built on top of it. The DDE framework itself is built using the concept of ‘message-passing’~[\autoref{sec:messagePassing}] to alleviate any possibility of concurrency issues, making DDE applications thread-safe.
 
   The framework is based on following principles:
 \begin{itemize}
@@ -23,20 +23,20 @@
   \label{fig:architecture}
 \end{figure}
 
-The DDE framework comprises of an Isolate System, a Registry, a Message Queuing System, a Message Broker System and an Activator. \autoref{fig:architecture} depicts the general overview of different components and sub-components of the framework.
+The DDE framework comprises of an ‘Isolate System’, a ‘Registry’, a ‘Message Queuing System’, a ‘Message Broker System’ and an ‘Activator’. \autoref{fig:architecture} depicts the general overview of different components and sub-components of the framework.
 
   \subsection{Isolate System}
   \label{sub:isolate-system}
-  An Isolate System is analogous to an actor system~\autoref{subsec:actorSystem}. Just as an actor system consists of a group of actors working together, an isolate system is composed of a group of ‘Worker’ isolates. It consists of different hierarchies which forms an organizational-like structure. The top level isolate is the Isolate System itself and the bottom most are ‘Worker’ isolates.
+  An isolate system is analogous to an actor system~\autoref{subsec:actorSystem}. Just as an actor system consists of a group of actors working together, an isolate system is composed of a group of ‘Worker’ isolates. It consists of different hierarchies which form an organization-like structure. The bottom most entities are ‘Worker’ isolates, which are managed by a ‘Router’. Routers are managed by a ‘Controller’ and the controller is spawned by a top level isolate.
 
-  A ‘Bootstrapper’ in a physical node can start up several Isolate Systems. Nevertheless, a logical Isolate System is not limited to a single physical node. The ‘Worker’ isolates spawned by an isolate system can be distributed across several remote systems.
+  Each isolate system has a unique id, which is a \acrshort{uuid}. It is generated when an isolate system is bootstrapped. For bootstrapping, an isolate system needs the WebSocket address of a Message Queuing System, and a ‘name’ for itself. The name is simply an alias and it should not be confused with the unique id. Another isolate system with the same name may exist in other nodes but a unique id is exclusive for a particular instance of an isolate system.
 
-  Each isolate system has a unique id, which is a \acrshort{uuid}. It is generated when the isolate system is bootstrapped. For bootstrapping, an isolate system needs the WebSocket address of Message Queuing System, and a ‘name’ for itself. The name is simply an alias, and should not be confused with the unique id as another isolate system with the same name can exist in other nodes but the unique id is exclusive for a particular instance of an isolate system.
+  A ‘Bootstrapper’ in a physical node can start up several Isolate Systems. But, a logical isolate system is not limited to a single physical node. The ‘Worker’ isolates of an isolate system can be distributed across several remote systems.
 
-  The bootstrapping of an isolate system includes: generating a new id which is unique for itself, opening up a ‘ReceivePort’, and connecting to a ‘Message Queuing System’. After opening up a ‘ReceivePort’, the isolate system starts listening on that port for messages so that it can receive incoming messages from ‘Controller’. While connecting to the Message Queuing System, if a connection could not be established, it simply keeps on retrying at certain interval. Furthermore, should the connection be lost at any time after being connected with the MQS, the Isolate System automatically keeps on trying to re-establish the connection at regular intervals. Since, the connection to MQS takes place asynchronously, the isolate system moves forward and spawns a controller, regardless of the establishment of connection to the MQS.
+  Bootstrapping of an isolate system includes: generating a new unique id, opening up a ‘ReceivePort’, and connecting to a ‘Message Queuing System’. After opening up a ‘ReceivePort’, the isolate system starts listening on that port for messages so that it can receive incoming messages from ‘Controller’. If a connection with MQS fails or disconnects, the isolate system keeps on retrying at a regular interval to establish a connection. Since the connection to MQS takes place asynchronously, the isolate system moves forward and spawns a controller regardless of the establishment of connection to the MQS.
 
-  \subsubsection{Adding Worker Isolates to The Isolate System}
-  As an isolate system is a top level isolate, it spawns controller. The controller spawns one or several routers and each router spawns worker isolates. \autoref{fig:addIsolateSequence} shows the message flow sequence in different components while starting up an isolate system and deploying a worker isolate in it.
+  \subsubsection{Adding Worker Isolates to an Isolate System}
+  As an isolate system is a top level isolate, it spawns a controller. A controller spawns one or several routers and each router spawns worker isolates. \autoref{fig:addIsolateSequence} shows a message flow sequence in different components while starting up an isolate system and deploying a worker isolate in it.
 
   \begin{figure}[H]
     \centering
@@ -72,40 +72,39 @@ The DDE framework comprises of an Isolate System, a Registry, a Message Queuing 
   \label{fig:addIsolateSequence}
   \normalsize
 
-  When an isolate system is first initialized, it is an empty system without any Workers running in it. The Workers can be added with appropriate load balancer once the isolate system has been initialized. The ‘addIsolate’ method starts up worker isolates into the isolate system. It requires following arguments:
+  An isolate system is initialized without any Workers running in it. The Workers are added with appropriate load balancer after the isolate system is initialized. The \emph{addIsolate} method starts up worker isolates into the isolate system. It requires following arguments:
   \begin{description}
     \item{\itshape{name}} \textendash{} A name for pool of isolates. A deployed isolate has its own name but overall the name is concatenated with the name of isolate system to denote the hierarchy. For instance, an isolate with name ‘account’ becomes ‘bank/account’ where ‘bank’ is the name of the isolate system.
-    \item{\itshape{sourceUri}} \textendash{} The location of the source code from which the isolate shall be spawned. The path can either be absolute path to the local file system or the full http or https URI.
-    \item{\itshape{workersPaths}} \textendash{} List of destinations where each of the isolates should be spawned. To spawn locally, ‘localhost’ should be used, whereas to spawn in remote node, WebSocket path like: “ws://192.168.2.9:42042/activator” should be used. The number copy of isolates that should be spawned is determined by the length of this list. If multiple copies of isolates should be spawned in a node, the location can be repeated. For instance [“localhost”, “localhost”] results in spawning of two identical isolates in local machine which is load balanced by the type of specified router.
-    \item{\itshape{routerType}} \textendash{} The type of load balancing technique that one would like to use to effectively distribute incoming messages. By default, the framework, provides three types of routers: Round-Robin, Random and Broadcast. If the developer wants to use his own customized load balancer instead of using the options provided by the framework, the absolute path to the location of source code, which can also be a remote URI, of the custom router implementation can be provided.
-    \item{\itshape{hotDeployment}} \textendash{} This argument is optional and is set to ‘true’ by default. Setting it to ‘true’ enables continuous monitoring of the source code. If any change in source code is identified, the  instances of isolates, spawned by this ‘addIsolate’ function, in current isolate system will be restarted, without the need of redeploying the system.
-    \item{\itshape{args}} \textendash{} Custom additional arguments to be passed into each instance of spawned isolate. This argument is also optional and can be safely ignored.
+    \item{\itshape{sourceUri}} \textendash{} Location of the source code from which the isolate shall be spawned. The path may either be an absolute path to a local file system or a full http or https URI.
+    \item{\itshape{workersPaths}} \textendash{} List of destinations where each of the isolates should be spawned. To spawn a worker isolate locally, ‘localhost’ should be used as the path and to spawn in a remote node, WebSocket path like: “ws://192.168.2.9:42042/activator” should be used. The number of isolates that should be spawned is determined by the length of this list. If multiple copies of isolates should be spawned in a node, the location can be repeated. For instance [“localhost”, “localhost”] results in spawning of two identical isolates in local machine which is load balanced by the type of specified router.
+    \item{\itshape{routerType}} \textendash{} Type of load balancing technique that one would like to use to effectively distribute incoming messages. By default, the DDE framework, provides three types of routers: Round-Robin, Random and Broadcast. It is also possible to use a custom implemented router by extending the \emph{Router} class of the framework. A custom router can be loaded by providing an absolute path (either file or http/https URI) of the location of source code.
+    \item{\itshape{hotDeployment}} \textendash{} This argument is optional and is set to ‘true’ by default. Setting it to ‘true’ enables continuous monitoring of a source code. If any change in the source code is identified, instances of isolates spawned by this \emph{addIsolate} function in current isolate system are restarted, without the need of redeploying the system.
+    \item{\itshape{args}} \textendash{} Custom additional arguments to be passed into each instance of isolates during spawning. This argument is also optional and can be safely ignored.
   \end{description}
 
-  \subsubsection{Message Handling in The Top Level Isolate System}
+  \subsubsection{Message Handling in a Top Level Isolate}
   Typically, a message in an isolate system may arrive from three sources: Message Queuing System via WebSocket, Controller via ReceivePort or Bootstrapper via direct method invocation. As Dart is a single threaded programming language~[\autoref{sec:isolates}], only one message is handled at a time by the top level isolate.
 
-  A Message Queuing System sends the data over WebSocket in JSON string format, which should be deserialized to Map data type before further processing. As the received message contains the queue name from which it is dequeued, the name of the queue is then parsed and transformed to name and address of the corresponding isolate. The message is then forwarded to the Controller that this instance of the isolate system has spawned.
+  A Message Queuing System sends the data over WebSocket in JSON string format, which should be deserialized to Map data type before further processing. As a received message contains a queue name from which it is dequeued, the name of the queue is parsed and transformed to name and address of the corresponding isolate. The message is then forwarded to the Controller that this instance of the isolate system has spawned.
 
-  The messages arriving from a controller are either dequeue requests or messages for enqueuing (that should be sent to the Message Queuing System). The dequeue requests are sent from the isolates that have completed certain task and are ready to accept another message. For the dequeue requests, the sender of the message is identified, which is used to figure out the corresponding name of the queue name. Then the pull request to dequeue from that queue is forwarded to MQS via open WebSocket port. For messages that should be delivered to another isolate, the name of the target isolate is used to figure out the name of the queue and then sent to the MQS for enqueuing.
+  The messages arriving from a controller are either dequeue requests or messages for enqueuing (that should be sent to the Message Queuing System). The dequeue requests are sent from the isolates that have completed certain task and are ready to accept another message. For the dequeue requests, the sender of the message is identified to figure out the corresponding name of the queue. Then the dequeue request to dequeue from that queue is forwarded to MQS via open WebSocket port. For messages that should be delivered to another isolate, the name of the target isolate is used to figure out the name of the queue and then sent to the MQS for enqueuing.
 
-%TODO
-  The ‘Bootstrapper’ of a node that creates an isolate system can send messages to isolate system by directly invoking the functions provided by the isolate system. The bootstrapper can request the information about the isolates this instance of isolate system is running. For which, the isolate system delegates the message to its controller and waits asynchronously for the response from the controller. The request, to fetch a list of running worker isolates, is triggered when a user sends the request to view details of an isolate system via a web interface or via RESTful web services provided by the ‘Registry’~[\autoref{subsec:registry}].
+Messages arriving from bootstrapper are either KILL messages or messages to get isolate details. A request to get detailed information of an isolate system and its isolates are made via web interface or RESTful web services of registry~[\autoref{sec:registry}]. When such requests are made, the registry forwards the requests to respective bootstrapper~[\autoref{subsubsec:bootstrapper}]. The bootstrapper then invokes a function provided by the top level isolate. Then, the top level isolate sends a message to a controller to get list of isolates the controller is managing and waits asynchronously for a future reply. As soon as a response is received from the controller, the top level isolate sends the response to the bootstrapper as a return value of the invoked function.
 
-  Another type of message is the ‘KILL’ message, which is used to terminate a worker isolate. It is also forwarded to the controller as the isolate system does not directly manage the running worker isolates. Thus, the message is forwarded to the controller which is next in the hierarchy. In contrast, when the shutdown command for the isolate system is triggered via web or REST interface, the isolate system closes all the open ports including WebSocket ports and ReceivePorts, and then wait for the ‘Garbage Collector’ to clean up the memory reserved by it.
+  Another type of message is a ‘KILL’ message, which is used to terminate a worker isolate. Since, a top level isolate does not directly manage running worker isolates, the message is forwarded to the controller which is next in the hierarchy. Similarly, when the ‘KILL’ message is sent to an isolate system to shut it down, the top level isolate forwards the KILL message to its controller and closes all open ports including WebSocket ports and ReceivePorts. After that it waits for a ‘Garbage Collector’ to clean up the memory reserved by it.
 
   \subsubsection{Controller}
-  Every isolate system has a single controller, which is spawned by the top level isolate of the isolate system. A controller stays idle until it receives a message to create an isolate. Basically, a controller spawns and manages all the routers of an isolate system. Additionally, a controller takes care of the ‘hot deployment’ feature for which it spawns a ‘FileMonitor’ for each router if the feature is enabled. When a RESTART message is received from a FileMonitor, the controller sends a RESTART\textunderscore{}ALL message to the designated router, which restarts all the Worker isolates the router has spawned.
+  Every isolate system has a single controller, which is spawned by the top level isolate of an isolate system. A controller stays idle until it receives a message to create an isolate. After receiving a spawn message, the controller spawns and manages routers in an isolate system. It also spawns a ‘FileMonitor’ for each ‘hot deployment’ feature enabled router. When a RESTART message is received from a FileMonitor, the controller sends a RESTART\textunderscore{}ALL message to the designated router, and the router restarts all Worker isolates it has spawned.
 
-  A controller is also responsible for replying to the query of list of isolates an isolate system is running. It achieves this by keeping a detailed record of each Router and number of Worker isolates each Router is handling, which is updated as soon as an isolate is killed or a new isolate is added.
+  A controller is also responsible for replying to the query of list of isolates of an isolate system. It achieves this by keeping a detailed record of each Router and number of Worker isolates each Router is handling. The list gets updated as soon as a worker isolate is killed or a new worker isolate is added.
 
-  As a Controller is the ‘spawner’ of Routers and the ‘spawnee’ of the top level isolate, it forwards the messages as well as dequeue requests coming from Routers to the top level isolate of an isolate system.
+  As a Controller is the ‘spawner’ of Routers and the ‘spawnee’ of the top level isolate, it forwards the messages as well as dequeue requests coming from Routers to the top level isolate.
 
   \subsubsection{Router}
   \label{subsubsec:router}
-  A router is spawned by a controller. The router creates and is responsible for a group of identical Workers isolates. Since an isolate is single threaded, creation of multiple instances of an isolate is desirable for concurrency. When a message arrives in a router from a controller, the router, based on its defined routing policy, delegates the message to one of the worker isolates. The routing policy can be chosen at the time of deployment of a worker isolate.
+  A router is spawned by a controller. The router creates and is responsible for a group of identical Workers isolates. Since an isolate is single threaded, creation of multiple instances of an isolate is desirable for concurrency. When a message arrives in a router from a controller, the router, based on its defined routing policy, delegates the message to one of the worker isolates. The routing policy may be chosen at the time of deployment of a worker isolate.
 
-  A router uses a routing policy to distribute message among the group of isolates it is handling. The default routing policies that are available in the framework are listed in the \autoref{tab:routers}
+  A router uses a routing policy to distribute messages among the group of isolates it is handling. The default routing policies that are available in the framework are listed in \autoref{tab:routers}
 \begin{table}[htsb]
   \caption[Routing techniques provided by the framework]{List of routing techniques provided by the framework}\label{tab:routers}
   \centering
@@ -120,23 +119,23 @@ The DDE framework comprises of an Isolate System, a Registry, a Message Queuing 
   \end{tabular}
 \end{table}
 
-    In addition to the available routing policies of the framework, it is also possible to add a new Routing technique by simply extending the ‘Router’ class which requires ‘selectWorker’ function to be implemented. The overridden ‘selectWorker’ function may either return a list of Workers or a single Worker. The ability to implement a custom router opens up possibilities for numerous load balancing techniques. For instance, a simple multicasting router that replicates a message only to the Workers that are spawned locally can be implemented by selecting such Workers using their deployment paths and returning them as a ‘List’.
+    In addition to the available routing policies of the framework, it is also possible to add a new Routing technique by simply extending the ‘Router’ class which requires ‘selectWorker’ function to be implemented. The overridden ‘selectWorker’ function may either return a list of Workers or a single Worker. The ability to implement a custom router opens up possibilities for numerous load balancing techniques. For instance, a simple multicasting router that replicates a message only to the Workers that are spawned locally can be implemented easily by selecting such Workers using their deployment paths and returning them as a ‘List’.
 
-    As the router manages the Worker isolates it has spawned, it is responsible for effectively terminating and restarting the Worker isolates. It also buffers the messages that might arrive while the workers are not ready to accept the messages yet; usually, during the creation of Worker isolates and while restarting them.
+    As a router manages the Worker isolates it has spawned, it is responsible for effectively terminating and restarting the Worker isolates. It also buffers the messages that might arrive when the worker isolates are not ready. This usually occurs during the creation and restarting of Worker isolates.
 
-    If a router does not receive any message from a Worker for a certain amount of time, the router sends a PING message to check if the Worker isolate is alive and ready to accept more messages. If the Worker isolate responds with a PONG message, the router sends a request to fetch messages to controller. This mechanism is present in the framework to prevent the ‘starvation’ for a Worker isolate in case the dequeue message, that might have been sent earlier, could not reach the Message Queuing System because of a network issue or unavailability of MQS.
+    If a router does not receive any message from a Worker for a certain amount of time, the router sends a PING message to check if the Worker isolate is alive and ready to accept more messages. If the Worker isolate responds with a PONG message, the router sends a dequeue request to controller. This mechanism is present in the framework to prevent the ‘starvation’ for Worker isolates. The ‘starvation’ is caused when a dequeue message that may have been sent earlier do not reach the Message Queuing System due to network issue or unavailability of MQS.
 
   \subsubsection{Worker}
   \label{subsubsec:worker}
-  The ‘Worker’ of the framework is an abstract class, which should be inherited by the isolate that the programmer creates. The ‘Worker’ first unwraps the messages that arrives from the router and retrieves headers from it. ‘Sender’ and ‘replyTo’ headers of the message are collected before forwarding message to the child class, that extends this abstract class. By unwrapping the messages that are encapsulated by various headers, the abstract Worker class makes sure that the messages are delivered to the target implementation of the Worker isolate immutated and in intended form.
+  The ‘Worker’ of the framework is an abstract class, which should be extended by the isolate that a developer of DDE application creates. The ‘Worker’ unwraps the messages that arrive from the router and retrieves headers from them. ‘sender’ and ‘replyTo’ headers of messages are collected before forwarding them to the instance of ‘Worker’. By unwrapping the messages that are encapsulated by various headers, the abstract Worker class makes sure that the messages are delivered to the target implementation of the Worker isolate immutated and in intended form.
 
-  To extend the ‘Worker’ isolate, one must implement ‘onReceive’ function which handles incoming messages and carry out the business logic tasks. However, if a task is too complex, the Worker isolate can divide the tasks into subtasks and spawn temporary isolates to carry out those subtasks concurrently. The temporary isolates can be terminated once the subtask has been carried out.
+  To extend a ‘Worker’ isolate, one must implement \emph{onReceive} function which handles incoming messages and carry out the business logic tasks. However, if a task is too complex, the Worker isolate may divide the tasks into subtasks and spawn temporary isolates to carry out those subtasks concurrently. The temporary isolates may be terminated once a subtask has been carried out.
 
-  The ‘send’, ‘reply’ and ‘ask’ functions are provided by this abstract Worker class to send a message to another worker isolate. These functions automatically add the information of sender and receiver in the header of the message that is sent out.
+  The \emph{send}, \emph{reply} and \emph{ask} are helper functions provided by this abstract Worker class to send a message to another worker isolate. These functions automatically add the information of sender and receiver in headers of messages that are sent out.
 
   \paragraph{Sending a Message}
   \label{para:sendMessage}
-  To send a message from one Worker isolate to another, the framework provides ‘send’ function. It takes ‘message’ and ‘address’ of the target Worker isolate as its argument. The reply path can also be optionally set, so that the replied message from target isolate is sent to a different worker isolate for further processing. The named parameter\footnote{Dart's named paramter is an optional argument in the function} ‘replyTo’ can be used to set the address of intended recipient of the reply message; eg:
+  To send a message from one Worker isolate to another, the framework provides \emph{send} function. It requires ‘message’ and ‘address’ of a target Worker isolate as its argument. A reply path can also be optionally set, so that the replied message from the target isolate is sent to a different worker isolate for further processing. The named parameter\footnote{Dart's named paramter is an optional argument in the function} ‘replyTo’ should be used to set the address of intended recipient of the reply message; eg:
 \begin{lstlisting}[numbers=none]
   send("A simple text message", "demosystem/printer");
 \end{lstlisting}
@@ -147,24 +146,24 @@ The DDE framework comprises of an Isolate System, a Registry, a Message Queuing 
 
   \paragraph{Asking For a Reply}
   \label{subsec:askMessage}
-  Sometimes a Worker isolate might need a reply from another isolate for further processing or before replying to the sender of the message. In such case, the worker isolate can specifically ask the target isolate to reply to this particular instance of worker isolate.
+  Sometimes a Worker isolate might need a reply from another isolate for further processing or before replying to the sender of the message. In such case, the worker isolate specifically asks the target isolate to reply to this particular instance of worker isolate.
 
-  For instance, a sample use case can be, a worker isolate maintaining a connection with a browser via HTTP. In this case, as the port cannot be serialized and passed to other isolates through messages, another instance of similar isolate will not be able to respond to the request made in that connection.
+  A sample use case may be, a worker isolate maintaining a connection with a browser via HTTP. In this case, as the port cannot be serialized and passed to other isolates through messages, another instance of similar isolate will not be able to respond to the request made in that connection.
 
-  Similar to the ‘send’ function, the ‘ask’ function takes ‘message’ and ‘address’ of the target worker isolate as its argument; eg:
+  Similar to the \emph{send} function, the \emph{ask} function takes ‘message’ and ‘address’ of a target worker isolate as its argument; eg:
 \begin{lstlisting}[numbers=none]
   ask("current time", "demosystem/timeKeeper");
 \end{lstlisting}
   \paragraph{Replying to a Message}
   \label{subsec:replyMessage}
 
-  To reply to a message, the framework provides the ‘reply’ function. It expects a single argument~\textemdash{} ‘message’, because the response is sent to the worker isolate specified by the sender. The ‘reply’ can be used in response to any of ‘send’ or ‘ask’ messages; eg:
+  To reply to a message, the framework provides the \emph{reply} function. It expects a single argument~\textemdash{} ‘message’, because the response is sent to the worker isolate specified by the sender. The \emph{reply} can be used in response to any of \emph{send} or \emph{ask} messages; eg:
 \begin{lstlisting}[numbers=none]
   reply("Current time is: $time");
 \end{lstlisting}
 
   \subsubsection{Proxy}
-  A ‘Proxy’ is a special type of Worker isolate. When a Worker isolate is supposed to be spawned in a remote node, the router instead spawns a Proxy isolate in local node. Once the Proxy isolate is created, it connects to the ‘Isolate Deployer’ of the remote node where the Worker isolate is intended to be spawned. After establishing connection over a WebSocket with Isolate Deployer of the remote node, the proxy isolate forwards the request to spawn the worker isolate to the Isolate Deployer. After successful spawning of isolate in the remote node, the proxy isolate simply forward the messages that are sent to it by the spawner router. Each proxy worker maintains a separate WebSocket connection with an ‘Isolate Deployer’.\\
+  A ‘Proxy’ is a special type of Worker isolate. When a Worker isolate is supposed to be spawned in a remote node, a router instead spawns a Proxy isolate in a local node. Once the Proxy isolate is created, it connects to the ‘Isolate Deployer’~\autoref{subsubsec:isolateDeployer} of the remote node where the Worker isolate is intended to be spawned. After establishing connection over a WebSocket with the Isolate Deployer, the proxy isolate forwards the request to spawn the worker isolate. After successful spawning the worker isolate in the remote node, the proxy isolate forwards the messages that are sent to it by the spawner router. Each proxy worker maintains a separate WebSocket connection with an ‘Isolate Deployer’.\\
 
   \begin{figure}[H]
     \centering
@@ -175,11 +174,11 @@ The DDE framework comprises of an Isolate System, a Registry, a Message Queuing 
 
   \subsubsection{FileMonitor}
   \label{subsubsec:fileMonitor}
-  The controller spawns a ‘FileMonitor’ only if the ‘Hot Deployement’ flag for a worker isolate is set while deploying. The spawned ‘FileMonitor’ monitors the md5 checksum of the source code from which the Worker isolate is spawned. If a change in the source file is detected, it simply sends a RESTART command to the controller, which eventually forwards it to the target router. The router then restarts all of its worker isolates.
+  A ‘FileMonitor’ is spawned by a controller only if a ‘Hot Deployement’ flag for a worker isolate is set while deploying. The spawned ‘FileMonitor’ monitors the md5 checksum of the source code from which the Worker isolate is spawned. If a change in the source file is detected, it sends a RESTART command to the controller, which forwards it to the target router and the router restarts all of its worker isolates.
 
 \subsection{The Registry}
 \label{subsec:registry}
-The isolate registry is a central node where other nodes, which are running Bootstrapper, connect and register themselves. The registry simply keeps the record of the connected nodes, assigns a unique id to each and queries them about the running isolate systems when required. The registry provides RESTful API and a web interface~\footnote{the web interface can be opted out as it has to be started separately} through which one can have an overview of the full system and manage the deployments of the isolate systems as well as individual isolates.
+The isolate registry is a central node where nodes that are running Bootstrappers connect and register. The registry simply keeps a record of the connected nodes, assigns a unique id to each node and queries them about the running isolate systems when required. The registry provides RESTful API and a web interface~\footnote{the web interface can be opted out as it has to be started separately} through which one can have an overview of the full system and manage the deployments of an isolate systems as well as individual isolates.
 
 The basic tasks that a registry carries out are:
 \begin{itemize}
@@ -190,9 +189,9 @@ The basic tasks that a registry carries out are:
 
   \subsubsection{RESTful API of Registry}
   \label{subsec:restApi}
-  The registry provides a REST API to perform the operations on the connected nodes. One can send a ‘GET’ request to the registry to fetch the list of the nodes that are connected to the registry. Using the ‘id’ of a node from the replied list, one can deploy an isolate system or add an isolate to already deployed system by sending appropriate ‘POST’ request.
+  Registry provides a REST API to perform several operations on connected nodes. One can send a ‘GET’ request to the registry to fetch the list of the nodes that are connected to the registry. Using an ‘id’ of a node from the replied list, one can deploy an isolate system or add an isolate to already deployed isolate system by sending appropriate ‘POST’ request.
 
-  The REST endpoints exposed by the registry are listed in table~\autoref{tab:endpoints}.
+  The REST endpoints exposed by a registry are listed in table~\autoref{tab:endpoints}.
   \begin{table}[H]
     \caption[Endpoints exposed by the registry]{List of endpoints exposed by the registry}\label{tab:endpoints}
     \centering
@@ -208,7 +207,7 @@ The basic tasks that a registry carries out are:
     \end{tabular}
   \end{table}
 
-\paragraph{A sample GET and POST query to deploy an isolate system}
+\paragraph{A Sample GET and POST Query to Deploy an Isolate System}
 \begin{description}
   \item{GET request to fetch a list of connected systems}\\
   Request: ‘GET \url{http://54.77.239.254:8000/registry/system/list}’\\
@@ -248,7 +247,7 @@ The basic tasks that a registry carries out are:
   Response Status Code: 200 OK
 \end{description}
 
-\paragraph{A sample GET query to fetch details of an isolate system}
+\paragraph{A Sample GET Query to Fetch Details of an Isolate System}
   \begin{description}
     \item{GET request to get details of an isolate system}\\
     Request: ‘GET \url{http://54.77.239.254:8000/registry/system/266393094}’\\
@@ -273,7 +272,7 @@ The basic tasks that a registry carries out are:
   \end{lstlisting}
   \end{description}
 
-\paragraph{A sample POST query to terminate a Worker isolate}
+\paragraph{A Sample POST Query to Terminate a Worker Isolate}
   \begin{description}
     \item{POST request to terminate an isolate of an isolate system}\\
     Request: ‘POST \url{http://54.77.239.254:8000/registry/system/shutdown}’\\
@@ -306,7 +305,24 @@ The registry generates all the information about isolate and isolate systems “
 
   \subsubsection{The Web Interface for the Registry}
   \label{subsubsection:registryWebInterface}
-  The deployment of isolates can also be managed by using a web interface provided by the registry. The Web Interface should be started up separately in a different port. The Web Interface, internally communicates with the registry via the REST API~[\ref{subsec:restApi}] which is exposed by the Registry.
+  Deployment of isolates can also be managed by using a web interface provided by the registry. The Web Interface should be started up separately in a different port. The Web Interface, internally communicates with the registry via the REST API~[\ref{subsec:restApi}] which is exposed by the Registry.
+
+  \autoref{fig:registryWebInterface} is a screenshot of the Web Interface of registry which shows a list of connected nodes and a list of deployed systems in a node along with the details of each isolate. The individual isolate can be terminated using the ‘kill’ button next to an isolate and an isolate system can be terminated using ‘shutdown’ button next to the isolate system. To deploy a new worker isolate into new isolate system, the ‘+’ button may be used, which pops out a form shown in \autoref{fig:registryWebInterface-addisolate}. While deploying a worker isolate, if the name of existing isolate system is used, instead of creating new isolate system, the worker isolate is added to the existing isolate system.
+
+  To deploy a worker isolate to an existing isolate system, the existing name of isolate system may be used.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{figures/webinterface}
+  \caption[Web interface of Registry showing isolate system and isolate in a node]{Web interface of Registry showing isolate system and isolate in a node}
+  \label{fig:registryWebInterface}
+\end{figure}
+
+\begin{figure}[H]
+  \centering  \includegraphics[width=0.8\textwidth]{figures/webinterface-addisolate}
+  \caption[Form of the Web interface to deploy an isolate]{Form of the Web interface to deploy an isolate}
+  \label{fig:registryWebInterface-addisolate}
+\end{figure}
 
 \subsection{Message Queuing System (MQS)}
 \label{subsec:mqs}
@@ -336,10 +352,15 @@ Since, in Dart\footnote{Dart version 1.7.2} the passing of sockets to isolates i
 \subsection{Activator}
   An activator simply starts up two isolates: a ‘System Bootstrapper’ and an ‘Isolate Deployer’. Every node that is supposed to be running an Isolate System or become a part of isolate system by running isolates must be running an Activator. The activator requires a WebSocket address of the Registry as a command line argument. Nevertheless, it is also possible to start up System Bootstrapper and Isolate Deployer separately.
 
+%TODO
   \subsubsection{System Bootstrapper}
-  The System Bootstrapper registers itself to the ‘Registry’ via a WebSocket connection as soon as it is started. The activator forwards the path of the WebSocket to the system bootstrapper. But, if a System Bootstrapper is started separately then the path of the Registry should be passed as a command line argument.
+  \label{subsubsec:bootstrapper}
+  System Bootstrapper registers itself to the ‘Registry’ via a WebSocket connection as soon as it is started. The activator forwards the path of the WebSocket to the system bootstrapper. But, if a System Bootstrapper is started separately then the path of the Registry should be passed as a command line argument.
+
+  A system bootstrapper is responsible for starting up an instance of isolate system in a physical node. As it creates an isolate system, it can invoke methods provided by the top level isolate of the isolate system.
 
   \subsubsection{Isolate Deployer}
+  \label{subsubsec:isolateDeployer}
 An Isolate Deployer starts up a Worker isolate in a node. The isolate is spawned without a local isolate system and as a part of an isolate system running in another node. This functionality expands the isolate system beyond a physical system. An isolate system can deploy number of instances of an isolate in several different nodes.
 
   An isolate deployer running in a remote machine is able to handle requests from multiple ‘Proxies’ from several isolate systems. Each proxy opens up a separate WebSocket channel with the isolate deployer.
@@ -432,9 +453,9 @@ A message is serialized to JSON string before sending via a SendPort of an isola
 \end{figure}
 \normalsize
 
-\subsection{Sample message formats}
+\subsection{Sample Message formats}
 
-\subsubsection{The message sent through different components while enqueuing}
+\subsubsection{A Message Sent Through Different Components While Enqueuing}
 
 \begin{description}
 
@@ -474,7 +495,7 @@ A message is serialized to JSON string before sending via a SendPort of an isola
 \end{lstlisting}
 \end{description}
 
-\subsubsection{Sample format of a message sent at different components while dequeuing}
+\subsubsection{Sample Format of a Message Sent at Different Components While Dequeuing}
 \begin{description}
 \item Dequeuer:
 \begin{lstlisting}[language=json,numbers=none]
@@ -574,7 +595,7 @@ A message is serialized to JSON string before sending via a SendPort of an isola
   \end{tabular}
 \end{table}
 
-\section{A Sample Implementation of Worker Using The Framework}
+\section{A Sample Implementation of Worker Using DDE Framework}
 \autoref{lst:sampleWorker} is an example implementation of Worker isolate for the framework. The \emph{main()} is the entry point of the isolate, which is invoked when this isolate is spawned by the router. The class \emph{Consumer} overrides the function \emph{onReceive()}, which is called for each incoming message.
 
   The example shown here prints a message, if the ‘action’
