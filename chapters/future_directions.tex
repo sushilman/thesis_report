@@ -10,7 +10,7 @@
 
   One feature to improve the fault-tolerance of the system would be to change the implementation for FileMonitor~[\autoref{subsubsec:fileMonitor}]. The current implementation of the FileMonitor simply monitors the file from a remote location and periodically fetches it to calculate the checksum. In case of modification in the file, the FileMonitor informs the controller which instructs a router to re-spawn the worker regardless of the contents of the source. This means there is a vulnerability to deploy incorrect code which could result in failing to start up the isolate. The ability to rollback to a previous working version of the source in case of failure of spawning would improve the resilience of the framework.
 
-  Improvements in user experience of web interface of registry~\autoref{subsubsection:registryWebInterface} would add more value to usability of the framework.
+  Improvements in the user experience of web interface of a registry~[\autoref{subsubsection:registryWebInterface}] would add more value to the usability of the framework.
 
   Compared to Akka actors, Dart isolates require more memory and longer time to spawn. Creating an alternative lightweight entity to isolate, but having similar properties of an isolate would make the applications lightweight, less resource hungry and reduce the cost of dynamic isolate creation.
 
