@@ -1,11 +1,7 @@
 \chapter{Introduction}\label{chapter:introduction}
-  To scale out and handle a high number of requests, applications are deployed in distributed environments. The transfer speed and demand for data have been increasing rapidly. Performance expectations from web applications are higher than ever.
-  %Why? Because of fast growing information technology?
-  % because of increasing number of users?
-  % growing usage of smartphones is also one of the reasons
-Performance and scalability concerns are met by using high end multi-core servers and concurrent processing via multi-threading.
+  Performance expectations from applications are higher than ever with demands for data and transfer speed increasing rapidly. Performance and scalability concerns are met by using high end multi-core servers and concurrent processing via multi-threading. To scale out and handle a high number of requests, applications are deployed in distributed environments.
 
-  Enterprises want their applications to be available 100\% of the time because a few seconds of application downtime could cause a huge loss to revenue and customer satisfaction.
+  Enterprises want applications to be available 100\% of the time, because a few seconds of downtime may cause a huge loss in revenue and customer satisfaction.
 
   Ideally an application should be able to scale up or down without compromising its availability. The possibility to dynamically scale allows an application to grow when demand increases and shrink to minimal resources when demand is low.
 
@@ -17,13 +13,13 @@ Performance and scalability concerns are met by using high end multi-core server
 
   The framework is intended to take advantage of the fact that the Dart virtual machine can be run in browser and server. This advantage opens up the possibility of creating a fully distributed application in which isolates may run everywhere: in servers, desktop browsers and even in mobile browsers.
 
-  Erlang~[\autoref{sec:erlang}] and Scala~[\autoref{sec:scala}] are popular programming languages which have their own implementations of actor programming. The Akka toolkit~[\autoref{sec:akka}] provides a foundation for actor programming in both Java and Scala. The \acrshort{DDE} framework presented in this thesis draws on ideas from the actor system~[\autoref{subsec:actorSystem}] and router~[\autoref{subsec:akka-routers}]
+  Erlang~[\autoref{sec:erlang}] and Scala~[\autoref{sec:scala}] are popular programming languages which have their own implementations for actor programming. The Akka toolkit~[\autoref{sec:akka}] provides a foundation for actor programming in both Java and Scala. The \acrshort{DDE} framework presented in this thesis draws on ideas from the actor system~[\autoref{subsec:actorSystem}] and router~[\autoref{subsec:akka-routers}]
    implementations of Akka to provide a comparable isolate system~[\autoref{sub:isolate-system}] and routers~[\autoref{subsubsec:router}] for Dart.
 
   As \acrshort{DDE} applications communicate internally by message passing, the \acrshort{DDE} framework takes advantages of features offered by the message broker system – RabbitMQ~[\autoref{sec:rabbitmq}]. RabbitMQ provides message persistence and a decoupled nature to applications built on the \acrshort{DDE} framework.
 
-  To provide a fully distributed nature to applications the \acrshort{DDE} framework allows developers to deploy components of their application (Worker isolate~[\autoref{subsubsec:worker}]) to remote nodes. The \acrshort{DDE} framework itself is based on asynchronous message passing. It has several decoupled components which communicate with each other via WebSockets~[\autoref{sec:websocket}].
+  To provide a fully distributed nature to applications the \acrshort{DDE} framework allows developers to deploy components of their application (Worker isolate~[\autoref{subsubsec:worker}]) to remote nodes. The \acrshort{DDE} framework internally uses asynchronous message passing. It has several decoupled components which communicate with each other via WebSockets~[\autoref{sec:websocket}].
 
-  The result of this thesis is a framework based on the Dart language that enforces actor based programming in Dart and makes applications scalable, highly available, with support for deploying and terminating isolates at runtime without interrupting the whole system.
+  The result of this thesis is a framework based on the Dart language that enforces actor based programming in Dart and makes applications scalable, highly available, and supports deploying and terminating isolates at runtime without interrupting the whole system.
 
  Chapter \ref{chapter:literature_review} consists of the introduction and references of the concepts behind the \acrshort{DDE} framework. It also discusses the technologies that were used in the framework. Chapter \ref{chapter:system_design} presents the implementation ideas and proof of concept of Dart Dart Everywhere. Chapter \ref{chapter:results} shows sample applications built using this framework and presents performance benchmarks and evaluations of applications ran in a distributed environment in Amazon EC2. The deductions made from the benchmarks and results are discussed in \autoref{chapter:discussions}.
